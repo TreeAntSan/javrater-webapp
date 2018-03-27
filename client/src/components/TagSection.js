@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Segment, Input, Form, List, Label, Dropdown, Checkbox } from 'semantic-ui-react';
+import { Segment, Form, List, Label } from 'semantic-ui-react';
 
 class TagSection extends Component {
   state = {

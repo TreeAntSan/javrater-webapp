@@ -34,7 +34,7 @@ class Basics extends Component {
             </List.Item>
             <List.Item>
               <Form.Field>
-                {/* TODO: Add label */}
+                {/* TODO: Add label, make nullable(?) */}
                 <Dropdown
                   label="Genre"
                   placeholder="Select Genre"
