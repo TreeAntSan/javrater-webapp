@@ -6,8 +6,29 @@ import TagSection from "./TagSection";
 import Output from "./Output";
 import { TAG_OPTIONS } from "../constants";
 
-
 class GridWindow extends Component {
+
+  /* TODO Bonus: add a tooltip timing function */
+
+  state = {
+    checkedTags: {},
+    title: '',
+    code: '',
+    genre: '',
+    rating: '',
+    tagsOnly: false,
+  };
+
+  handleTagChange = (tag, tagState) => {
+    const checkedTags = {...this.state.checkedTags};
+    checkedTags[tag] = tagState;
+    this.setState({ checkedTags });
+  };
+
+  handleBasicsChange = ({ title, code, genre, rating, tagsOnly }) => {
+
+  };
+
   render () {
     return (
       <Grid stackable padded>
@@ -24,16 +45,19 @@ class GridWindow extends Component {
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.special.title}
                     tags={TAG_OPTIONS.special.tags}
+                    onTagChange={this.handleTagChange}
                   />
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.generic.title}
                     tags={TAG_OPTIONS.generic.tags}
+                    onTagChange={this.handleTagChange}
                   />
                 </Grid.Column>
                 <Grid.Column width={8}>
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.interesting.title}
                     tags={TAG_OPTIONS.interesting.tags}
+                    onTagChange={this.handleTagChange}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -46,38 +70,46 @@ class GridWindow extends Component {
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.fetish.title}
                     tags={TAG_OPTIONS.fetish.tags}
+                    onTagChange={this.handleTagChange}
                   />
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.gross.title}
                     tags={TAG_OPTIONS.gross.tags}
+                    onTagChange={this.handleTagChange}
                   />
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.other.title}
                     tags={TAG_OPTIONS.other.tags}
+                    onTagChange={this.handleTagChange}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.incest.title}
                     tags={TAG_OPTIONS.incest.tags}
+                    onTagChange={this.handleTagChange}
                   />
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.voyeur.title}
                     tags={TAG_OPTIONS.voyeur.tags}
+                    onTagChange={this.handleTagChange}
                   />
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.idol.title}
                     tags={TAG_OPTIONS.idol.tags}
+                    onTagChange={this.handleTagChange}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.girl.title}
                     tags={TAG_OPTIONS.girl.tags}
+                    onTagChange={this.handleTagChange}
                   />
                   <TagSection
                     tagSectionTitle={TAG_OPTIONS.series.title}
                     tags={TAG_OPTIONS.series.tags}
+                    onTagChange={this.handleTagChange}
                   />
                 </Grid.Column>
               </Grid.Row>

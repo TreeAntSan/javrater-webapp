@@ -155,12 +155,12 @@ export const TAG_OPTIONS = {
       {
         tag: "NP",
         name: "Normal People",
-        description: "Not full of make-up covered models giving fake orgasms. Amat.",
+        description: "Not full of make-up covered models giving fake orgasms. Amateurs.",
       },
       {
         tag: "LB",
         name: "Lubed",
-        description: "Girl is lubed and shiny for at least part of the video. Also counts for.",
+        description: "Girl is lubed and shiny for at least part of the video. Also counts for sweaty.",
       },
       {
         tag: "LO",
@@ -195,7 +195,7 @@ export const TAG_OPTIONS = {
       {
         tag: "BM",
         name: "Blackmail",
-        description: "Girl is forced over guilt of something; having sex to get a job or good.",
+        description: "Girl is forced over guilt of something; having sex to get a job or good grades.",
       },
       {
         tag: "EM",
