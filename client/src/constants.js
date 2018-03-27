@@ -68,8 +68,8 @@ export const GENRE_OPTIONS = [
   },
 ];
 
-export const TAG_OPTIONS = [
-  {
+export const TAG_OPTIONS = {
+  special: {
     title: "Special",
     tags: [
       {
@@ -99,7 +99,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  generic: {
     title: "Generic",
     tags: [
       {
@@ -174,7 +174,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  interesting: {
     title: "Interesting",
     tags: [
       {
@@ -274,7 +274,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  fetish: {
     title: "Fetish",
     tags: [
       {
@@ -359,7 +359,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  gross: {
     title: "Gross",
     tags: [
       {
@@ -384,7 +384,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  incest: {
     title: "Incest",
     tags: [
       {
@@ -454,7 +454,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  voyeur: {
     title: "Voyeur",
     tags: [
       {
@@ -484,7 +484,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  idol: {
     title: "Idol",
     tags: [
       {
@@ -504,7 +504,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  other: {
     title: "Other",
     tags: [
       {
@@ -534,7 +534,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  girl: {
     title: "Girl",
     tags: [
       {
@@ -629,7 +629,7 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-  {
+  series: {
     title: "Series",
     tags: [
       {
@@ -674,4 +674,4 @@ export const TAG_OPTIONS = [
       },
     ],
   },
-];
+};
