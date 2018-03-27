@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
-import { Rating } from 'semantic-ui-react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Rating } from 'semantic-ui-react';
 
 class RatingElement extends Component {
   state = {
-    rating: this.props.initRating,
+    rating: this.props.initRating || 0,
     maxRating: this.props.initMaxRating,
   };
 
@@ -23,5 +24,11 @@ class RatingElement extends Component {
     );
   }
 }
+
+RatingElement.propTypes = {
+  initRating: PropTypes.number,
+  initMaxRating: PropTypes.number.isRequired,
+  ratingDescriptions: PropTypes.array.isRequired,
+};
 
 export default RatingElement;
