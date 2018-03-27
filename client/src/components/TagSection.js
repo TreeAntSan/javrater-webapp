@@ -17,14 +17,14 @@ class TagSection extends Component {
   render () {
     return (
       <Segment>
-        <Label attached="top left">{this.props.tagSectionTitle}</Label>
+        <Label attached="top left">{this.props.tagSectionTitle} Tags</Label>
         <Form>
           <List>
             {this.props.tags.map((tag) => (
               <List.Item key={tag.tag}>
                 <Form.Checkbox
                   checked={this.state.checkedTags[tag.tag] || false}
-                  label={tag.name}
+                  label={`${tag.tag} - ${tag.name}`}
                   onChange={this.onChange}
                   data-tag={tag.tag}
                 />

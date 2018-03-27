@@ -13,10 +13,12 @@ class GridWindow extends Component {
         <Grid.Column>
           <Grid.Row>
             <Basics />
-            <TagSection
-              tagSectionTitle={TAG_OPTIONS[0].title}
-              tags={TAG_OPTIONS[0].tags}
-            />
+            {TAG_OPTIONS.map((tagSection) => (
+              <TagSection
+                tagSectionTitle={tagSection.title}
+                tags={tagSection.tags}
+              />
+            ))}
           </Grid.Row>
         </Grid.Column>
       </Grid>

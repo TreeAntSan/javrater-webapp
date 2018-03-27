@@ -10,6 +10,7 @@ class Basics extends Component {
   ratingCount = Object.keys(RATING_OPTIONS).length - 1;
 
   render () {
+    {/* TODO below */}
     return (
       <Segment>
         <Label attached="top left">Basics</Label>
@@ -33,6 +34,7 @@ class Basics extends Component {
             </List.Item>
             <List.Item>
               <Form.Field>
+                {/* TODO: Add label */}
                 <Dropdown
                   label="Genre"
                   placeholder="Select Genre"
