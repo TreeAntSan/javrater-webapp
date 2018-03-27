@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Segment, Label, Form, Input, Grid, Button } from "semantic-ui-react";
 
 class Output extends Component {
@@ -27,7 +28,10 @@ class Output extends Component {
                       <Button color="teal">Parse</Button>
                     </Grid.Column>
                     <Grid.Column>
-                      <Button color="grey">Reset</Button>
+                      <Button
+                        color="grey"
+                        onClick={this.props.onResetClick}
+                      >Reset</Button>
                     </Grid.Column>
                   </Grid.Row>
                 </Grid>
@@ -39,5 +43,9 @@ class Output extends Component {
     );
   }
 }
+
+Output.propTypes = {
+  onResetClick: PropTypes.func.isRequired,
+};
 
 export default Output;

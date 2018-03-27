@@ -3,20 +3,21 @@ import PropTypes from "prop-types";
 import { Segment, Form, List, Label } from "semantic-ui-react";
 import ReactTooltip from "react-tooltip";
 
-const TagSection = ({ tagSectionTitle, tags, onTagChange }) => {
+const TagSection = ({ tagSectionTitle, tagOptions, onTagChange, tagValues }) => {
   return (
     <div>
       <Segment>
         <Label attached="top left">{tagSectionTitle} Tags</Label>
         <Form>
           <List>
-            {tags.map((tag) => (
-              <List.Item key={tag.tag}>
+            {tagOptions.map((tagOption) => (
+              <List.Item key={tagOption.tag}>
                 <Form.Checkbox
-                  label={`${tag.tag} - ${tag.name}`}
+                  label={`${tagOption.tag} - ${tagOption.name}`}
+                  checked={tagValues[tagOption.tag] || false}
                   onChange={(event, data) => (onTagChange((data["data-tag"] || "unknown"), data.checked))}
-                  data-tag={tag.tag}
-                  data-tip={tag.description}
+                  data-tag={tagOption.tag}
+                  data-tip={tagOption.description}
                 />
               </List.Item>
             ))}
@@ -30,8 +31,9 @@ const TagSection = ({ tagSectionTitle, tags, onTagChange }) => {
 
 TagSection.propTypes = {
   tagSectionTitle: PropTypes.string.isRequired,
-  tags: PropTypes.array.isRequired,
+  tagOptions: PropTypes.array.isRequired,
   onTagChange: PropTypes.func.isRequired,
+  tagValues: PropTypes.object.isRequired,
 };
 
 export default TagSection;
