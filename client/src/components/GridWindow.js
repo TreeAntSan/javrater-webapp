@@ -12,15 +12,14 @@ const initialState = {
     title: '',
     code: '',
     genre: '',
-    rating: (RATING_OPTIONS.length - 1)/2,
+    rating: 0,
     tagsOnly: false,
   },
 };
 
 class GridWindow extends Component {
 
-  /* TODO Bonus: add a tooltip timing function */
-
+  // TODO Bonus: add a tooltip timing function
 
   constructor(props) {
     super(props);
@@ -34,6 +33,7 @@ class GridWindow extends Component {
   };
 
   handleBasicsChange = ({ title, code, genre, rating, tagsOnly }) => {
+    // TODO There must be a more elegant way to accomplish this...
     const basicValues = {...this.state.basicValues};
     if (title !== undefined) basicValues.title = title;
     if (code !== undefined) basicValues.code = code;

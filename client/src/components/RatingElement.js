@@ -1,23 +1,19 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { Rating } from "semantic-ui-react";
 
-class RatingElement extends Component {
-  render () {
-    return (
-      <div>
-        <Rating
-          clearable
-          rating={this.props.rating}
-          maxRating={this.props.maxRating}
-          onRate={(event, { rating }) => this.props.onRate({ rating: rating })}
-        />
-        {this.props.rating}: {(this.props.ratingOptions[this.props.rating] &&
-                                this.props.ratingOptions[this.props.rating].description) || "ERROR"}
-      </div>
-    );
-  }
-}
+const RatingElement = ({ maxRating, ratingOptions, onRate, rating }) => (
+  <div>
+    <Rating
+      clearable
+      rating={rating}
+      maxRating={maxRating}
+      onRate={(event, { rating }) => onRate({ rating: rating })}
+    />
+    {rating}: {(ratingOptions[rating] &&
+                            ratingOptions[rating].description) || "ERROR"}
+  </div>
+);
 
 RatingElement.propTypes = {
   maxRating: PropTypes.number.isRequired,
