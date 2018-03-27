@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Segment, Label, Form, Input, Grid, Button } from "semantic-ui-react";
 
-const Output = ({ onResetClick }) => (
+const Output = ({ onOutputChange, outputValue, onMakeClick, onParseClick, onResetClick }) => (
   <Segment>
     <Label attached="top left">Output</Label>
     <Form>
@@ -13,6 +13,8 @@ const Output = ({ onResetClick }) => (
               <Input
                 label="Result"
                 type="text"
+                onChange={onOutputChange}
+                value={outputValue}
               />
             </Form.Field>
           </Grid.Column>
@@ -20,10 +22,16 @@ const Output = ({ onResetClick }) => (
             <Grid stackable columns="equal">
               <Grid.Row>
                 <Grid.Column>
-                  <Button color="blue">Make</Button>
+                  <Button
+                    color="blue"
+                    onClick={onMakeClick}
+                  >Make</Button>
                 </Grid.Column>
                 <Grid.Column>
-                  <Button color="teal">Parse</Button>
+                  <Button
+                    color="teal"
+                    onClick={onParseClick}
+                  >Parse</Button>
                 </Grid.Column>
                 <Grid.Column>
                   <Button
@@ -41,6 +49,10 @@ const Output = ({ onResetClick }) => (
 );
 
 Output.propTypes = {
+  onOutputChange: PropTypes.func.isRequired,
+  outputValue: PropTypes.string.isRequired,
+  onMakeClick: PropTypes.func.isRequired,
+  onParseClick: PropTypes.func.isRequired,
   onResetClick: PropTypes.func.isRequired,
 };
 

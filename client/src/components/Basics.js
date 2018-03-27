@@ -4,7 +4,6 @@ import { Segment, Input, Form, List, Label, Dropdown, Checkbox } from "semantic-
 
 import RatingElement from "./RatingElement";
 
-/* TODO below */
 const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
   <Segment>
     <Label attached="top left">Basics</Label>
@@ -15,6 +14,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Input
               label="Title"
               type="text"
+              placeholder="Video title"
               onChange={(e) => (onChange({ title: e.target.value }))}
               value={values.title}
             />
@@ -25,6 +25,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Input
               label="Code"
               type="text"
+              placeholder="ABC-123"
               onChange={(e) => (onChange({ code: e.target.value }))}
               value={values.code}
             />
@@ -32,11 +33,10 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
         <List.Item>
           <Form.Field>
-            {/* TODO: Add label, make nullable(?) */}
             <Dropdown
               placeholder="Select Genre"
               selection
-              options={genreOptions}
+              options={[{ text:"", value: "" }, ...genreOptions]}
               onChange={(event, data) => (onChange({ genre: data.value }))}
               value={values.genre}
             />

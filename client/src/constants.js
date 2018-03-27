@@ -68,8 +68,8 @@ export const GENRE_OPTIONS = [
   },
 ];
 
-export const TAG_OPTIONS = {
-  special: {
+export const TAG_OPTIONS = [
+  {
     title: "Special",
     tags: [
       {
@@ -99,7 +99,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  generic: {
+  {
     title: "Generic",
     tags: [
       {
@@ -174,7 +174,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  interesting: {
+  {
     title: "Interesting",
     tags: [
       {
@@ -274,7 +274,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  fetish: {
+  {
     title: "Fetish",
     tags: [
       {
@@ -359,7 +359,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  gross: {
+  {
     title: "Gross",
     tags: [
       {
@@ -384,7 +384,37 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  incest: {
+  {
+    title: "Other",
+    tags: [
+      {
+        tag: "FO",
+        name: "Foreign",
+        description: "White girls, black guys, traveling, outside of Asia.",
+      },
+      {
+        tag: "QV",
+        name: "Quality Video",
+        description: "1080p or 60fps or both. Eye candy awaits.",
+      },
+      {
+        tag: "BQ",
+        name: "Bad Quality",
+        description: "Low pixels, bad frame rate, low bitrate.",
+      },
+      {
+        tag: "UC",
+        name: "Uncensored",
+        description: "No mosaics here.",
+      },
+      {
+        tag: "CL",
+        name: "Collection",
+        description: "Folder than contains many single-shots that are all pretty much identical.",
+      },
+    ],
+  },
+  {
     title: "Incest",
     tags: [
       {
@@ -454,7 +484,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  voyeur: {
+  {
     title: "Voyeur",
     tags: [
       {
@@ -484,7 +514,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  idol: {
+  {
     title: "Idol",
     tags: [
       {
@@ -504,37 +534,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  other: {
-    title: "Other",
-    tags: [
-      {
-        tag: "FO",
-        name: "Foreign",
-        description: "White girls, black guys, traveling, outside of Asia.",
-      },
-      {
-        tag: "QV",
-        name: "Quality Video",
-        description: "1080p or 60fps or both. Eye candy awaits.",
-      },
-      {
-        tag: "BQ",
-        name: "Bad Quality",
-        description: "Low pixels, bad frame rate, low bitrate.",
-      },
-      {
-        tag: "UC",
-        name: "Uncensored",
-        description: "No mosaics here.",
-      },
-      {
-        tag: "CL",
-        name: "Collection",
-        description: "Folder than contains many single-shots that are all pretty much identical.",
-      },
-    ],
-  },
-  girl: {
+  {
     title: "Girl",
     tags: [
       {
@@ -629,7 +629,7 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-  series: {
+  {
     title: "Series",
     tags: [
       {
@@ -674,4 +674,4 @@ export const TAG_OPTIONS = {
       },
     ],
   },
-};
+];
