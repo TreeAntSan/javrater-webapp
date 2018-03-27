@@ -635,7 +635,7 @@ export const TAG_OPTIONS = {
       {
         tag: "MUS",
         name: "Muscle",
-        description: "Part of the muscle series folder. While the tag MS is there, this makes it.",
+        description: "Part of the muscle series folder. While the tag MS is there, this makes it easy to find.",
       },
       {
         tag: "BAK",

@@ -10,7 +10,7 @@ class Basics extends Component {
   ratingCount = Object.keys(RATING_OPTIONS).length - 1;
 
   render () {
-    {/* TODO below */}
+    /* TODO below */
     return (
       <Segment>
         <Label attached="top left">Basics</Label>
