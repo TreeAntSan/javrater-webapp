@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { Segment, Input, Form, List, Label, Dropdown, Checkbox } from 'semantic-ui-react';
+import React, { Component } from "react";
+import { Segment, Input, Form, List, Label, Dropdown, Checkbox } from "semantic-ui-react";
 
-import RatingElement from './RatingElement';
+import RatingElement from "./RatingElement";
 
-import { RATING_OPTIONS, GENRE_OPTIONS } from '../constants';
+import { RATING_OPTIONS, GENRE_OPTIONS } from "../constants";
 
 class Basics extends Component {
 

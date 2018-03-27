@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react';
+import React, { Component } from "react";
+import { Grid } from "semantic-ui-react";
 
-import Basics from './Basics';
+import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
 import { TAG_OPTIONS } from "../constants";

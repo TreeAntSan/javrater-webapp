@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Segment, Label, Form, Input, Grid, Button } from 'semantic-ui-react';
+import React, { Component } from "react";
+import { Segment, Label, Form, Input, Grid, Button } from "semantic-ui-react";
 
 class Output extends Component {
   render () {

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Segment, Form, List, Label } from 'semantic-ui-react';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Segment, Form, List, Label } from "semantic-ui-react";
 
 class TagSection extends Component {
   state = {
@@ -8,7 +8,7 @@ class TagSection extends Component {
   };
 
   onChange = (event, data) => {
-    const tag = data['data-tag'] || 'unknown';
+    const tag = data["data-tag"] || "unknown";
     const checkedTags = {...this.state.checkedTags};
     checkedTags[tag] = data.checked;
     this.setState({ checkedTags });
