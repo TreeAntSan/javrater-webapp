@@ -1,9 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import GridWindow from './components/GridWindow';
+import GridWindow from "./components/GridWindow";
+import Footer from "./components/Footer";
 
 const App = () => (
-  <GridWindow />
+  <div>
+    <GridWindow />
+    <Footer />
+  </div>
 );
 
 export default App;
