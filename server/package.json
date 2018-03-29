@@ -7,18 +7,19 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon -w ./ --exec 'babel-node --presets babel-preset-env -- ./bin/www'",
-    "debug": "babel-node --inspect --presets babel-preset-env -- ./bin/www",
-    "debugdemon": "nodemon -w ./ --exec 'babel-node --inspect --presets babel-preset-env -- ./bin/www'",
-    "build": "babel ./ -d dist --presets babel-preset-env",
-    "serve": "node dist/bin/www"
+    "start": "nodemon -w ./ --exec 'babel-node --presets babel-preset-env -- ./src/bin/www.js'",
+    "debug": "babel-node --inspect --presets babel-preset-env -- ./src/bin/www.js",
+    "debugdemon": "nodemon -w ./ --exec 'babel-node --inspect --presets babel-preset-env -- ./src/bin/www.js'",
+    "build": "rimraf ./build && babel ./src -d build --presets babel-preset-env",
+    "serve": "node ./build/bin/www.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
     "morgan": "~1.9.0",
-    "mysql": "^2.15.0"
+    "mysql": "^2.15.0",
+    "rimraf": "^2.6.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
