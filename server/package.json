@@ -7,7 +7,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon --exec babel-node --presets babel-preset-env -- ./bin/www"
+    "start": "nodemon -w ./ --exec 'babel-node --presets babel-preset-env -- ./bin/www'",
+    "debug": "babel-node --inspect --presets babel-preset-env -- ./bin/www",
+    "debugdemon": "nodemon -w ./ --exec 'babel-node --inspect --presets babel-preset-env -- ./bin/www'",
+    "build": "babel ./ -d dist --presets babel-preset-env",
+    "serve": "node dist/bin/www"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -27,6 +31,6 @@
     ]
   },
   "nodemonConfig": {
-    "ext": "html"
+    "ext": "js,html"
   }
 }
