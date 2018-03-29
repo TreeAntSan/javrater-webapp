@@ -1,0 +1,8 @@
+{
+  "name": "javrater-server",
+  "version": "0.0.1",
+  "description": "The server for the JAV Rater Webapp",
+  "main": "index.js",
+  "author": "TreeAntSan@gmail.com",
+  "license": "MIT"
+}
