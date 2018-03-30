@@ -5,7 +5,7 @@ const qry = `
   SELECT *
   FROM tag`;
 
-router.get("/all", function(req, res, next) {
+router.get("/all", (req, res, next) => {
   res.locals.connection.query(qry,
     (error, results, fields) => {
     res.setHeader("Content-Type", "application/json");
@@ -18,7 +18,7 @@ router.get("/all", function(req, res, next) {
   });
 });
 
-router.get("/:id", function(req, res, next) {
+router.get("/:id", (req, res, next) => {
   const id = parseInt(req.params.id, 10);
   res.locals.connection.query(qry + ` WHERE id = ${id}`,
     (error, results, fields) => {
