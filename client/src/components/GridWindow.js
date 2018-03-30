@@ -35,7 +35,9 @@ class GridWindow extends Component {
     let tagSeed = {};
     TAG_OPTIONS.forEach((tagCategory) => {
       tagCategory.tags.forEach((tag) => {
-        this.tagDict[tag.tag] = tag.name;
+        this.tagDict[tag.tag] = {};
+        this.tagDict[tag.tag].name = tag.name;
+        this.tagDict[tag.tag].category = tagCategory.title;
         tagSeed[tag.tag] = false;
       });
     });
@@ -65,18 +67,27 @@ class GridWindow extends Component {
 
   handleMakeClick = () => {
     let tags = [];
+    let series = [];
     Object.keys(this.state.checkedTags).forEach(key => {
-      if (this.state.checkedTags[key]) tags.push(key);
+      if (this.state.checkedTags[key]) {
+        if (this.tagDict[key].category.toLowerCase() === "series") {
+          series.push(key);
+        } else {
+          tags.push(key);
+        }
+      }
     });
 
     let tagList = tags.join(", ");
+    let seriesList = series.join(" ");
+    seriesList = seriesList.length ? " " + seriesList : seriesList;
 
     let output = "";
     if (this.state.basicValues.tagsOnly) {
       output = `(${tagList})`;
     } else {
       // Intentional blank space after genre, do not remove it.
-      output = deline`${this.state.basicValues.genre} 
+      output = deline`${this.state.basicValues.genre}${seriesList} 
                       ${RATING_OPTIONS[this.state.basicValues.rating].value} -
                       ${this.state.basicValues.title} [${this.state.basicValues.code}] (${tagList})`;
     }
@@ -95,7 +106,7 @@ class GridWindow extends Component {
     let parsedTags = [];
     tags.forEach((tag) => {
       if (this.tagDict[tag]) {
-        parsedTags.push(this.tagDict[tag]);
+        parsedTags.push(this.tagDict[tag].name);
       }
     });
 
