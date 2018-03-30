@@ -34,8 +34,7 @@ router.get("/all", (req, res, next) => {
 });
 
 router.get("/:id", (req, res, next) => {
-  const id = parseInt(req.params.id, 10);
-  res.locals.connection.query(qry + ` WHERE j.id = ${id}`,
+  res.locals.connection.query(qry + ` WHERE j.id = ?`, [req.params.id],
     (error, results, fields) => {
     res.setHeader("Content-Type", "application/json");
     if (error){

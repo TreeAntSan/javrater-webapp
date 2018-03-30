@@ -28,8 +28,7 @@ router.get("/all", (req, res, next) => {
 
 // Get details on all tags for a single jav
 router.get("/:javid", (req, res, next) => {
-  const javid = parseInt(req.params.javid, 10);
-  res.locals.connection.query(allqry + ` WHERE m.javid = ${javid}`,
+  res.locals.connection.query(allqry + ` WHERE m.javid = ?`, [req.params.javid],
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
       if (error){
@@ -51,8 +50,7 @@ const concatqry = `
 
 // Get tags concatenated into a single string for a single jav
 router.get("/concat/:javid", (req, res, next) => {
-  const javid = parseInt(req.params.javid, 10);
-  res.locals.connection.query(concatqry + ` WHERE m.javid = ${javid}`,
+  res.locals.connection.query(concatqry + ` WHERE m.javid = ?`, [req.params.javid],
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
       if (error){
