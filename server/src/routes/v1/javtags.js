@@ -17,7 +17,7 @@ router.get("/all", (req, res, next) => {
   res.locals.connection.query(allqry,
     (error, results, fields) => {
     res.setHeader("Content-Type", "application/json");
-    if (error){
+    if (error) {
       res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
       throw error;
     } else {
@@ -31,7 +31,7 @@ router.get("/:javid", (req, res, next) => {
   res.locals.connection.query(allqry + ` WHERE m.javid = ?`, [req.params.javid],
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
-      if (error){
+      if (error) {
         res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
         throw error;
       } else {
@@ -53,7 +53,7 @@ router.get("/concat/:javid", (req, res, next) => {
   res.locals.connection.query(concatqry + ` WHERE m.javid = ?`, [req.params.javid],
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
-      if (error){
+      if (error) {
         res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
         throw error;
       } else {

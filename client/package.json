@@ -2,6 +2,7 @@
   "name": "javrater-webapp",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3001/",
   "dependencies": {
     "deline": "^1.0.4",
     "prop-types": "^15.6.1",

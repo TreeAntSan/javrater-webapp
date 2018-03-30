@@ -6,6 +6,7 @@ import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
 import { TAG_OPTIONS, RATING_OPTIONS, GENRE_OPTIONS } from "../constants";
+import client from "../client";
 
 class GridWindow extends Component {
 
@@ -23,17 +24,26 @@ class GridWindow extends Component {
       tagsOnly: false,
     },
     output: '',
+    genreOptions: [],
+    ratingOptions: [],
+    tagOptions: [],
   };
 
   constructor(props) {
     super(props);
-    this._makeTagDict();
+    this._fetchGenres();
+    this._fetchRatings();
+    this._fetchTags();
+    // this.initialState.checkedTags = this._makeTagDict(this.tagOptions);
     this.state = this.initialState;
   }
 
-  _makeTagDict = () => {
+  componentWillMount() {
+  }
+
+  _makeTagDict = (tagOptions) => {
     let tagSeed = {};
-    TAG_OPTIONS.forEach((tagCategory) => {
+    tagOptions.forEach((tagCategory) => {
       tagCategory.tags.forEach((tag) => {
         this.tagDict[tag.tag] = {};
         this.tagDict[tag.tag].name = tag.name;
@@ -41,7 +51,44 @@ class GridWindow extends Component {
         tagSeed[tag.tag] = false;
       });
     });
-    this.initialState.checkedTags = tagSeed;
+    return tagSeed;
+  };
+
+  _fetchGenres = () => {
+    client.getGenres((genres) => {
+      const genreOptions = genres.response.map((genre) => (
+        { value: genre.code, text: `${genre.code} - ${genre.description}` }
+        ));
+      this.setState({ genreOptions });
+    });
+  };
+
+  _fetchRatings = () => {
+    client.getRatings((ratings) => {
+      const ratingOptions = ratings.response.map((rating) => (
+        { value: rating.rating, description: rating.description}
+      ));
+      this.setState({ ratingOptions });
+    });
+  };
+
+  _fetchTags = () => {
+    client.getTags((tags) => {
+      let tagOptions = [];
+      tags.response.forEach((tag) => {
+        let index = tagOptions.findIndex((element) => element.title === tag.category);
+        if (index === -1) {
+          tagOptions.push({ title: tag.category, tags: [] });
+          index = tagOptions.length - 1;
+        }
+        tagOptions[index].tags.push(
+          { tag: tag.tag, name: tag.name, description: tag.description }
+        );
+      });
+      this.initialState.checkedTags = this._makeTagDict(tagOptions);
+      this.setState({ checkedTags: this.initialState.checkedTags});
+      this.setState({ tagOptions });
+    });
   };
 
   handleTagChange = (tag, tagState) => {
@@ -88,7 +135,7 @@ class GridWindow extends Component {
     } else {
       // Intentional blank space after genre, do not remove it.
       output = deline`${this.state.basicValues.genre}${seriesList} 
-                      ${RATING_OPTIONS[this.state.basicValues.rating].value} -
+                      ${this.state.ratingOptions[this.state.basicValues.rating].value} -
                       ${this.state.basicValues.title} [${this.state.basicValues.code}] (${tagList})`;
     }
 
@@ -130,8 +177,8 @@ class GridWindow extends Component {
                   <Basics
                     onChange={this.handleBasicsChange}
                     values={this.state.basicValues}
-                    ratingOptions={RATING_OPTIONS}
-                    genreOptions={GENRE_OPTIONS}
+                    ratingOptions={this.state.ratingOptions}
+                    genreOptions={this.state.genreOptions}
                   />
                 </Grid.Column>
               </Grid.Row>
