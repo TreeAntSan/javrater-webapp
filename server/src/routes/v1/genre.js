@@ -1,17 +1,35 @@
 import express from "express";
 const router = express.Router();
 
-router.get("/", function(req, res, next) {
-  res.locals.connection.query(`SELECT * from genre`,
+const qry = `
+  SELECT *
+  FROM genre`;
+
+router.get("/all", function(req, res, next) {
+  res.locals.connection.query(qry,
     (error, results, fields) => {
     res.setHeader("Content-Type", "application/json");
-    if(error){
-      res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
+    if (error){
+      res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
       throw error;
     } else {
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+      res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
     }
   });
+});
+
+router.get("/:id", function(req, res, next) {
+  const id = parseInt(req.params.id, 10);
+  res.locals.connection.query(qry + ` WHERE id = ${id}`,
+    (error, results, fields) => {
+      res.setHeader("Content-Type", "application/json");
+      if (error){
+        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
+        throw error;
+      } else {
+        res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+      }
+    });
 });
 
 module.exports = router;
