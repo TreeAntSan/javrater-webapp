@@ -1,12 +1,20 @@
 import express from "express";
 const router = express.Router();
 
-const qry = `
-  SELECT *
-  FROM map_jav_tag`;
+const allqry = `
+  SELECT
+    m.javid,
+    j.prodcode,
+    m.tagid,
+    t.category,
+    t.tag
+  FROM map_jav_tag m
+  JOIN jav j ON(m.javid = j.id)
+  JOIN tag t ON(m.tagid = t.id)`;
 
+// Get details on all tags for all javs
 router.get("/all", function(req, res, next) {
-  res.locals.connection.query(qry,
+  res.locals.connection.query(allqry,
     (error, results, fields) => {
     res.setHeader("Content-Type", "application/json");
     if (error){
@@ -18,9 +26,33 @@ router.get("/all", function(req, res, next) {
   });
 });
 
-router.get("/:id", function(req, res, next) {
-  const id = parseInt(req.params.id, 10);
-  res.locals.connection.query(qry + ` WHERE id = ${id}`,
+// Get details on all tags for a single jav
+router.get("/:javid", function(req, res, next) {
+  const javid = parseInt(req.params.javid, 10);
+  res.locals.connection.query(allqry + ` WHERE m.javid = ${javid}`,
+    (error, results, fields) => {
+      res.setHeader("Content-Type", "application/json");
+      if (error){
+        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
+        throw error;
+      } else {
+        res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+      }
+    });
+});
+
+const concatqry = `
+  SELECT
+    m.javid,
+    GROUP_CONCAT(t.tag SEPARATOR ",") AS tags
+  FROM map_jav_tag m
+  JOIN jav j ON(m.javid = j.id)
+  JOIN tag t ON(m.tagid = t.id)`;
+
+// Get tags concatenated into a single string for a single jav
+router.get("/concat/:javid", function(req, res, next) {
+  const javid = parseInt(req.params.javid, 10);
+  res.locals.connection.query(concatqry + ` WHERE m.javid = ${javid}`,
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
       if (error){
