@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-  res.send("I hear you!");
-});
+import v1Router from "./v1/router";
+
+router.use("/v1", v1Router);
 
 module.exports = router;

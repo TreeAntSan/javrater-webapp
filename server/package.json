@@ -8,8 +8,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon -w ./ --exec 'babel-node --presets babel-preset-env -- ./src/bin/www.js'",
-//    "debug": "babel-node --inspect-brk --presets babel-preset-env -- ./src/bin/www.js",
-//    "debugdemon": "nodemon -w ./ --exec 'babel-node --inspect-brk --presets babel-preset-env -- ./src/bin/www.js'",
+    "debug": "babel-node --inspect-brk --presets babel-preset-env -- ./src/bin/www.js",
+    "debugdemon": "nodemon -w ./ --exec 'babel-node --inspect-brk --presets babel-preset-env -- ./src/bin/www.js'",
     "build": "rimraf ./build && babel ./src -d build --presets babel-preset-env",
     "serve": "node ./build/bin/www.js"
   },
