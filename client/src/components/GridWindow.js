@@ -5,7 +5,6 @@ import deline from 'deline';
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import { TAG_OPTIONS, RATING_OPTIONS, GENRE_OPTIONS } from "../constants";
 import client from "../client";
 
 class GridWindow extends Component {
@@ -31,14 +30,10 @@ class GridWindow extends Component {
 
   constructor(props) {
     super(props);
+    this.state = this.initialState;
     this._fetchGenres();
     this._fetchRatings();
     this._fetchTags();
-    // this.initialState.checkedTags = this._makeTagDict(this.tagOptions);
-    this.state = this.initialState;
-  }
-
-  componentWillMount() {
   }
 
   _makeTagDict = (tagOptions) => {
@@ -85,9 +80,11 @@ class GridWindow extends Component {
           { tag: tag.tag, name: tag.name, description: tag.description }
         );
       });
+      this.setState({ tagOptions });
+
+      // Need to updated initial state so it's reset to these values each time.
       this.initialState.checkedTags = this._makeTagDict(tagOptions);
       this.setState({ checkedTags: this.initialState.checkedTags});
-      this.setState({ tagOptions });
     });
   };
 
@@ -133,9 +130,8 @@ class GridWindow extends Component {
     if (this.state.basicValues.tagsOnly) {
       output = `(${tagList})`;
     } else {
-      // Intentional blank space after genre, do not remove it.
-      output = deline`${this.state.basicValues.genre}${seriesList} 
-                      ${this.state.ratingOptions[this.state.basicValues.rating].value} -
+      output = deline`${this.state.basicValues.genre}
+                      ${seriesList} ${this.state.ratingOptions[this.state.basicValues.rating].value} -
                       ${this.state.basicValues.title} [${this.state.basicValues.code}] (${tagList})`;
     }
 
@@ -185,22 +181,19 @@ class GridWindow extends Component {
               <Grid.Row>
                 <Grid.Column>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[0].title}
-                    tagOptions={TAG_OPTIONS[0].tags}
+                    tagData={this.state.tagOptions[0]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[1].title}
-                    tagOptions={TAG_OPTIONS[1].tags}
+                    tagData={this.state.tagOptions[1]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                 </Grid.Column>
                 <Grid.Column width={8}>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[2].title}
-                    tagOptions={TAG_OPTIONS[2].tags}
+                    tagData={this.state.tagOptions[2]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
@@ -213,54 +206,46 @@ class GridWindow extends Component {
               <Grid.Row>
                 <Grid.Column>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[3].title}
-                    tagOptions={TAG_OPTIONS[3].tags}
+                    tagData={this.state.tagOptions[3]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[4].title}
-                    tagOptions={TAG_OPTIONS[4].tags}
+                    tagData={this.state.tagOptions[4]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[5].title}
-                    tagOptions={TAG_OPTIONS[5].tags}
-                    onTagChange={this.handleTagChange}
-                    tagValues={this.state.checkedTags}
-                  />
-                </Grid.Column>
-                <Grid.Column>
-                  <TagSection
-                    tagSectionTitle={TAG_OPTIONS[6].title}
-                    tagOptions={TAG_OPTIONS[6].tags}
-                    onTagChange={this.handleTagChange}
-                    tagValues={this.state.checkedTags}
-                  />
-                  <TagSection
-                    tagSectionTitle={TAG_OPTIONS[7].title}
-                    tagOptions={TAG_OPTIONS[7].tags}
-                    onTagChange={this.handleTagChange}
-                    tagValues={this.state.checkedTags}
-                  />
-                  <TagSection
-                    tagSectionTitle={TAG_OPTIONS[8].title}
-                    tagOptions={TAG_OPTIONS[8].tags}
+                    tagData={this.state.tagOptions[5]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[9].title}
-                    tagOptions={TAG_OPTIONS[9].tags}
+                    tagData={this.state.tagOptions[6]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[10].title}
-                    tagOptions={TAG_OPTIONS[10].tags}
+                    tagData={this.state.tagOptions[7]}
+                    onTagChange={this.handleTagChange}
+                    tagValues={this.state.checkedTags}
+                  />
+                  <TagSection
+                    tagData={this.state.tagOptions[8]}
+                    onTagChange={this.handleTagChange}
+                    tagValues={this.state.checkedTags}
+                  />
+                </Grid.Column>
+                <Grid.Column>
+                  <TagSection
+                    tagData={this.state.tagOptions[9]}
+                    onTagChange={this.handleTagChange}
+                    tagValues={this.state.checkedTags}
+                  />
+                  <TagSection
+                    tagData={this.state.tagOptions[10]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
@@ -277,6 +262,9 @@ class GridWindow extends Component {
               onMakeClick={this.handleMakeClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
+              ready={this.state.genreOptions.length > 0 &&
+                      this.state.ratingOptions.length > 0 &&
+                      this.state.tagOptions.length > 0}
             />
           </Grid.Column>
         </Grid.Row>

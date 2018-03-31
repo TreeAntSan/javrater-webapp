@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Segment, Input, Form, List, Label, Dropdown, Checkbox } from "semantic-ui-react";
+import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader } from "semantic-ui-react";
 
 import RatingElement from "./RatingElement";
 
@@ -63,6 +63,9 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
       </List>
     </Form>
+    <Dimmer active={!(ratingOptions.length && genreOptions.length)}>
+      <Loader>Loading</Loader>
+    </Dimmer>
   </Segment>
 );
 

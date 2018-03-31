@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Segment, Label, Form, Input, Grid, Button } from "semantic-ui-react";
+import { Segment, Label, Form, Input, Grid, Button, Dimmer, Loader } from "semantic-ui-react";
 
-const Output = ({ onOutputChange, outputValue, onMakeClick, onParseClick, onResetClick }) => (
+const Output = ({ onOutputChange, outputValue, onMakeClick, onParseClick, onResetClick, ready }) => (
   <Segment>
     <Label attached="top left">Output</Label>
     <Form>
@@ -45,6 +45,9 @@ const Output = ({ onOutputChange, outputValue, onMakeClick, onParseClick, onRese
         </Grid.Row>
       </Grid>
     </Form>
+    <Dimmer active={!ready}>
+      <Loader>Waiting for Tools to Load</Loader>
+    </Dimmer>
   </Segment>
 );
 
@@ -54,6 +57,7 @@ Output.propTypes = {
   onMakeClick: PropTypes.func.isRequired,
   onParseClick: PropTypes.func.isRequired,
   onResetClick: PropTypes.func.isRequired,
+  ready: PropTypes.bool.isRequired,
 };
 
 export default Output;
