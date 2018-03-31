@@ -13,9 +13,9 @@ const app = express();
 app.use((req, res, next) => {
   res.locals.connection = mysql.createConnection({
     host     : "localhost",
-    user     : "javrater",
-    password : process.env.JAVRATER_MYSQL_PASSWORD || "password",
-    database : "javrater",
+    database : process.env.MOVIE ? "movierater" : "javrater",
+    user     : process.env.MOVIE ? "movierater" : "javrater",
+    password : process.env.RATER_MYSQL_PASSWORD || "password",
   });
   res.locals.connection.connect();
   next();

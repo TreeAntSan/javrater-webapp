@@ -14,7 +14,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Input
               label="Title"
               type="text"
-              placeholder="Video title"
+              placeholder="Movie Title"
               onChange={(e) => (onChange({ title: e.target.value }))}
               value={values.title}
             />

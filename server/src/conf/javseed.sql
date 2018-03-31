@@ -1,4 +1,8 @@
+-- Import this with `mysql -u root -p < javrater.sql`
+-- Only do this once!
+
 USE javrater;
+
 -- Ratings
 INSERT INTO rating
   (created, updated, rating, description)
@@ -143,9 +147,14 @@ VALUES
 INSERT INTO user
   (created, updated, name, password, type, status)
 VALUES  -- password is 'password' hashed+salted with bcryptjs
-  (NOW(), NOW(), 'MrTest', '$2a$10$MyB4x8RE2jo2o5.2jAX5rO2X0MQrTz9q9pY/vF/3Sz8qIQRttXUJC', 0, 0);
+  (NOW(), NOW(), "MrTest", "$2a$10$MyB4x8RE2jo2o5.2jAX5rO2X0MQrTz9q9pY/vF/3Sz8qIQRttXUJC", 0, 0);
 
--- No seed for jav or map_jav_tag because it has ids belonging to other tables so it would be presumptive to do so...
+INSERT INTO movie
+  (created, updated, title, prodcode, ratingid, genreid, createdby)
+VALUES
+  (NOW(), NOW(), "Test JAV", "ABC-123", 1, 1, 1);
+
+-- No seed for movie or map_movie_tag because it has ids belonging to other tables so it would be presumptive to do so...
 -- Example you can run by hand yourself:
--- INSERT INTO map_jav_tag (created, updated, javid, tagid) VALUES (NOW(), NOW(), 1, 2), (NOW(), NOW(), 1, 10);
--- It will make the first JAV have "Favorite" and "Creampie" tags if set to a fresh DB.
+-- INSERT INTO map_movie_tag (created, updated, movieid, tagid) VALUES (NOW(), NOW(), 1, 2), (NOW(), NOW(), 1, 10);
+-- It will make the first movie have "Favorite" and "Creampie" tags if set to a fresh DB.

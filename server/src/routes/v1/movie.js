@@ -13,11 +13,11 @@ const qry = `
     j.createdby AS userid,
     u.name AS username,
     GROUP_CONCAT(t.tag SEPARATOR ",") AS tags
-  FROM jav j
+  FROM movie j
   JOIN genre g ON(j.genreid = g.id)
   JOIN rating r ON(j.ratingid = r.id)
   JOIN user u ON(j.createdby = u.id)
-  JOIN map_jav_tag m ON(j.id = m.javid)
+  JOIN map_movie_tag m ON(j.id = m.movieid)
   JOIN tag t ON(m.tagid = t.id)`;
 
 router.get("/all", (req, res, next) => {

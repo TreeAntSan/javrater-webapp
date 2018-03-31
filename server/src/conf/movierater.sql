@@ -1,7 +1,7 @@
--- Import this with `mysql -u root -p < javrater.sql`
+-- Import this with `mysql -u root -p < movierater.sql`
 
-CREATE DATABASE IF NOT EXISTS javrater;
-USE javrater;
+CREATE DATABASE IF NOT EXISTS movierater;
+USE movierater;
 
 CREATE TABLE IF NOT EXISTS rating
 (

@@ -3,16 +3,16 @@ const router = express.Router();
 
 const allqry = `
   SELECT
-    m.javid,
+    m.movieid,
     j.prodcode,
     m.tagid,
     t.category,
     t.tag
-  FROM map_jav_tag m
-  JOIN jav j ON(m.javid = j.id)
+  FROM map_movie_tag m
+  JOIN movie j ON(m.movieid = j.id)
   JOIN tag t ON(m.tagid = t.id)`;
 
-// Get details on all tags for all javs
+// Get details on all tags for all movies
 router.get("/all", (req, res, next) => {
   res.locals.connection.query(allqry,
     (error, results, fields) => {
@@ -26,9 +26,9 @@ router.get("/all", (req, res, next) => {
   });
 });
 
-// Get details on all tags for a single jav
-router.get("/:javid", (req, res, next) => {
-  res.locals.connection.query(allqry + ` WHERE m.javid = ?`, [req.params.javid],
+// Get details on all tags for a single movie
+router.get("/:movieid", (req, res, next) => {
+  res.locals.connection.query(allqry + ` WHERE m.movieid = ?`, [req.params.movieid],
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
@@ -42,15 +42,15 @@ router.get("/:javid", (req, res, next) => {
 
 const concatqry = `
   SELECT
-    m.javid,
+    m.movieid,
     GROUP_CONCAT(t.tag SEPARATOR ",") AS tags
-  FROM map_jav_tag m
-  JOIN jav j ON(m.javid = j.id)
+  FROM map_movie_tag m
+  JOIN movie j ON(m.movieid = j.id)
   JOIN tag t ON(m.tagid = t.id)`;
 
-// Get tags concatenated into a single string for a single jav
-router.get("/concat/:javid", (req, res, next) => {
-  res.locals.connection.query(concatqry + ` WHERE m.javid = ?`, [req.params.javid],
+// Get tags concatenated into a single string for a single movie
+router.get("/concat/:movieid", (req, res, next) => {
+  res.locals.connection.query(concatqry + ` WHERE m.movieid = ?`, [req.params.movieid],
     (error, results, fields) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {

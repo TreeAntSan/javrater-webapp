@@ -114,7 +114,8 @@ class GridWindow extends Component {
     let series = [];
     Object.keys(this.state.checkedTags).forEach(key => {
       if (this.state.checkedTags[key]) {
-        if (this.tagDict[key].category.toLowerCase() === "series") {
+        if (this.tagDict[key].category.toLowerCase() === "series" ||
+          this.tagDict[key].category.toLowerCase() === "director") {
           series.push(key);
         } else {
           tags.push(key);
