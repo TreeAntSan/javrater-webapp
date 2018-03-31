@@ -1,4 +1,5 @@
 import express from "express";
+import uniq from "lodash/uniq";
 const router = express.Router();
 
 const qry = `
@@ -20,9 +21,9 @@ const qry = `
   JOIN map_movie_tag m ON(j.id = m.movieid)
   JOIN tag t ON(m.tagid = t.id)`;
 
-router.get("/all", (req, res, next) => {
+router.get("/all", (req, res) => {
   res.locals.connection.query(qry,
-    (error, results, fields) => {
+    (error, results) => {
     res.setHeader("Content-Type", "application/json");
     if (error) {
       res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
@@ -33,9 +34,9 @@ router.get("/all", (req, res, next) => {
   });
 });
 
-router.get("/:id", (req, res, next) => {
+router.get("/:id", (req, res) => {
   res.locals.connection.query(qry + ` WHERE j.id = ?`, [req.params.id],
-    (error, results, fields) => {
+    (error, results) => {
     res.setHeader("Content-Type", "application/json");
     if (error) {
       res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
@@ -53,9 +54,13 @@ const insertMovieQry = `
     (NOW(), NOW(), ?, ?, ?, ?, ?)
 `;
 
-const insertTags = ``;
+const insertTagsQry = `
+  INSERT INTO map_movie_tag
+    (created, updated, movieid, tagid)
+  VALUES
+`;
 
-router.post("/add", (req, res, next) => {
+router.post("/add", (req, res) => {
   res.locals.connection.query(insertMovieQry, [
       req.body.title,
       req.body.prodcode,
@@ -63,18 +68,44 @@ router.post("/add", (req, res, next) => {
       req.body.genreid,
       req.body.createdby,
     ],
-    (error, results, fields) => {
+    (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
         res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
         throw error;
       } else {
-        // TODO Insert tags
+        // Movie inserted successfully, try to insert tags
+        const newMovieId = results.insertId;
+        let valueClauses = [];
 
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results.insertId}, null, 2));
+        req.body.tags.replace(/\s/g,"").split(",").forEach(tag => {
+          const tagId = parseInt(tag, 10);  // Take care, this can return NaN
+          if (tagId > 0) {  // Ignore negative or NaN ids
+            valueClauses.push(` (NOW(), NOW(), ${newMovieId}, ${res.locals.connection.escape(tagId)})`);
+          }
+        });
+
+        // Tag inserts are constructed, now to combine and insert them together
+        // Use lodash's uniq to remove duplicate tags, a courtesy, the DB will reject otherwise due to unique index m_t
+        const joinedValueClause = uniq(valueClauses).join(",");
+        if (joinedValueClause) {
+          res.locals.connection.query(insertTagsQry + joinedValueClause,
+            (error) => {
+              if (error) {
+                // Failed to insert tags, will still return new movie id
+                res.send(JSON.stringify({"status": 500, "error": error, "response": newMovieId}, null, 2));
+                throw error;
+              } else {
+                res.send(JSON.stringify({"status": 201, "error": null, "response": newMovieId}, null, 2));
+              }
+            }
+          )
+        } else {
+          // Because queries are async if the tags fail this will be sent before the failure happens.
+          res.send(JSON.stringify({"status": 201, "error": null, "response": newMovieId}, null, 2));
+        }
       }
     });
 });
-
 
 module.exports = router;

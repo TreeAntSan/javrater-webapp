@@ -13,9 +13,9 @@ const allqry = `
   JOIN tag t ON(m.tagid = t.id)`;
 
 // Get details on all tags for all movies
-router.get("/all", (req, res, next) => {
+router.get("/all", (req, res) => {
   res.locals.connection.query(allqry,
-    (error, results, fields) => {
+    (error, results) => {
     res.setHeader("Content-Type", "application/json");
     if (error) {
       res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
@@ -27,9 +27,9 @@ router.get("/all", (req, res, next) => {
 });
 
 // Get details on all tags for a single movie
-router.get("/:movieid", (req, res, next) => {
+router.get("/:movieid", (req, res) => {
   res.locals.connection.query(allqry + ` WHERE m.movieid = ?`, [req.params.movieid],
-    (error, results, fields) => {
+    (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
         res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
@@ -49,9 +49,9 @@ const concatqry = `
   JOIN tag t ON(m.tagid = t.id)`;
 
 // Get tags concatenated into a single string for a single movie
-router.get("/concat/:movieid", (req, res, next) => {
+router.get("/concat/:movieid", (req, res) => {
   res.locals.connection.query(concatqry + ` WHERE m.movieid = ?`, [req.params.movieid],
-    (error, results, fields) => {
+    (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
         res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));

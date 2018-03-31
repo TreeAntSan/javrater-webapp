@@ -5,9 +5,9 @@ const qry = `
   SELECT *
   FROM genre`;
 
-router.get("/all", (req, res, next) => {
+router.get("/all", (req, res) => {
   res.locals.connection.query(qry,
-    (error, results, fields) => {
+    (error, results) => {
     res.setHeader("Content-Type", "application/json");
     if (error) {
       res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
@@ -18,9 +18,9 @@ router.get("/all", (req, res, next) => {
   });
 });
 
-router.get("/:id", (req, res, next) => {
+router.get("/:id", (req, res) => {
   res.locals.connection.query(qry + ` WHERE id = ?`, [req.params.id],
-    (error, results, fields) => {
+    (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
         res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
