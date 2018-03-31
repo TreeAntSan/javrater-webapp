@@ -16,13 +16,15 @@ class GridWindow extends Component {
   initialState = {
     checkedTags: {},
     basicValues: {
-      title: '',
-      code: '',
-      genre: '',
+      title: "",
+      prodcode: "",
+      genre: "",
+      genredbid: 0,
       rating: 0,
+      ratingdbid: 0,
       tagsOnly: false,
     },
-    output: '',
+    output: "",
     genreOptions: [],
     ratingOptions: [],
     tagOptions: [],
@@ -43,7 +45,9 @@ class GridWindow extends Component {
         this.tagDict[tag.tag] = {};
         this.tagDict[tag.tag].name = tag.name;
         this.tagDict[tag.tag].category = tagCategory.title;
-        tagSeed[tag.tag] = false;
+        tagSeed[tag.tag] = {};
+        tagSeed[tag.tag].checked = false;
+        tagSeed[tag.tag].id = tag.id;
       });
     });
     return tagSeed;
@@ -52,8 +56,8 @@ class GridWindow extends Component {
   _fetchGenres = () => {
     client.getGenres((genres) => {
       const genreOptions = genres.response.map((genre) => (
-        { value: genre.code, text: `${genre.code} - ${genre.description}` }
-        ));
+        { id: genre.id, value: genre.code, text: `${genre.code} - ${genre.description}` }
+      ));
       this.setState({ genreOptions });
     });
   };
@@ -61,7 +65,7 @@ class GridWindow extends Component {
   _fetchRatings = () => {
     client.getRatings((ratings) => {
       const ratingOptions = ratings.response.map((rating) => (
-        { value: rating.rating, description: rating.description}
+        { id: rating.id, value: rating.rating, description: rating.description }
       ));
       this.setState({ ratingOptions });
     });
@@ -77,7 +81,7 @@ class GridWindow extends Component {
           index = tagOptions.length - 1;
         }
         tagOptions[index].tags.push(
-          { tag: tag.tag, name: tag.name, description: tag.description }
+          { id: tag.id, tag: tag.tag, name: tag.name, description: tag.description }
         );
       });
       this.setState({ tagOptions });
@@ -90,17 +94,20 @@ class GridWindow extends Component {
 
   handleTagChange = (tag, tagState) => {
     const checkedTags = {...this.state.checkedTags};
-    checkedTags[tag] = tagState;
+    console.log(this.initialState.checkedTags);
+    checkedTags[tag].checked = tagState;
     this.setState({ checkedTags });
   };
 
-  handleBasicsChange = ({ title, code, genre, rating, tagsOnly }) => {
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genredbid, ratingdbid }) => {
     // TODO There must be a more elegant way to accomplish this...
     const basicValues = {...this.state.basicValues};
     if (title !== undefined) basicValues.title = title;
-    if (code !== undefined) basicValues.code = code;
+    if (prodcode !== undefined) basicValues.prodcode = prodcode;
     if (genre !== undefined) basicValues.genre = genre;
+    if (genredbid !== undefined) basicValues.genredbid = genredbid;
     if (rating !== undefined) basicValues.rating = rating;
+    if (ratingdbid !== undefined) basicValues.ratingdbid = ratingdbid;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
     this.setState({ basicValues });
   };
@@ -109,11 +116,14 @@ class GridWindow extends Component {
     this.setState({ output: data.value});
   };
 
-  handleMakeClick = () => {
+  _tallyTags = () => {
     let tags = [];
     let series = [];
+    let tagIds = [];
     Object.keys(this.state.checkedTags).forEach(key => {
-      if (this.state.checkedTags[key]) {
+      const tag = this.state.checkedTags[key];
+      if (tag.checked) {
+        tagIds.push(tag.id);
         if (this.tagDict[key].category.toLowerCase() === "series" ||
           this.tagDict[key].category.toLowerCase() === "director") {
           series.push(key);
@@ -122,6 +132,12 @@ class GridWindow extends Component {
         }
       }
     });
+    return { tags, series, tagIds };
+
+  };
+
+  handleMakeClick = () => {
+    const { tags, series } = this._tallyTags();
 
     let tagList = tags.join(", ");
     let seriesList = series.join(" ");
@@ -133,10 +149,16 @@ class GridWindow extends Component {
     } else {
       output = deline`${this.state.basicValues.genre}
                       ${seriesList} ${this.state.ratingOptions[this.state.basicValues.rating].value} -
-                      ${this.state.basicValues.title} [${this.state.basicValues.code}] (${tagList})`;
+                      ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${tagList})`;
     }
 
     this.setState({ output });
+  };
+
+  handleSaveClick = () => {
+    const { tagIds } = this._tallyTags();
+    const fake = `title:${this.state.basicValues.title}, prodcode:${this.state.basicValues.prodcode}, genredbid:${this.state.basicValues.genredbid}, ratingdbid:${this.state.basicValues.ratingdbid}, tags:${tagIds.join(",")}`;
+    this.setState({ output: fake });
   };
 
   handleParseClick = () => {
@@ -261,6 +283,7 @@ class GridWindow extends Component {
               onOutputChange={this.handleOutputChange}
               outputValue={this.state.output}
               onMakeClick={this.handleMakeClick}
+              onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
               ready={this.state.genreOptions.length > 0 &&

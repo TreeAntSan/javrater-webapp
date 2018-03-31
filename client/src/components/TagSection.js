@@ -15,7 +15,7 @@ const TagSection = ({ tagData, onTagChange, tagValues }) => (
               <List.Item key={tagOption.tag}>
                 <Form.Checkbox
                   label={`${tagOption.tag} - ${tagOption.name}`}
-                  checked={tagValues[tagOption.tag] || false}
+                  checked={tagValues[tagOption.tag] && tagValues[tagOption.tag].checked || false}
                   onChange={(event, data) => (onTagChange((data["data-tag"] || "unknown"), data.checked))}
                   data-tag={tagOption.tag}
                   data-tip={tagOption.description}

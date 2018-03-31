@@ -46,4 +46,35 @@ router.get("/:id", (req, res, next) => {
   });
 });
 
+const insertMovieQry = `
+  INSERT INTO movie
+    (created, updated, title, prodcode, ratingid, genreid, createdby)
+  VALUES
+    (NOW(), NOW(), ?, ?, ?, ?, ?)
+`;
+
+const insertTags = ``;
+
+router.post("/add", (req, res, next) => {
+  res.locals.connection.query(insertMovieQry, [
+      req.body.title,
+      req.body.prodcode,
+      req.body.ratingid,
+      req.body.genreid,
+      req.body.createdby,
+    ],
+    (error, results, fields) => {
+      res.setHeader("Content-Type", "application/json");
+      if (error) {
+        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
+        throw error;
+      } else {
+        // TODO Insert tags
+
+        res.send(JSON.stringify({"status": 200, "error": null, "response": results.insertId}, null, 2));
+      }
+    });
+});
+
+
 module.exports = router;

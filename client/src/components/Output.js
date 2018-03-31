@@ -2,13 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Segment, Label, Form, Input, Grid, Button, Dimmer, Loader } from "semantic-ui-react";
 
-const Output = ({ onOutputChange, outputValue, onMakeClick, onParseClick, onResetClick, ready }) => (
+const Output = ({ onOutputChange, outputValue, onMakeClick, onSaveClick,
+                  onParseClick, onResetClick, ready }) => (
   <Segment>
     <Label attached="top left">Output</Label>
     <Form>
-      <Grid container>
+      <Grid stackable container>
         <Grid.Row>
-          <Grid.Column width={12}>
+          <Grid.Column width={10}>
             <Form.Field>
               <Input
                 label="Result"
@@ -18,22 +19,28 @@ const Output = ({ onOutputChange, outputValue, onMakeClick, onParseClick, onRese
               />
             </Form.Field>
           </Grid.Column>
-          <Grid.Column floated="right" width={4}>
-            <Grid stackable columns="equal">
+          <Grid.Column floated="right" width={6}>
+            <Grid columns="equal">
               <Grid.Row>
-                <Grid.Column>
+                <Grid.Column width={4}>
                   <Button
                     color="blue"
                     onClick={onMakeClick}
                   >Make</Button>
                 </Grid.Column>
-                <Grid.Column>
+                <Grid.Column width={4}>
+                  <Button
+                    color="green"
+                    onClick={onSaveClick}
+                  >Save</Button>
+                </Grid.Column>
+                <Grid.Column width={4}>
                   <Button
                     color="teal"
                     onClick={onParseClick}
                   >Parse</Button>
                 </Grid.Column>
-                <Grid.Column>
+                <Grid.Column width={4}>
                   <Button
                     color="grey"
                     onClick={onResetClick}
@@ -55,6 +62,7 @@ Output.propTypes = {
   onOutputChange: PropTypes.func.isRequired,
   outputValue: PropTypes.string.isRequired,
   onMakeClick: PropTypes.func.isRequired,
+  onSaveClick: PropTypes.func.isRequired,
   onParseClick: PropTypes.func.isRequired,
   onResetClick: PropTypes.func.isRequired,
   ready: PropTypes.bool.isRequired,
