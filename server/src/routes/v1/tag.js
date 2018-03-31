@@ -10,23 +10,22 @@ router.get("/all", (req, res) => {
     (error, results) => {
     res.setHeader("Content-Type", "application/json");
     if (error) {
-      res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
-      throw error;
+      res.send(JSON.stringify({status: 500, error: error, response: null}, null, 2));
     } else {
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+      res.send(JSON.stringify({status: 200, error: null, response: results}, null, 2));
     }
   });
 });
 
 router.get("/:id", (req, res) => {
+  // TODO add comma-delimited multi-id support
   res.locals.connection.query(qry + ` WHERE id = ?`, [req.params.id],
     (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
-        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
-        throw error;
+        res.send(JSON.stringify({status: 500, error: error, response: null}, null, 2));
       } else {
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+        res.send(JSON.stringify({status: 200, error: null, response: results}, null, 2));
       }
     });
 });
@@ -37,10 +36,9 @@ router.get("/category/:category", (req, res) => {
     (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
-        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
-        throw error;
+        res.send(JSON.stringify({status: 500, error: error, response: null}, null, 2));
       } else {
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+        res.send(JSON.stringify({status: 200, error: null, response: results}, null, 2));
       }
     });
 });

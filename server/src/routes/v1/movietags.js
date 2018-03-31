@@ -18,24 +18,23 @@ router.get("/all", (req, res) => {
     (error, results) => {
     res.setHeader("Content-Type", "application/json");
     if (error) {
-      res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
-      throw error;
+      res.send(JSON.stringify({status: 500, error: error, response: null}, null, 2));
     } else {
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+      res.send(JSON.stringify({status: 200, error: null, response: results}, null, 2));
     }
   });
 });
 
 // Get details on all tags for a single movie
 router.get("/:movieid", (req, res) => {
+  // TODO add comma-delimited multi-id support (will require query re-write)
   res.locals.connection.query(allqry + ` WHERE m.movieid = ?`, [req.params.movieid],
     (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
-        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
-        throw error;
+        res.send(JSON.stringify({status: 500, error: error, response: null}, null, 2));
       } else {
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+        res.send(JSON.stringify({status: 200, error: null, response: results}, null, 2));
       }
     });
 });
@@ -50,14 +49,14 @@ const concatqry = `
 
 // Get tags concatenated into a single string for a single movie
 router.get("/concat/:movieid", (req, res) => {
+  // TODO add comma-delimited multi-id support (will require query re-write)
   res.locals.connection.query(concatqry + ` WHERE m.movieid = ?`, [req.params.movieid],
     (error, results) => {
       res.setHeader("Content-Type", "application/json");
       if (error) {
-        res.send(JSON.stringify({"status": 500, "error": error, "response": null}, null, 2));
-        throw error;
+        res.send(JSON.stringify({status: 500, error: error, response: null}, null, 2));
       } else {
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}, null, 2));
+        res.send(JSON.stringify({status: 200, error: null, response: results}, null, 2));
       }
     });
 });

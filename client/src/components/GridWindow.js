@@ -28,6 +28,7 @@ class GridWindow extends Component {
     genreOptions: [],
     ratingOptions: [],
     tagOptions: [],
+    userid: 1,
   };
 
   constructor(props) {
@@ -94,7 +95,6 @@ class GridWindow extends Component {
 
   handleTagChange = (tag, tagState) => {
     const checkedTags = {...this.state.checkedTags};
-    console.log(this.initialState.checkedTags);
     checkedTags[tag].checked = tagState;
     this.setState({ checkedTags });
   };
@@ -157,8 +157,22 @@ class GridWindow extends Component {
 
   handleSaveClick = () => {
     const { tagIds } = this._tallyTags();
-    const fake = `title:${this.state.basicValues.title}, prodcode:${this.state.basicValues.prodcode}, genredbid:${this.state.basicValues.genredbid}, ratingdbid:${this.state.basicValues.ratingdbid}, tags:${tagIds.join(",")}`;
-    this.setState({ output: fake });
+    const payload = {
+      title: this.state.basicValues.title,
+      prodcode: this.state.basicValues.prodcode,
+      genreid: this.state.basicValues.genredbid,
+      ratingid: this.state.basicValues.ratingdbid,
+      tags: tagIds.join(","),
+      createdby: this.state.userid,
+    };
+
+    client.postMovie(payload, (res) => {
+      if (res.error) {
+        this.setState({ output: `Error: ${res.error}` });
+      } else {
+        this.setState({ output: `Status ${res.status} - MovieId: ${res.response}` });
+      }
+    });
   };
 
   handleParseClick = () => {

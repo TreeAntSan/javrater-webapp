@@ -1,5 +1,6 @@
 const getGenres = (cb) => {
   return fetch(`/api/v1/genre/all`, {
+    method: "get",
     accept: "application/json",
   }).then(checkStatus)
     .then(parseJSON)
@@ -9,6 +10,7 @@ const getGenres = (cb) => {
 
 const getRatings = (cb) => {
   return fetch(`/api/v1/rating/all`, {
+    method: "get",
     accept: "application/json",
   }).then(checkStatus)
   .then(parseJSON)
@@ -16,9 +18,34 @@ const getRatings = (cb) => {
   .catch((error) => console.log(error.message));
 };
 
-const getTags= (cb) => {
+const getTags = (cb) => {
   return fetch(`/api/v1/tag/all`, {
+    method: "get",
     accept: "application/json",
+  }).then(checkStatus)
+  .then(parseJSON)
+  .then(cb)
+  .catch((error) => console.log(error.message));
+};
+
+const getMovie = (cb) => {
+  return fetch(`/api/v1/movie/all`, {
+    method: "get",
+    accept: "application/json",
+  }).then(checkStatus)
+  .then(parseJSON)
+  .then(cb)
+  .catch((error) => console.log(error.message));
+};
+
+const postMovie = (payload, cb) => {
+  return fetch(`/api/v1/movie/add`, {
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+    },
+    method: "post",
+    body: JSON.stringify(payload),
   }).then(checkStatus)
   .then(parseJSON)
   .then(cb)
@@ -41,5 +68,5 @@ const parseJSON = (response) => {
   return response.json();
 };
 
-const client = { getGenres, getRatings, getTags };
+const client = { getGenres, getRatings, getTags, getMovie, postMovie };
 export default client;

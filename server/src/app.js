@@ -3,6 +3,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import mysql from "mysql";
+import bodyParser from "body-parser";
 
 import indexRouter from "./routes/index";
 import apiRouter from "./routes/api";
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 app.use(logger("dev"));
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
