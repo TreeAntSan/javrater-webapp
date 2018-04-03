@@ -9,7 +9,7 @@ const Output = ({ onOutputChange, outputValue, onMakeClick, onSaveClick,
     <Form>
       <Grid stackable container>
         <Grid.Row>
-          <Grid.Column width={10}>
+          <Grid.Column width={11}>
             <Form.Field>
               <Input
                 label="Result"
@@ -19,28 +19,22 @@ const Output = ({ onOutputChange, outputValue, onMakeClick, onSaveClick,
               />
             </Form.Field>
           </Grid.Column>
-          <Grid.Column floated="right" width={6}>
+          <Grid.Column floated="right" width={5}>
             <Grid columns="equal">
               <Grid.Row>
-                <Grid.Column width={4}>
-                  <Button
-                    color="blue"
-                    onClick={onMakeClick}
-                  >Make</Button>
-                </Grid.Column>
-                <Grid.Column width={4}>
+                <Grid.Column>
                   <Button
                     color="green"
                     onClick={onSaveClick}
                   >Save</Button>
                 </Grid.Column>
-                <Grid.Column width={4}>
+                <Grid.Column>
                   <Button
                     color="teal"
                     onClick={onParseClick}
                   >Parse</Button>
                 </Grid.Column>
-                <Grid.Column width={4}>
+                <Grid.Column>
                   <Button
                     color="grey"
                     onClick={onResetClick}
@@ -61,7 +55,6 @@ const Output = ({ onOutputChange, outputValue, onMakeClick, onSaveClick,
 Output.propTypes = {
   onOutputChange: PropTypes.func.isRequired,
   outputValue: PropTypes.string.isRequired,
-  onMakeClick: PropTypes.func.isRequired,
   onSaveClick: PropTypes.func.isRequired,
   onParseClick: PropTypes.func.isRequired,
   onResetClick: PropTypes.func.isRequired,

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
+import { cloneDeep } from "lodash";
 
 import Basics from "./Basics";
 import TagSection from "./TagSection";
@@ -11,6 +12,8 @@ class GridWindow extends Component {
 
   // TODO Bonus: add a tooltip timing function
 
+  // This is an object where the keys are tags and contains the name and category, it is used
+  // in _tallyTags and handleParseClick
   tagDict = {};
 
   initialState = {
@@ -24,11 +27,16 @@ class GridWindow extends Component {
       ratingdbid: 0,
       tagsOnly: false,
     },
-    output: "",
     genreOptions: [],
     ratingOptions: [],
     tagOptions: [],
+    tallyTags: {
+      tags: [],
+      series: [],
+      tagIds: [],
+    },
     userid: 1,
+    output: "",
   };
 
   constructor(props) {
@@ -60,6 +68,9 @@ class GridWindow extends Component {
         { id: genre.id, value: genre.code, text: `${genre.code} - ${genre.description}` }
       ));
       this.setState({ genreOptions });
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.genreOptions = genreOptions;
     });
   };
 
@@ -69,6 +80,9 @@ class GridWindow extends Component {
         { id: rating.id, value: rating.rating, description: rating.description }
       ));
       this.setState({ ratingOptions });
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.ratingOptions = ratingOptions;
     });
   };
 
@@ -87,16 +101,19 @@ class GridWindow extends Component {
       });
       this.setState({ tagOptions });
 
-      // Need to updated initial state so it's reset to these values each time.
-      this.initialState.checkedTags = this._makeTagDict(tagOptions);
-      this.setState({ checkedTags: this.initialState.checkedTags});
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.tagOptions = tagOptions;
+      this.initialState.checkedTags= this._makeTagDict(tagOptions);
+
+      // Need to deep copy or the component state will update initialState, breaking the reset functionality.
+      this.setState({ checkedTags: cloneDeep(this.initialState.checkedTags) });
     });
   };
 
   handleTagChange = (tag, tagState) => {
     const checkedTags = {...this.state.checkedTags};
     checkedTags[tag].checked = tagState;
-    this.setState({ checkedTags });
+    this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
   };
 
   handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genredbid, ratingdbid }) => {
@@ -109,7 +126,7 @@ class GridWindow extends Component {
     if (rating !== undefined) basicValues.rating = rating;
     if (ratingdbid !== undefined) basicValues.ratingdbid = ratingdbid;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
-    this.setState({ basicValues });
+    this.setState({ basicValues }, this.renderOutput);
   };
 
   handleOutputChange = (event, data) => {
@@ -133,11 +150,10 @@ class GridWindow extends Component {
       }
     });
     return { tags, series, tagIds };
-
   };
 
-  handleMakeClick = () => {
-    const { tags, series } = this._tallyTags();
+  renderOutput = () => {
+    const { tags, series } = this.state.tallyTags;
 
     let tagList = tags.join(", ");
     let seriesList = series.join(" ");
@@ -296,7 +312,6 @@ class GridWindow extends Component {
             <Output
               onOutputChange={this.handleOutputChange}
               outputValue={this.state.output}
-              onMakeClick={this.handleMakeClick}
               onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
