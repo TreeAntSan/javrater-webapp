@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Segment, Input, Form, List, Label, Dropdown, Checkbox } from "semantic-ui-react";
+import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader } from "semantic-ui-react";
 
 import RatingElement from "./RatingElement";
 
@@ -14,7 +14,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Input
               label="Title"
               type="text"
-              placeholder="Video title"
+              placeholder="Movie Title"
               onChange={(e) => (onChange({ title: e.target.value }))}
               value={values.title}
             />
@@ -26,7 +26,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
               label="Code"
               type="text"
               placeholder="ABC-123"
-              onChange={(e) => (onChange({ code: e.target.value }))}
+              onChange={(e) => (onChange({ prodcode: e.target.value }))}
               value={values.code}
             />
           </Form.Field>
@@ -36,8 +36,12 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Dropdown
               placeholder="Select Genre"
               selection
-              options={[{ text:"", value: "" }, ...genreOptions]}
-              onChange={(event, data) => (onChange({ genre: data.value }))}
+              options={[{ id: 0, text:"", value: "" }, ...genreOptions]}
+              onChange={(event, data) => (onChange({
+                genre: data.value,
+                genredbid: data.options[data.options.findIndex(
+                  option => option.value === data.value)].id }))  // Only way to find index of selection
+              }
               value={values.genre}
             />
           </Form.Field>
@@ -63,6 +67,9 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
       </List>
     </Form>
+    <Dimmer active={!(ratingOptions.length && genreOptions.length)}>
+      <Loader>Loading</Loader>
+    </Dimmer>
   </Segment>
 );
 

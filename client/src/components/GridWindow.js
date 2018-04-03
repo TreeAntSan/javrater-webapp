@@ -1,82 +1,159 @@
 import React, { Component } from "react";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
+import { cloneDeep } from "lodash";
 
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import { TAG_OPTIONS, RATING_OPTIONS, GENRE_OPTIONS } from "../constants";
+import client from "../client";
 
 class GridWindow extends Component {
 
   // TODO Bonus: add a tooltip timing function
 
+  // This is an object where the keys are tags and contains the name and category, it is used
+  // in _tallyTags and handleParseClick
   tagDict = {};
 
   initialState = {
     checkedTags: {},
     basicValues: {
-      title: '',
-      code: '',
-      genre: '',
+      title: "",
+      prodcode: "",
+      genre: "",
+      genredbid: 0,
       rating: 0,
+      ratingdbid: 0,
       tagsOnly: false,
     },
-    output: '',
+    genreOptions: [],
+    ratingOptions: [],
+    tagOptions: [],
+    tallyTags: {
+      tags: [],
+      series: [],
+      tagIds: [],
+    },
+    userid: 1,
+    output: "",
   };
 
   constructor(props) {
     super(props);
-    this._makeTagDict();
     this.state = this.initialState;
+    this._fetchGenres();
+    this._fetchRatings();
+    this._fetchTags();
   }
 
-  _makeTagDict = () => {
+  _makeTagDict = (tagOptions) => {
     let tagSeed = {};
-    TAG_OPTIONS.forEach((tagCategory) => {
+    tagOptions.forEach((tagCategory) => {
       tagCategory.tags.forEach((tag) => {
         this.tagDict[tag.tag] = {};
         this.tagDict[tag.tag].name = tag.name;
         this.tagDict[tag.tag].category = tagCategory.title;
-        tagSeed[tag.tag] = false;
+        tagSeed[tag.tag] = {};
+        tagSeed[tag.tag].checked = false;
+        tagSeed[tag.tag].id = tag.id;
       });
     });
-    this.initialState.checkedTags = tagSeed;
+    return tagSeed;
+  };
+
+  _fetchGenres = () => {
+    client.getGenres((genres) => {
+      const genreOptions = genres.response.map((genre) => (
+        { id: genre.id, value: genre.code, text: `${genre.code} - ${genre.description}` }
+      ));
+      this.setState({ genreOptions });
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.genreOptions = genreOptions;
+    });
+  };
+
+  _fetchRatings = () => {
+    client.getRatings((ratings) => {
+      const ratingOptions = ratings.response.map((rating) => (
+        { id: rating.id, value: rating.rating, description: rating.description }
+      ));
+      this.setState({ ratingOptions });
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.ratingOptions = ratingOptions;
+    });
+  };
+
+  _fetchTags = () => {
+    client.getTags((tags) => {
+      let tagOptions = [];
+      tags.response.forEach((tag) => {
+        let index = tagOptions.findIndex((element) => element.title === tag.category);
+        if (index === -1) {
+          tagOptions.push({ title: tag.category, tags: [] });
+          index = tagOptions.length - 1;
+        }
+        tagOptions[index].tags.push(
+          { id: tag.id, tag: tag.tag, name: tag.name, description: tag.description }
+        );
+      });
+      this.setState({ tagOptions });
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.tagOptions = tagOptions;
+      this.initialState.checkedTags= this._makeTagDict(tagOptions);
+
+      // Need to deep copy or the component state will update initialState, breaking the reset functionality.
+      this.setState({ checkedTags: cloneDeep(this.initialState.checkedTags) });
+    });
   };
 
   handleTagChange = (tag, tagState) => {
     const checkedTags = {...this.state.checkedTags};
-    checkedTags[tag] = tagState;
-    this.setState({ checkedTags });
+    checkedTags[tag].checked = tagState;
+    this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
   };
 
-  handleBasicsChange = ({ title, code, genre, rating, tagsOnly }) => {
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genredbid, ratingdbid }) => {
     // TODO There must be a more elegant way to accomplish this...
     const basicValues = {...this.state.basicValues};
     if (title !== undefined) basicValues.title = title;
-    if (code !== undefined) basicValues.code = code;
+    if (prodcode !== undefined) basicValues.prodcode = prodcode;
     if (genre !== undefined) basicValues.genre = genre;
+    if (genredbid !== undefined) basicValues.genredbid = genredbid;
     if (rating !== undefined) basicValues.rating = rating;
+    if (ratingdbid !== undefined) basicValues.ratingdbid = ratingdbid;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
-    this.setState({ basicValues });
+    this.setState({ basicValues }, this.renderOutput);
   };
 
   handleOutputChange = (event, data) => {
     this.setState({ output: data.value});
   };
 
-  handleMakeClick = () => {
+  _tallyTags = () => {
     let tags = [];
     let series = [];
+    let tagIds = [];
     Object.keys(this.state.checkedTags).forEach(key => {
-      if (this.state.checkedTags[key]) {
-        if (this.tagDict[key].category.toLowerCase() === "series") {
+      const tag = this.state.checkedTags[key];
+      if (tag.checked) {
+        tagIds.push(tag.id);
+        if (this.tagDict[key].category.toLowerCase() === "series" ||
+          this.tagDict[key].category.toLowerCase() === "director") {
           series.push(key);
         } else {
           tags.push(key);
         }
       }
     });
+    return { tags, series, tagIds };
+  };
+
+  renderOutput = () => {
+    const { tags, series } = this.state.tallyTags;
 
     let tagList = tags.join(", ");
     let seriesList = series.join(" ");
@@ -86,13 +163,32 @@ class GridWindow extends Component {
     if (this.state.basicValues.tagsOnly) {
       output = `(${tagList})`;
     } else {
-      // Intentional blank space after genre, do not remove it.
-      output = deline`${this.state.basicValues.genre}${seriesList} 
-                      ${RATING_OPTIONS[this.state.basicValues.rating].value} -
-                      ${this.state.basicValues.title} [${this.state.basicValues.code}] (${tagList})`;
+      output = deline`${this.state.basicValues.genre}
+                      ${seriesList} ${this.state.ratingOptions[this.state.basicValues.rating].value} -
+                      ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${tagList})`;
     }
 
     this.setState({ output });
+  };
+
+  handleSaveClick = () => {
+    const { tagIds } = this._tallyTags();
+    const payload = {
+      title: this.state.basicValues.title,
+      prodcode: this.state.basicValues.prodcode,
+      genreid: this.state.basicValues.genredbid,
+      ratingid: this.state.basicValues.ratingdbid,
+      tags: tagIds.join(","),
+      createdby: this.state.userid,
+    };
+
+    client.postMovie(payload, (res) => {
+      if (res.error) {
+        this.setState({ output: `Error: ${res.error}` });
+      } else {
+        this.setState({ output: `Status ${res.status} - MovieId: ${res.response}` });
+      }
+    });
   };
 
   handleParseClick = () => {
@@ -130,30 +226,27 @@ class GridWindow extends Component {
                   <Basics
                     onChange={this.handleBasicsChange}
                     values={this.state.basicValues}
-                    ratingOptions={RATING_OPTIONS}
-                    genreOptions={GENRE_OPTIONS}
+                    ratingOptions={this.state.ratingOptions}
+                    genreOptions={this.state.genreOptions}
                   />
                 </Grid.Column>
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[0].title}
-                    tagOptions={TAG_OPTIONS[0].tags}
+                    tagData={this.state.tagOptions[0]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[1].title}
-                    tagOptions={TAG_OPTIONS[1].tags}
+                    tagData={this.state.tagOptions[1]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                 </Grid.Column>
                 <Grid.Column width={8}>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[2].title}
-                    tagOptions={TAG_OPTIONS[2].tags}
+                    tagData={this.state.tagOptions[2]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
@@ -166,54 +259,46 @@ class GridWindow extends Component {
               <Grid.Row>
                 <Grid.Column>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[3].title}
-                    tagOptions={TAG_OPTIONS[3].tags}
+                    tagData={this.state.tagOptions[3]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[4].title}
-                    tagOptions={TAG_OPTIONS[4].tags}
+                    tagData={this.state.tagOptions[4]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[5].title}
-                    tagOptions={TAG_OPTIONS[5].tags}
-                    onTagChange={this.handleTagChange}
-                    tagValues={this.state.checkedTags}
-                  />
-                </Grid.Column>
-                <Grid.Column>
-                  <TagSection
-                    tagSectionTitle={TAG_OPTIONS[6].title}
-                    tagOptions={TAG_OPTIONS[6].tags}
-                    onTagChange={this.handleTagChange}
-                    tagValues={this.state.checkedTags}
-                  />
-                  <TagSection
-                    tagSectionTitle={TAG_OPTIONS[7].title}
-                    tagOptions={TAG_OPTIONS[7].tags}
-                    onTagChange={this.handleTagChange}
-                    tagValues={this.state.checkedTags}
-                  />
-                  <TagSection
-                    tagSectionTitle={TAG_OPTIONS[8].title}
-                    tagOptions={TAG_OPTIONS[8].tags}
+                    tagData={this.state.tagOptions[5]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[9].title}
-                    tagOptions={TAG_OPTIONS[9].tags}
+                    tagData={this.state.tagOptions[6]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
                   <TagSection
-                    tagSectionTitle={TAG_OPTIONS[10].title}
-                    tagOptions={TAG_OPTIONS[10].tags}
+                    tagData={this.state.tagOptions[7]}
+                    onTagChange={this.handleTagChange}
+                    tagValues={this.state.checkedTags}
+                  />
+                  <TagSection
+                    tagData={this.state.tagOptions[8]}
+                    onTagChange={this.handleTagChange}
+                    tagValues={this.state.checkedTags}
+                  />
+                </Grid.Column>
+                <Grid.Column>
+                  <TagSection
+                    tagData={this.state.tagOptions[9]}
+                    onTagChange={this.handleTagChange}
+                    tagValues={this.state.checkedTags}
+                  />
+                  <TagSection
+                    tagData={this.state.tagOptions[10]}
                     onTagChange={this.handleTagChange}
                     tagValues={this.state.checkedTags}
                   />
@@ -227,9 +312,12 @@ class GridWindow extends Component {
             <Output
               onOutputChange={this.handleOutputChange}
               outputValue={this.state.output}
-              onMakeClick={this.handleMakeClick}
+              onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
+              ready={this.state.genreOptions.length > 0 &&
+                      this.state.ratingOptions.length > 0 &&
+                      this.state.tagOptions.length > 0}
             />
           </Grid.Column>
         </Grid.Row>
