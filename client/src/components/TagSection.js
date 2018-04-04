@@ -5,7 +5,7 @@ import ReactTooltip from "react-tooltip";
 
 const TagSection = ({ tagData, onTagChange, tagValues }) => (
   <Segment>
-    {tagData !== undefined
+    {tagData !== undefined && tagValues !== undefined
       ?
       <div>
         <Label attached="top left">{tagData.title} Tags</Label>
@@ -37,7 +37,7 @@ const TagSection = ({ tagData, onTagChange, tagValues }) => (
 TagSection.propTypes = {
   tagData: PropTypes.object,
   onTagChange: PropTypes.func.isRequired,
-  tagValues: PropTypes.object.isRequired,
+  tagValues: PropTypes.object,
 };
 
 export default TagSection;
