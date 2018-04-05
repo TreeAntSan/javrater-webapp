@@ -27,7 +27,7 @@ const TagSection = ({ tagData, onTagChange, tagValues }) => (
         <ReactTooltip delayShow={300}/>
       </div>
       :
-      <Dimmer active>
+      <Dimmer inverted active>
         <Loader size="mini"/>
       </Dimmer>
     }

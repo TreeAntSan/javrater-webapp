@@ -7,6 +7,7 @@ import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
 import client from "../client";
+import utils from "../utils";
 
 class GridWindow extends Component {
 
@@ -50,26 +51,9 @@ class GridWindow extends Component {
     this._fetchTags();
   }
 
-  _makeTagDict = (tagOptions) => {
-    let tagSeed = {};
-    tagOptions.forEach((tagCategory) => {
-      tagCategory.tags.forEach((tag) => {
-        this.tagDict[tag.tag] = {};
-        this.tagDict[tag.tag].name = tag.name;
-        this.tagDict[tag.tag].category = tagCategory.title;
-        tagSeed[tag.tag] = {};
-        tagSeed[tag.tag].checked = false;
-        tagSeed[tag.tag].id = tag.id;
-      });
-    });
-    return tagSeed;
-  };
-
   _fetchGenres = () => {
     client.getGenres((genres) => {
-      const genreOptions = genres.response.map((genre) => (
-        { id: genre.id, value: genre.code, text: `${genre.code} - ${genre.description}` }
-      ));
+      const genreOptions = utils.genreOptionFormatter(genres);
 
       // Need to update initial state so it's reset to these values each time.
       this.initialState.genreOptions = genreOptions;
@@ -79,9 +63,7 @@ class GridWindow extends Component {
 
   _fetchRatings = () => {
     client.getRatings((ratings) => {
-      const ratingOptions = ratings.response.map((rating) => (
-        { id: rating.id, value: rating.rating, description: rating.description }
-      ));
+      const ratingOptions = utils.ratingOptionFormatter(ratings);
 
       // Need to update initial state so it's reset to these values each time.
       this.initialState.ratingOptions = ratingOptions;
@@ -91,20 +73,13 @@ class GridWindow extends Component {
 
   _fetchTags = () => {
     client.getTags((tags) => {
-      let tagOptions = [];
-      tags.response.forEach((tag) => {
-        let index = tagOptions.findIndex((element) => element.title === tag.category);
-        if (index === -1) {
-          tagOptions.push({ title: tag.category, tags: [] });
-          index = tagOptions.length - 1;
-        }
-        tagOptions[index].tags.push(
-          { id: tag.id, tag: tag.tag, name: tag.name, description: tag.description }
-        );
-      });
+      const tagOptions = utils.tagOptionFormatter(tags);
+
       // Need to update initial state so it's reset to these values each time.
       this.initialState.tagOptions = tagOptions;
-      this.initialState.checkedTags = this._makeTagDict(tagOptions);
+      const { tagDict, tagSeed } = utils.makeTagDict(tagOptions);
+      this.initialState.checkedTags = tagSeed;
+      this.tagDict = tagDict;
 
       // Need to deep copy or the component state will update initialState, breaking the reset functionality.
       this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });

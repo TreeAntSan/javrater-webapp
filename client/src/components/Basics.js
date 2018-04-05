@@ -67,7 +67,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
       </List>
     </Form>
-    <Dimmer active={!(ratingOptions.length && genreOptions.length)}>
+    <Dimmer inverted active={!(ratingOptions.length && genreOptions.length)}>
       <Loader>Loading</Loader>
     </Dimmer>
   </Segment>
