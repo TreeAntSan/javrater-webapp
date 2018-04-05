@@ -10,17 +10,19 @@ import apiRouter from "./routes/api";
 
 const app = express();
 
-// Database connection
-app.use((req, res, next) => {
-  res.locals.connection = mysql.createConnection({
-    host     : "localhost",
-    database : process.env.MOVIE ? "movierater" : "javrater",
-    user     : process.env.MOVIE ? "movierater" : "javrater",
-    password : process.env.RATER_MYSQL_PASSWORD || "password",
+// Database connection. For testing purposes disregard connection if no password inputted.
+if (process.env.RATER_MYSQL_PASSWORD) {
+  app.use((req, res, next) => {
+    res.locals.connection = mysql.createConnection({
+      host     : "localhost",
+      database : process.env.MOVIE ? "movierater" : "javrater",
+      user     : process.env.MOVIE ? "movierater" : "javrater",
+      password : process.env.RATER_MYSQL_PASSWORD || "password",
+    });
+    res.locals.connection.connect();
+    next();
   });
-  res.locals.connection.connect();
-  next();
-});
+}
 
 app.use(logger("dev"));
 app.use(express.json());
