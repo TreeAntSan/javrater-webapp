@@ -46,7 +46,7 @@ const Output = ({ onOutputChange, outputValue, onMakeClick, onSaveClick,
         </Grid.Row>
       </Grid>
     </Form>
-    <Dimmer active={!ready}>
+    <Dimmer inverted active={!ready}>
       <Loader>Waiting for Tools to Load</Loader>
     </Dimmer>
   </Segment>

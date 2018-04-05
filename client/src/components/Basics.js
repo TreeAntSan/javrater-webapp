@@ -39,7 +39,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
               options={[{ id: 0, text:"", value: "" }, ...genreOptions]}
               onChange={(event, data) => (onChange({
                 genre: data.value,
-                genredbid: data.options[data.options.findIndex(
+                genreid: data.options[data.options.findIndex(
                   option => option.value === data.value)].id }))  // Only way to find index of selection
               }
               value={values.genre}
@@ -67,7 +67,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
       </List>
     </Form>
-    <Dimmer active={!(ratingOptions.length && genreOptions.length)}>
+    <Dimmer inverted active={!(ratingOptions.length && genreOptions.length)}>
       <Loader>Loading</Loader>
     </Dimmer>
   </Segment>

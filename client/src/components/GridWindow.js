@@ -7,6 +7,7 @@ import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
 import client from "../client";
+import utils from "../utils";
 
 class GridWindow extends Component {
 
@@ -22,9 +23,9 @@ class GridWindow extends Component {
       title: "",
       prodcode: "",
       genre: "",
-      genredbid: 0,
+      genreid: 0,
       rating: 0,
-      ratingdbid: 0,
+      ratingid: 0,
       tagsOnly: false,
     },
     genreOptions: [],
@@ -42,71 +43,46 @@ class GridWindow extends Component {
   constructor(props) {
     super(props);
     this.state = this.initialState;
+  }
+
+  componentWillMount() {
     this._fetchGenres();
     this._fetchRatings();
     this._fetchTags();
   }
 
-  _makeTagDict = (tagOptions) => {
-    let tagSeed = {};
-    tagOptions.forEach((tagCategory) => {
-      tagCategory.tags.forEach((tag) => {
-        this.tagDict[tag.tag] = {};
-        this.tagDict[tag.tag].name = tag.name;
-        this.tagDict[tag.tag].category = tagCategory.title;
-        tagSeed[tag.tag] = {};
-        tagSeed[tag.tag].checked = false;
-        tagSeed[tag.tag].id = tag.id;
-      });
-    });
-    return tagSeed;
-  };
-
   _fetchGenres = () => {
     client.getGenres((genres) => {
-      const genreOptions = genres.response.map((genre) => (
-        { id: genre.id, value: genre.code, text: `${genre.code} - ${genre.description}` }
-      ));
-      this.setState({ genreOptions });
+      const genreOptions = utils.genreOptionFormatter(genres);
 
       // Need to update initial state so it's reset to these values each time.
       this.initialState.genreOptions = genreOptions;
+      this.setState({ genreOptions });
     });
   };
 
   _fetchRatings = () => {
     client.getRatings((ratings) => {
-      const ratingOptions = ratings.response.map((rating) => (
-        { id: rating.id, value: rating.rating, description: rating.description }
-      ));
-      this.setState({ ratingOptions });
+      const ratingOptions = utils.ratingOptionFormatter(ratings);
 
       // Need to update initial state so it's reset to these values each time.
       this.initialState.ratingOptions = ratingOptions;
+      this.setState({ ratingOptions });
     });
   };
 
   _fetchTags = () => {
     client.getTags((tags) => {
-      let tagOptions = [];
-      tags.response.forEach((tag) => {
-        let index = tagOptions.findIndex((element) => element.title === tag.category);
-        if (index === -1) {
-          tagOptions.push({ title: tag.category, tags: [] });
-          index = tagOptions.length - 1;
-        }
-        tagOptions[index].tags.push(
-          { id: tag.id, tag: tag.tag, name: tag.name, description: tag.description }
-        );
-      });
-      this.setState({ tagOptions });
+      const tagOptions = utils.tagOptionFormatter(tags);
 
       // Need to update initial state so it's reset to these values each time.
       this.initialState.tagOptions = tagOptions;
-      this.initialState.checkedTags= this._makeTagDict(tagOptions);
+      const { tagDict, tagSeed } = utils.makeTagDict(tagOptions);
+      this.initialState.checkedTags = tagSeed;
+      this.tagDict = tagDict;
 
       // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-      this.setState({ checkedTags: cloneDeep(this.initialState.checkedTags) });
+      this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
     });
   };
 
@@ -116,15 +92,15 @@ class GridWindow extends Component {
     this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
   };
 
-  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genredbid, ratingdbid }) => {
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genreid, ratingid }) => {
     // TODO There must be a more elegant way to accomplish this...
     const basicValues = {...this.state.basicValues};
     if (title !== undefined) basicValues.title = title;
     if (prodcode !== undefined) basicValues.prodcode = prodcode;
     if (genre !== undefined) basicValues.genre = genre;
-    if (genredbid !== undefined) basicValues.genredbid = genredbid;
+    if (genreid !== undefined) basicValues.genreid = genreid;
     if (rating !== undefined) basicValues.rating = rating;
-    if (ratingdbid !== undefined) basicValues.ratingdbid = ratingdbid;
+    if (ratingid !== undefined) basicValues.ratingid = ratingid;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
     this.setState({ basicValues }, this.renderOutput);
   };
@@ -176,8 +152,8 @@ class GridWindow extends Component {
     const payload = {
       title: this.state.basicValues.title,
       prodcode: this.state.basicValues.prodcode,
-      genreid: this.state.basicValues.genredbid,
-      ratingid: this.state.basicValues.ratingdbid,
+      genreid: this.state.basicValues.genreid,
+      ratingid: this.state.basicValues.ratingid,
       tags: tagIds.join(","),
       createdby: this.state.userid,
     };

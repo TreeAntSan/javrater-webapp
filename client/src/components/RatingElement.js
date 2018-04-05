@@ -8,7 +8,7 @@ const RatingElement = ({ maxRating, ratingOptions, onRate, rating }) => (
       clearable
       rating={rating}
       maxRating={maxRating}
-      onRate={(event, { rating }) => onRate({ rating, ratingdbid: ratingOptions[rating].id })}
+      onRate={(event, { rating }) => onRate({ rating, ratingid: ratingOptions[rating].id })}
     />
     {rating}: {(ratingOptions[rating] &&
                             ratingOptions[rating].description) || "ERROR"}
