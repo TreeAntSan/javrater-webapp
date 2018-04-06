@@ -5,14 +5,37 @@
 # Model Types
 #
 
-type Post implements Node {
+type Genre implements Node {
   id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean!
+  code: String!
+  description: String!
+  movies(where: MovieWhereInput, orderBy: MovieOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Movie!]
+}
+
+type Movie implements Node {
+  id: ID!
   title: String!
-  text: String!
-  author(where: UserWhereInput): User!
+  prodCode: String!
+  rating(where: RatingWhereInput): Rating
+  genre(where: GenreWhereInput): Genre
+  tags(where: TagWhereInput, orderBy: TagOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tag!]
+  createdBy(where: UserWhereInput): User
+}
+
+type Rating implements Node {
+  id: ID!
+  rating: String!
+  description: String!
+  movies(where: MovieWhereInput, orderBy: MovieOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Movie!]
+}
+
+type Tag implements Node {
+  id: ID!
+  category: String!
+  tag: String!
+  name: String!
+  description: String!
+  movies(where: MovieWhereInput, orderBy: MovieOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Movie!]
 }
 
 type User implements Node {
@@ -20,7 +43,9 @@ type User implements Node {
   email: String!
   password: String!
   name: String!
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  type: Int!
+  status: Int!
+  movies(where: MovieWhereInput, orderBy: MovieOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Movie!]
 }
 
 
@@ -28,7 +53,19 @@ type User implements Node {
 # Other Types
 #
 
-type AggregatePost {
+type AggregateGenre {
+  count: Int!
+}
+
+type AggregateMovie {
+  count: Int!
+}
+
+type AggregateRating {
+  count: Int!
+}
+
+type AggregateTag {
   count: Int!
 }
 
@@ -43,71 +80,10 @@ type BatchPayload {
   count: Long!
 }
 
-scalar DateTime
-
-"""
-The `Long` scalar type represents non-fractional signed whole numeric values.
-Long can represent values between -(2^63) and 2^63 - 1.
-"""
-scalar Long
-
-type Mutation {
-  createPost(data: PostCreateInput!): Post!
-  createUser(data: UserCreateInput!): User!
-  updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  deletePost(where: PostWhereUniqueInput!): Post
-  deleteUser(where: UserWhereUniqueInput!): User
-  upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
-  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
-  deleteManyPosts(where: PostWhereInput!): BatchPayload!
-  deleteManyUsers(where: UserWhereInput!): BatchPayload!
-}
-
-enum MutationType {
-  CREATED
-  UPDATED
-  DELETED
-}
-
-"""
-An object with an ID
-"""
-interface Node {
-  """
-  The id of the object.
-  """
-  id: ID!
-}
-
-"""
-Information about pagination in a connection.
-"""
-type PageInfo {
-  """
-  When paginating forwards, are there more items?
-  """
-  hasNextPage: Boolean!
-  """
-  When paginating backwards, are there more items?
-  """
-  hasPreviousPage: Boolean!
-  """
-  When paginating backwards, the cursor to continue.
-  """
-  startCursor: String
-  """
-  When paginating forwards, the cursor to continue.
-  """
-  endCursor: String
-}
-
 """
 A connection to a list of items.
 """
-type PostConnection {
+type GenreConnection {
   """
   Information to aid in pagination.
   """
@@ -115,82 +91,75 @@ type PostConnection {
   """
   A list of edges.
   """
-  edges: [PostEdge]!
-  aggregate: AggregatePost!
+  edges: [GenreEdge]!
+  aggregate: AggregateGenre!
 }
 
-input PostCreateInput {
-  isPublished: Boolean
-  title: String!
-  text: String!
-  author: UserCreateOneWithoutPostsInput!
+input GenreCreateInput {
+  code: String!
+  description: String!
+  movies: MovieCreateManyWithoutGenreInput
 }
 
-input PostCreateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
-  connect: [PostWhereUniqueInput!]
+input GenreCreateOneWithoutMoviesInput {
+  create: GenreCreateWithoutMoviesInput
+  connect: GenreWhereUniqueInput
 }
 
-input PostCreateWithoutAuthorInput {
-  isPublished: Boolean
-  title: String!
-  text: String!
+input GenreCreateWithoutMoviesInput {
+  code: String!
+  description: String!
 }
 
 """
 An edge in a connection.
 """
-type PostEdge {
+type GenreEdge {
   """
   The item at the end of the edge.
   """
-  node: Post!
+  node: Genre!
   """
   A cursor for use in pagination.
   """
   cursor: String!
 }
 
-enum PostOrderByInput {
+enum GenreOrderByInput {
   id_ASC
   id_DESC
-  createdAt_ASC
-  createdAt_DESC
+  code_ASC
+  code_DESC
+  description_ASC
+  description_DESC
   updatedAt_ASC
   updatedAt_DESC
-  isPublished_ASC
-  isPublished_DESC
-  title_ASC
-  title_DESC
-  text_ASC
-  text_DESC
+  createdAt_ASC
+  createdAt_DESC
 }
 
-type PostPreviousValues {
+type GenrePreviousValues {
   id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean!
-  title: String!
-  text: String!
+  code: String!
+  description: String!
 }
 
-type PostSubscriptionPayload {
+type GenreSubscriptionPayload {
   mutation: MutationType!
-  node: Post
+  node: Genre
   updatedFields: [String!]
-  previousValues: PostPreviousValues
+  previousValues: GenrePreviousValues
 }
 
-input PostSubscriptionWhereInput {
+input GenreSubscriptionWhereInput {
   """
   Logical AND on all given filters.
   """
-  AND: [PostSubscriptionWhereInput!]
+  AND: [GenreSubscriptionWhereInput!]
   """
   Logical OR on all given filters.
   """
-  OR: [PostSubscriptionWhereInput!]
+  OR: [GenreSubscriptionWhereInput!]
   """
   The subscription event gets dispatched when it's listed in mutation_in
   """
@@ -207,51 +176,43 @@ input PostSubscriptionWhereInput {
   The subscription event gets only dispatched when some of the field names included in this list have been updated
   """
   updatedFields_contains_some: [String!]
-  node: PostWhereInput
+  node: GenreWhereInput
 }
 
-input PostUpdateInput {
-  isPublished: Boolean
-  title: String
-  text: String
-  author: UserUpdateOneWithoutPostsInput
+input GenreUpdateInput {
+  code: String
+  description: String
+  movies: MovieUpdateManyWithoutGenreInput
 }
 
-input PostUpdateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
-  connect: [PostWhereUniqueInput!]
-  disconnect: [PostWhereUniqueInput!]
-  delete: [PostWhereUniqueInput!]
-  update: [PostUpdateWithWhereUniqueWithoutAuthorInput!]
-  upsert: [PostUpsertWithWhereUniqueWithoutAuthorInput!]
+input GenreUpdateOneWithoutMoviesInput {
+  create: GenreCreateWithoutMoviesInput
+  connect: GenreWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: GenreUpdateWithoutMoviesDataInput
+  upsert: GenreUpsertWithoutMoviesInput
 }
 
-input PostUpdateWithoutAuthorDataInput {
-  isPublished: Boolean
-  title: String
-  text: String
+input GenreUpdateWithoutMoviesDataInput {
+  code: String
+  description: String
 }
 
-input PostUpdateWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  data: PostUpdateWithoutAuthorDataInput!
+input GenreUpsertWithoutMoviesInput {
+  update: GenreUpdateWithoutMoviesDataInput!
+  create: GenreCreateWithoutMoviesInput!
 }
 
-input PostUpsertWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  update: PostUpdateWithoutAuthorDataInput!
-  create: PostCreateWithoutAuthorInput!
-}
-
-input PostWhereInput {
+input GenreWhereInput {
   """
   Logical AND on all given filters.
   """
-  AND: [PostWhereInput!]
+  AND: [GenreWhereInput!]
   """
   Logical OR on all given filters.
   """
-  OR: [PostWhereInput!]
+  OR: [GenreWhereInput!]
   id: ID
   """
   All values that are not equal to given value.
@@ -305,69 +266,455 @@ input PostWhereInput {
   All values not ending with the given string.
   """
   id_not_ends_with: ID
-  createdAt: DateTime
+  code: String
   """
   All values that are not equal to given value.
   """
-  createdAt_not: DateTime
+  code_not: String
   """
   All values that are contained in given list.
   """
-  createdAt_in: [DateTime!]
+  code_in: [String!]
   """
   All values that are not contained in given list.
   """
-  createdAt_not_in: [DateTime!]
+  code_not_in: [String!]
   """
   All values less than the given value.
   """
-  createdAt_lt: DateTime
+  code_lt: String
   """
   All values less than or equal the given value.
   """
-  createdAt_lte: DateTime
+  code_lte: String
   """
   All values greater than the given value.
   """
-  createdAt_gt: DateTime
+  code_gt: String
   """
   All values greater than or equal the given value.
   """
-  createdAt_gte: DateTime
-  updatedAt: DateTime
+  code_gte: String
+  """
+  All values containing the given string.
+  """
+  code_contains: String
+  """
+  All values not containing the given string.
+  """
+  code_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  code_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  code_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  code_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  code_not_ends_with: String
+  description: String
   """
   All values that are not equal to given value.
   """
-  updatedAt_not: DateTime
+  description_not: String
   """
   All values that are contained in given list.
   """
-  updatedAt_in: [DateTime!]
+  description_in: [String!]
   """
   All values that are not contained in given list.
   """
-  updatedAt_not_in: [DateTime!]
+  description_not_in: [String!]
   """
   All values less than the given value.
   """
-  updatedAt_lt: DateTime
+  description_lt: String
   """
   All values less than or equal the given value.
   """
-  updatedAt_lte: DateTime
+  description_lte: String
   """
   All values greater than the given value.
   """
-  updatedAt_gt: DateTime
+  description_gt: String
   """
   All values greater than or equal the given value.
   """
-  updatedAt_gte: DateTime
-  isPublished: Boolean
+  description_gte: String
+  """
+  All values containing the given string.
+  """
+  description_contains: String
+  """
+  All values not containing the given string.
+  """
+  description_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  description_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  description_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  description_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  description_not_ends_with: String
+  movies_every: MovieWhereInput
+  movies_some: MovieWhereInput
+  movies_none: MovieWhereInput
+}
+
+input GenreWhereUniqueInput {
+  id: ID
+  code: String
+}
+
+"""
+The `Long` scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+"""
+scalar Long
+
+"""
+A connection to a list of items.
+"""
+type MovieConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [MovieEdge]!
+  aggregate: AggregateMovie!
+}
+
+input MovieCreateInput {
+  title: String!
+  prodCode: String!
+  rating: RatingCreateOneWithoutMoviesInput
+  genre: GenreCreateOneWithoutMoviesInput
+  tags: TagCreateManyWithoutMoviesInput
+  createdBy: UserCreateOneWithoutMoviesInput
+}
+
+input MovieCreateManyWithoutCreatedByInput {
+  create: [MovieCreateWithoutCreatedByInput!]
+  connect: [MovieWhereUniqueInput!]
+}
+
+input MovieCreateManyWithoutGenreInput {
+  create: [MovieCreateWithoutGenreInput!]
+  connect: [MovieWhereUniqueInput!]
+}
+
+input MovieCreateManyWithoutRatingInput {
+  create: [MovieCreateWithoutRatingInput!]
+  connect: [MovieWhereUniqueInput!]
+}
+
+input MovieCreateManyWithoutTagsInput {
+  create: [MovieCreateWithoutTagsInput!]
+  connect: [MovieWhereUniqueInput!]
+}
+
+input MovieCreateWithoutCreatedByInput {
+  title: String!
+  prodCode: String!
+  rating: RatingCreateOneWithoutMoviesInput
+  genre: GenreCreateOneWithoutMoviesInput
+  tags: TagCreateManyWithoutMoviesInput
+}
+
+input MovieCreateWithoutGenreInput {
+  title: String!
+  prodCode: String!
+  rating: RatingCreateOneWithoutMoviesInput
+  tags: TagCreateManyWithoutMoviesInput
+  createdBy: UserCreateOneWithoutMoviesInput
+}
+
+input MovieCreateWithoutRatingInput {
+  title: String!
+  prodCode: String!
+  genre: GenreCreateOneWithoutMoviesInput
+  tags: TagCreateManyWithoutMoviesInput
+  createdBy: UserCreateOneWithoutMoviesInput
+}
+
+input MovieCreateWithoutTagsInput {
+  title: String!
+  prodCode: String!
+  rating: RatingCreateOneWithoutMoviesInput
+  genre: GenreCreateOneWithoutMoviesInput
+  createdBy: UserCreateOneWithoutMoviesInput
+}
+
+"""
+An edge in a connection.
+"""
+type MovieEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Movie!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum MovieOrderByInput {
+  id_ASC
+  id_DESC
+  title_ASC
+  title_DESC
+  prodCode_ASC
+  prodCode_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type MoviePreviousValues {
+  id: ID!
+  title: String!
+  prodCode: String!
+}
+
+type MovieSubscriptionPayload {
+  mutation: MutationType!
+  node: Movie
+  updatedFields: [String!]
+  previousValues: MoviePreviousValues
+}
+
+input MovieSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [MovieSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [MovieSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: MovieWhereInput
+}
+
+input MovieUpdateInput {
+  title: String
+  prodCode: String
+  rating: RatingUpdateOneWithoutMoviesInput
+  genre: GenreUpdateOneWithoutMoviesInput
+  tags: TagUpdateManyWithoutMoviesInput
+  createdBy: UserUpdateOneWithoutMoviesInput
+}
+
+input MovieUpdateManyWithoutCreatedByInput {
+  create: [MovieCreateWithoutCreatedByInput!]
+  connect: [MovieWhereUniqueInput!]
+  disconnect: [MovieWhereUniqueInput!]
+  delete: [MovieWhereUniqueInput!]
+  update: [MovieUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [MovieUpsertWithWhereUniqueWithoutCreatedByInput!]
+}
+
+input MovieUpdateManyWithoutGenreInput {
+  create: [MovieCreateWithoutGenreInput!]
+  connect: [MovieWhereUniqueInput!]
+  disconnect: [MovieWhereUniqueInput!]
+  delete: [MovieWhereUniqueInput!]
+  update: [MovieUpdateWithWhereUniqueWithoutGenreInput!]
+  upsert: [MovieUpsertWithWhereUniqueWithoutGenreInput!]
+}
+
+input MovieUpdateManyWithoutRatingInput {
+  create: [MovieCreateWithoutRatingInput!]
+  connect: [MovieWhereUniqueInput!]
+  disconnect: [MovieWhereUniqueInput!]
+  delete: [MovieWhereUniqueInput!]
+  update: [MovieUpdateWithWhereUniqueWithoutRatingInput!]
+  upsert: [MovieUpsertWithWhereUniqueWithoutRatingInput!]
+}
+
+input MovieUpdateManyWithoutTagsInput {
+  create: [MovieCreateWithoutTagsInput!]
+  connect: [MovieWhereUniqueInput!]
+  disconnect: [MovieWhereUniqueInput!]
+  delete: [MovieWhereUniqueInput!]
+  update: [MovieUpdateWithWhereUniqueWithoutTagsInput!]
+  upsert: [MovieUpsertWithWhereUniqueWithoutTagsInput!]
+}
+
+input MovieUpdateWithoutCreatedByDataInput {
+  title: String
+  prodCode: String
+  rating: RatingUpdateOneWithoutMoviesInput
+  genre: GenreUpdateOneWithoutMoviesInput
+  tags: TagUpdateManyWithoutMoviesInput
+}
+
+input MovieUpdateWithoutGenreDataInput {
+  title: String
+  prodCode: String
+  rating: RatingUpdateOneWithoutMoviesInput
+  tags: TagUpdateManyWithoutMoviesInput
+  createdBy: UserUpdateOneWithoutMoviesInput
+}
+
+input MovieUpdateWithoutRatingDataInput {
+  title: String
+  prodCode: String
+  genre: GenreUpdateOneWithoutMoviesInput
+  tags: TagUpdateManyWithoutMoviesInput
+  createdBy: UserUpdateOneWithoutMoviesInput
+}
+
+input MovieUpdateWithoutTagsDataInput {
+  title: String
+  prodCode: String
+  rating: RatingUpdateOneWithoutMoviesInput
+  genre: GenreUpdateOneWithoutMoviesInput
+  createdBy: UserUpdateOneWithoutMoviesInput
+}
+
+input MovieUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: MovieWhereUniqueInput!
+  data: MovieUpdateWithoutCreatedByDataInput!
+}
+
+input MovieUpdateWithWhereUniqueWithoutGenreInput {
+  where: MovieWhereUniqueInput!
+  data: MovieUpdateWithoutGenreDataInput!
+}
+
+input MovieUpdateWithWhereUniqueWithoutRatingInput {
+  where: MovieWhereUniqueInput!
+  data: MovieUpdateWithoutRatingDataInput!
+}
+
+input MovieUpdateWithWhereUniqueWithoutTagsInput {
+  where: MovieWhereUniqueInput!
+  data: MovieUpdateWithoutTagsDataInput!
+}
+
+input MovieUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: MovieWhereUniqueInput!
+  update: MovieUpdateWithoutCreatedByDataInput!
+  create: MovieCreateWithoutCreatedByInput!
+}
+
+input MovieUpsertWithWhereUniqueWithoutGenreInput {
+  where: MovieWhereUniqueInput!
+  update: MovieUpdateWithoutGenreDataInput!
+  create: MovieCreateWithoutGenreInput!
+}
+
+input MovieUpsertWithWhereUniqueWithoutRatingInput {
+  where: MovieWhereUniqueInput!
+  update: MovieUpdateWithoutRatingDataInput!
+  create: MovieCreateWithoutRatingInput!
+}
+
+input MovieUpsertWithWhereUniqueWithoutTagsInput {
+  where: MovieWhereUniqueInput!
+  update: MovieUpdateWithoutTagsDataInput!
+  create: MovieCreateWithoutTagsInput!
+}
+
+input MovieWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [MovieWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [MovieWhereInput!]
+  id: ID
   """
   All values that are not equal to given value.
   """
-  isPublished_not: Boolean
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
   title: String
   """
   All values that are not equal to given value.
@@ -421,73 +768,158 @@ input PostWhereInput {
   All values not ending with the given string.
   """
   title_not_ends_with: String
-  text: String
+  prodCode: String
   """
   All values that are not equal to given value.
   """
-  text_not: String
+  prodCode_not: String
   """
   All values that are contained in given list.
   """
-  text_in: [String!]
+  prodCode_in: [String!]
   """
   All values that are not contained in given list.
   """
-  text_not_in: [String!]
+  prodCode_not_in: [String!]
   """
   All values less than the given value.
   """
-  text_lt: String
+  prodCode_lt: String
   """
   All values less than or equal the given value.
   """
-  text_lte: String
+  prodCode_lte: String
   """
   All values greater than the given value.
   """
-  text_gt: String
+  prodCode_gt: String
   """
   All values greater than or equal the given value.
   """
-  text_gte: String
+  prodCode_gte: String
   """
   All values containing the given string.
   """
-  text_contains: String
+  prodCode_contains: String
   """
   All values not containing the given string.
   """
-  text_not_contains: String
+  prodCode_not_contains: String
   """
   All values starting with the given string.
   """
-  text_starts_with: String
+  prodCode_starts_with: String
   """
   All values not starting with the given string.
   """
-  text_not_starts_with: String
+  prodCode_not_starts_with: String
   """
   All values ending with the given string.
   """
-  text_ends_with: String
+  prodCode_ends_with: String
   """
   All values not ending with the given string.
   """
-  text_not_ends_with: String
-  author: UserWhereInput
+  prodCode_not_ends_with: String
+  rating: RatingWhereInput
+  genre: GenreWhereInput
+  tags_every: TagWhereInput
+  tags_some: TagWhereInput
+  tags_none: TagWhereInput
+  createdBy: UserWhereInput
 }
 
-input PostWhereUniqueInput {
+input MovieWhereUniqueInput {
   id: ID
 }
 
+type Mutation {
+  createUser(data: UserCreateInput!): User!
+  createRating(data: RatingCreateInput!): Rating!
+  createGenre(data: GenreCreateInput!): Genre!
+  createTag(data: TagCreateInput!): Tag!
+  createMovie(data: MovieCreateInput!): Movie!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateRating(data: RatingUpdateInput!, where: RatingWhereUniqueInput!): Rating
+  updateGenre(data: GenreUpdateInput!, where: GenreWhereUniqueInput!): Genre
+  updateTag(data: TagUpdateInput!, where: TagWhereUniqueInput!): Tag
+  updateMovie(data: MovieUpdateInput!, where: MovieWhereUniqueInput!): Movie
+  deleteUser(where: UserWhereUniqueInput!): User
+  deleteRating(where: RatingWhereUniqueInput!): Rating
+  deleteGenre(where: GenreWhereUniqueInput!): Genre
+  deleteTag(where: TagWhereUniqueInput!): Tag
+  deleteMovie(where: MovieWhereUniqueInput!): Movie
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertRating(where: RatingWhereUniqueInput!, create: RatingCreateInput!, update: RatingUpdateInput!): Rating!
+  upsertGenre(where: GenreWhereUniqueInput!, create: GenreCreateInput!, update: GenreUpdateInput!): Genre!
+  upsertTag(where: TagWhereUniqueInput!, create: TagCreateInput!, update: TagUpdateInput!): Tag!
+  upsertMovie(where: MovieWhereUniqueInput!, create: MovieCreateInput!, update: MovieUpdateInput!): Movie!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
+  updateManyRatings(data: RatingUpdateInput!, where: RatingWhereInput!): BatchPayload!
+  updateManyGenres(data: GenreUpdateInput!, where: GenreWhereInput!): BatchPayload!
+  updateManyTags(data: TagUpdateInput!, where: TagWhereInput!): BatchPayload!
+  updateManyMovies(data: MovieUpdateInput!, where: MovieWhereInput!): BatchPayload!
+  deleteManyUsers(where: UserWhereInput!): BatchPayload!
+  deleteManyRatings(where: RatingWhereInput!): BatchPayload!
+  deleteManyGenres(where: GenreWhereInput!): BatchPayload!
+  deleteManyTags(where: TagWhereInput!): BatchPayload!
+  deleteManyMovies(where: MovieWhereInput!): BatchPayload!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+"""
+An object with an ID
+"""
+interface Node {
+  """
+  The id of the object.
+  """
+  id: ID!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+}
+
 type Query {
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  post(where: PostWhereUniqueInput!): Post
+  ratings(where: RatingWhereInput, orderBy: RatingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Rating]!
+  genres(where: GenreWhereInput, orderBy: GenreOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Genre]!
+  tags(where: TagWhereInput, orderBy: TagOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tag]!
+  movies(where: MovieWhereInput, orderBy: MovieOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Movie]!
   user(where: UserWhereUniqueInput!): User
-  postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
+  rating(where: RatingWhereUniqueInput!): Rating
+  genre(where: GenreWhereUniqueInput!): Genre
+  tag(where: TagWhereUniqueInput!): Tag
+  movie(where: MovieWhereUniqueInput!): Movie
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  ratingsConnection(where: RatingWhereInput, orderBy: RatingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RatingConnection!
+  genresConnection(where: GenreWhereInput, orderBy: GenreOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GenreConnection!
+  tagsConnection(where: TagWhereInput, orderBy: TagOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TagConnection!
+  moviesConnection(where: MovieWhereInput, orderBy: MovieOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MovieConnection!
   """
   Fetches an object given its ID
   """
@@ -497,9 +929,741 @@ type Query {
   id: ID!): Node
 }
 
+"""
+A connection to a list of items.
+"""
+type RatingConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [RatingEdge]!
+  aggregate: AggregateRating!
+}
+
+input RatingCreateInput {
+  rating: String!
+  description: String!
+  movies: MovieCreateManyWithoutRatingInput
+}
+
+input RatingCreateOneWithoutMoviesInput {
+  create: RatingCreateWithoutMoviesInput
+  connect: RatingWhereUniqueInput
+}
+
+input RatingCreateWithoutMoviesInput {
+  rating: String!
+  description: String!
+}
+
+"""
+An edge in a connection.
+"""
+type RatingEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Rating!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum RatingOrderByInput {
+  id_ASC
+  id_DESC
+  rating_ASC
+  rating_DESC
+  description_ASC
+  description_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type RatingPreviousValues {
+  id: ID!
+  rating: String!
+  description: String!
+}
+
+type RatingSubscriptionPayload {
+  mutation: MutationType!
+  node: Rating
+  updatedFields: [String!]
+  previousValues: RatingPreviousValues
+}
+
+input RatingSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [RatingSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [RatingSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: RatingWhereInput
+}
+
+input RatingUpdateInput {
+  rating: String
+  description: String
+  movies: MovieUpdateManyWithoutRatingInput
+}
+
+input RatingUpdateOneWithoutMoviesInput {
+  create: RatingCreateWithoutMoviesInput
+  connect: RatingWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: RatingUpdateWithoutMoviesDataInput
+  upsert: RatingUpsertWithoutMoviesInput
+}
+
+input RatingUpdateWithoutMoviesDataInput {
+  rating: String
+  description: String
+}
+
+input RatingUpsertWithoutMoviesInput {
+  update: RatingUpdateWithoutMoviesDataInput!
+  create: RatingCreateWithoutMoviesInput!
+}
+
+input RatingWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [RatingWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [RatingWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  rating: String
+  """
+  All values that are not equal to given value.
+  """
+  rating_not: String
+  """
+  All values that are contained in given list.
+  """
+  rating_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  rating_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  rating_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  rating_lte: String
+  """
+  All values greater than the given value.
+  """
+  rating_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  rating_gte: String
+  """
+  All values containing the given string.
+  """
+  rating_contains: String
+  """
+  All values not containing the given string.
+  """
+  rating_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  rating_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  rating_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  rating_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  rating_not_ends_with: String
+  description: String
+  """
+  All values that are not equal to given value.
+  """
+  description_not: String
+  """
+  All values that are contained in given list.
+  """
+  description_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  description_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  description_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  description_lte: String
+  """
+  All values greater than the given value.
+  """
+  description_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  description_gte: String
+  """
+  All values containing the given string.
+  """
+  description_contains: String
+  """
+  All values not containing the given string.
+  """
+  description_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  description_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  description_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  description_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  description_not_ends_with: String
+  movies_every: MovieWhereInput
+  movies_some: MovieWhereInput
+  movies_none: MovieWhereInput
+}
+
+input RatingWhereUniqueInput {
+  id: ID
+}
+
 type Subscription {
-  post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  rating(where: RatingSubscriptionWhereInput): RatingSubscriptionPayload
+  genre(where: GenreSubscriptionWhereInput): GenreSubscriptionPayload
+  tag(where: TagSubscriptionWhereInput): TagSubscriptionPayload
+  movie(where: MovieSubscriptionWhereInput): MovieSubscriptionPayload
+}
+
+"""
+A connection to a list of items.
+"""
+type TagConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [TagEdge]!
+  aggregate: AggregateTag!
+}
+
+input TagCreateInput {
+  category: String!
+  tag: String!
+  name: String!
+  description: String!
+  movies: MovieCreateManyWithoutTagsInput
+}
+
+input TagCreateManyWithoutMoviesInput {
+  create: [TagCreateWithoutMoviesInput!]
+  connect: [TagWhereUniqueInput!]
+}
+
+input TagCreateWithoutMoviesInput {
+  category: String!
+  tag: String!
+  name: String!
+  description: String!
+}
+
+"""
+An edge in a connection.
+"""
+type TagEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Tag!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum TagOrderByInput {
+  id_ASC
+  id_DESC
+  category_ASC
+  category_DESC
+  tag_ASC
+  tag_DESC
+  name_ASC
+  name_DESC
+  description_ASC
+  description_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type TagPreviousValues {
+  id: ID!
+  category: String!
+  tag: String!
+  name: String!
+  description: String!
+}
+
+type TagSubscriptionPayload {
+  mutation: MutationType!
+  node: Tag
+  updatedFields: [String!]
+  previousValues: TagPreviousValues
+}
+
+input TagSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [TagSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [TagSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: TagWhereInput
+}
+
+input TagUpdateInput {
+  category: String
+  tag: String
+  name: String
+  description: String
+  movies: MovieUpdateManyWithoutTagsInput
+}
+
+input TagUpdateManyWithoutMoviesInput {
+  create: [TagCreateWithoutMoviesInput!]
+  connect: [TagWhereUniqueInput!]
+  disconnect: [TagWhereUniqueInput!]
+  delete: [TagWhereUniqueInput!]
+  update: [TagUpdateWithWhereUniqueWithoutMoviesInput!]
+  upsert: [TagUpsertWithWhereUniqueWithoutMoviesInput!]
+}
+
+input TagUpdateWithoutMoviesDataInput {
+  category: String
+  tag: String
+  name: String
+  description: String
+}
+
+input TagUpdateWithWhereUniqueWithoutMoviesInput {
+  where: TagWhereUniqueInput!
+  data: TagUpdateWithoutMoviesDataInput!
+}
+
+input TagUpsertWithWhereUniqueWithoutMoviesInput {
+  where: TagWhereUniqueInput!
+  update: TagUpdateWithoutMoviesDataInput!
+  create: TagCreateWithoutMoviesInput!
+}
+
+input TagWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [TagWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [TagWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  category: String
+  """
+  All values that are not equal to given value.
+  """
+  category_not: String
+  """
+  All values that are contained in given list.
+  """
+  category_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  category_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  category_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  category_lte: String
+  """
+  All values greater than the given value.
+  """
+  category_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  category_gte: String
+  """
+  All values containing the given string.
+  """
+  category_contains: String
+  """
+  All values not containing the given string.
+  """
+  category_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  category_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  category_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  category_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  category_not_ends_with: String
+  tag: String
+  """
+  All values that are not equal to given value.
+  """
+  tag_not: String
+  """
+  All values that are contained in given list.
+  """
+  tag_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  tag_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  tag_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  tag_lte: String
+  """
+  All values greater than the given value.
+  """
+  tag_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  tag_gte: String
+  """
+  All values containing the given string.
+  """
+  tag_contains: String
+  """
+  All values not containing the given string.
+  """
+  tag_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  tag_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  tag_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  tag_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  tag_not_ends_with: String
+  name: String
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  description: String
+  """
+  All values that are not equal to given value.
+  """
+  description_not: String
+  """
+  All values that are contained in given list.
+  """
+  description_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  description_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  description_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  description_lte: String
+  """
+  All values greater than the given value.
+  """
+  description_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  description_gte: String
+  """
+  All values containing the given string.
+  """
+  description_contains: String
+  """
+  All values not containing the given string.
+  """
+  description_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  description_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  description_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  description_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  description_not_ends_with: String
+  movies_every: MovieWhereInput
+  movies_some: MovieWhereInput
+  movies_none: MovieWhereInput
+}
+
+input TagWhereUniqueInput {
+  id: ID
+  tag: String
 }
 
 """
@@ -521,18 +1685,22 @@ input UserCreateInput {
   email: String!
   password: String!
   name: String!
-  posts: PostCreateManyWithoutAuthorInput
+  type: Int!
+  status: Int!
+  movies: MovieCreateManyWithoutCreatedByInput
 }
 
-input UserCreateOneWithoutPostsInput {
-  create: UserCreateWithoutPostsInput
+input UserCreateOneWithoutMoviesInput {
+  create: UserCreateWithoutMoviesInput
   connect: UserWhereUniqueInput
 }
 
-input UserCreateWithoutPostsInput {
+input UserCreateWithoutMoviesInput {
   email: String!
   password: String!
   name: String!
+  type: Int!
+  status: Int!
 }
 
 """
@@ -558,6 +1726,10 @@ enum UserOrderByInput {
   password_DESC
   name_ASC
   name_DESC
+  type_ASC
+  type_DESC
+  status_ASC
+  status_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -569,6 +1741,8 @@ type UserPreviousValues {
   email: String!
   password: String!
   name: String!
+  type: Int!
+  status: Int!
 }
 
 type UserSubscriptionPayload {
@@ -610,26 +1784,31 @@ input UserUpdateInput {
   email: String
   password: String
   name: String
-  posts: PostUpdateManyWithoutAuthorInput
+  type: Int
+  status: Int
+  movies: MovieUpdateManyWithoutCreatedByInput
 }
 
-input UserUpdateOneWithoutPostsInput {
-  create: UserCreateWithoutPostsInput
+input UserUpdateOneWithoutMoviesInput {
+  create: UserCreateWithoutMoviesInput
   connect: UserWhereUniqueInput
+  disconnect: Boolean
   delete: Boolean
-  update: UserUpdateWithoutPostsDataInput
-  upsert: UserUpsertWithoutPostsInput
+  update: UserUpdateWithoutMoviesDataInput
+  upsert: UserUpsertWithoutMoviesInput
 }
 
-input UserUpdateWithoutPostsDataInput {
+input UserUpdateWithoutMoviesDataInput {
   email: String
   password: String
   name: String
+  type: Int
+  status: Int
 }
 
-input UserUpsertWithoutPostsInput {
-  update: UserUpdateWithoutPostsDataInput!
-  create: UserCreateWithoutPostsInput!
+input UserUpsertWithoutMoviesInput {
+  update: UserUpdateWithoutMoviesDataInput!
+  create: UserCreateWithoutMoviesInput!
 }
 
 input UserWhereInput {
@@ -853,9 +2032,67 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   name_not_ends_with: String
-  posts_every: PostWhereInput
-  posts_some: PostWhereInput
-  posts_none: PostWhereInput
+  type: Int
+  """
+  All values that are not equal to given value.
+  """
+  type_not: Int
+  """
+  All values that are contained in given list.
+  """
+  type_in: [Int!]
+  """
+  All values that are not contained in given list.
+  """
+  type_not_in: [Int!]
+  """
+  All values less than the given value.
+  """
+  type_lt: Int
+  """
+  All values less than or equal the given value.
+  """
+  type_lte: Int
+  """
+  All values greater than the given value.
+  """
+  type_gt: Int
+  """
+  All values greater than or equal the given value.
+  """
+  type_gte: Int
+  status: Int
+  """
+  All values that are not equal to given value.
+  """
+  status_not: Int
+  """
+  All values that are contained in given list.
+  """
+  status_in: [Int!]
+  """
+  All values that are not contained in given list.
+  """
+  status_not_in: [Int!]
+  """
+  All values less than the given value.
+  """
+  status_lt: Int
+  """
+  All values less than or equal the given value.
+  """
+  status_lte: Int
+  """
+  All values greater than the given value.
+  """
+  status_gt: Int
+  """
+  All values greater than or equal the given value.
+  """
+  status_gte: Int
+  movies_every: MovieWhereInput
+  movies_some: MovieWhereInput
+  movies_none: MovieWhereInput
 }
 
 input UserWhereUniqueInput {
