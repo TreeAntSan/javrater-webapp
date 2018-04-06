@@ -13,6 +13,6 @@ datamodel: datamodel.graphql
 
 # seed your service with initial data based on seed.graphql
 seed:
-  import: seed.graphql
+  import: movieseed.graphql
 
 cluster: ${env:PRISMA_CLUSTER}

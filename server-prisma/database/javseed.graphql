@@ -1,0 +1,989 @@
+# This is the NSFW version of the seed. Change the seed with the seed: import: setting in prisma.yml.
+# To apply seed use `prisma delete` to nuke the DB and `prisma deploy` to apply the
+# datamodel.graphql and this seed file.
+# Otherwise just run the whole mutation in the playground.
+
+mutation {
+
+#################################### Ratings
+  m_001: createRating(data: {
+    rating: "_"
+    description: "No rating"
+  }) {
+    id
+  }
+  m_002: createRating(data: {
+    rating: "1"
+    description: "Bad"
+  }) {
+    id
+  }
+  m_003: createRating(data: {
+    rating: "2"
+    description: "Below Average"
+  }) {
+    id
+  }
+  m_004: createRating(data: {
+    rating: "3"
+    description: "Average"
+  }) {
+    id
+  }
+  m_005: createRating(data: {
+    rating: "4"
+    description: "Good"
+  }) {
+    id
+  }
+  m_006: createRating(data: {
+    rating: "5"
+    description: "Great"
+  }) {
+    id
+  }
+  m_007: createRating(data: {
+    rating: "6"
+    description: "Awesome"
+  }) {
+    id
+  }
+
+#################################### Genres
+  m_008: createGenre(data: {
+    code: "STD"
+    description: "Standard"
+  }) {
+    id
+  }
+  m_009: createGenre(data: {
+    code: "INC"
+    description: "Incest"
+  }) {
+    id
+  }
+  m_010: createGenre(data: {
+    code: "FET"
+    description: "Fetish"
+  }) {
+    id
+  }
+  m_011: createGenre(data: {
+    code: "GRO"
+    description: "Gross"
+  }) {
+    id
+  }
+  m_012: createGenre(data: {
+    code: "INT"
+    description: "Interesting"
+  }) {
+    id
+  }
+  m_013: createGenre(data: {
+    code: "VOY"
+    description: "Voyeur"
+  }) {
+    id
+  }
+  m_014: createGenre(data: {
+    code: "IDL"
+    description: "Idol"
+  }) {
+    id
+  }
+  m_015: createGenre(data: {
+    code: "OTH"
+    description: "Other"
+  }) {
+    id
+  }
+  m_016: createGenre(data: {
+    code: "EWF"
+    description: "Embarrassing, Weird, or Funny"
+  }) {
+    id
+  }
+
+#################################### Tags
+  m_017: createTag(data: {
+    category: "Special"
+    tag: "ZZ"
+    name: "Incomplete"
+    description: "Not familiar enough with this video to make decisions on."
+  }) {
+    id
+  }
+  m_018: createTag(data: {
+    category: "Special"
+    tag: "FV"
+    name: "Favorite"
+    description: "One of my favorites."
+  }) {
+    id
+  }
+  m_019: createTag(data: {
+    category: "Special"
+    tag: "HL"
+    name: "Hi-light"
+    description: "Meritable within its own genre."
+  }) {
+    id
+  }
+  m_020: createTag(data: {
+    category: "Special"
+    tag: "SE"
+    name: "Something Else"
+    description: "\"This is something else, man\" would be a way to describe this video."
+  }) {
+    id
+  }
+  m_021: createTag(data: {
+    category: "Special"
+    tag: "AC"
+    name: "Special Actress"
+    description: "Contains the work of a noted or favorite actress."
+  }) {
+    id
+  }
+  m_022: createTag(data: {
+    category: "Generic"
+    tag: "VY"
+    name: "Very Young"
+    description: "If this wasn't commercial porn..."
+  }) {
+    id
+  }
+  m_023: createTag(data: {
+    category: "Generic"
+    tag: "YN"
+    name: "Young Girls"
+    description: "Teenagers, mostly."
+  }) {
+    id
+  }
+  m_024: createTag(data: {
+    category: "Generic"
+    tag: "MA"
+    name: "Mature Women"
+    description: "Mothers and up."
+  }) {
+    id
+  }
+  m_025: createTag(data: {
+    category: "Generic"
+    tag: "VD"
+    name: "Very Old"
+    description: "60+ year old grandmas."
+  }) {
+    id
+  }
+  m_026: createTag(data: {
+    category: "Generic"
+    tag: "CP"
+    name: "Creampie"
+    description: "At least one creampie."
+  }) {
+    id
+  }
+  m_027: createTag(data: {
+    category: "Generic"
+    tag: "CD"
+    name: "CP Dedicated"
+    description: "Creampies are the end of a majority of scenes."
+  }) {
+    id
+  }
+  m_028: createTag(data: {
+    category: "Generic"
+    tag: "LE"
+    name: "Lesbian"
+    description: "Girls doing girls."
+  }) {
+    id
+  }
+  m_029: createTag(data: {
+    category: "Generic"
+    tag: "SG"
+    name: "School Girl"
+    description: "There are girls wearing sailor uniforms..."
+  }) {
+    id
+  }
+  m_030: createTag(data: {
+    category: "Generic"
+    tag: "ST"
+    name: "Story"
+    description: "There is a narrative of some kind, they are actors, not porn stars fucking."
+  }) {
+    id
+  }
+  m_031: createTag(data: {
+    category: "Generic"
+    tag: "RL"
+    name: "Realism"
+    description: "Director is trying for some realism here in a <special> way."
+  }) {
+    id
+  }
+  m_032: createTag(data: {
+    category: "Generic"
+    tag: "NP"
+    name: "Normal People"
+    description: "Not full of make-up covered models giving fake orgasms. Amateurs and authenticity are key."
+  }) {
+    id
+  }
+  m_033: createTag(data: {
+    category: "Generic"
+    tag: "LB"
+    name: "Lubed"
+    description: "Girl is lubed and shiny for at least part of the video. Also counts for sweaty."
+  }) {
+    id
+  }
+  m_034: createTag(data: {
+    category: "Generic"
+    tag: "LO"
+    name: "Lolita"
+    description: "Girl is acting/looking like a child."
+  }) {
+    id
+  }
+  m_035: createTag(data: {
+    category: "Generic"
+    tag: "HF"
+    name: "Hot Fucking"
+    description: "The actors are fucking hard. A special classification that is just \"oh shit this is hot\"."
+  }) {
+    id
+  }
+  m_036: createTag(data: {
+    category: "Interesting"
+    tag: "FN"
+    name: "Funny"
+    description: "Make you laugh with some of the stuff they do."
+  }) {
+    id
+  }
+  m_037: createTag(data: {
+    category: "Interesting"
+    tag: "WD"
+    name: "Weird"
+    description: "Sometimes it's not even about getting a boner..."
+  }) {
+    id
+  }
+  m_038: createTag(data: {
+    category: "Interesting"
+    tag: "BU"
+    name: "Bully"
+    description: "Usually school bullying."
+  }) {
+    id
+  }
+  m_039: createTag(data: {
+    category: "Interesting"
+    tag: "BM"
+    name: "Blackmail"
+    description: "Girl is forced over guilt of something; having sex to get a job or good grades."
+  }) {
+    id
+  }
+  m_040: createTag(data: {
+    category: "Interesting"
+    tag: "EM"
+    name: "Embarrassing"
+    description: "Girl is forced and made shameful or embarrassed over her actions."
+  }) {
+    id
+  }
+  m_041: createTag(data: {
+    category: "Interesting"
+    tag: "TS"
+    name: "Teasing"
+    description: "Girl is playfully forced to do embarrassing things, mild."
+  }) {
+    id
+  }
+  m_042: createTag(data: {
+    category: "Interesting"
+    tag: "SY"
+    name: "Shy"
+    description: "Shy, reluctant about everything - beyond embarrassing tag."
+  }) {
+    id
+  }
+  m_043: createTag(data: {
+    category: "Interesting"
+    tag: "FA"
+    name: "Fantasy"
+    description: "Time manipulation, ghosts, body switching, mind control, etc."
+  }) {
+    id
+  }
+  m_044: createTag(data: {
+    category: "Interesting"
+    tag: "GA"
+    name: "Game"
+    description: "Usually funny, takes crazy Japanese gameshow and puts porn in the equation."
+  }) {
+    id
+  }
+  m_045: createTag(data: {
+    category: "Interesting"
+    tag: "WR"
+    name: "Wrestling"
+    description: "Men v women, women v women, whatever it is, there is a wrestling match!"
+  }) {
+    id
+  }
+  m_046: createTag(data: {
+    category: "Interesting"
+    tag: "DR"
+    name: "Doctor"
+    description: "Here the check-up gets a little sexy."
+  }) {
+    id
+  }
+  m_047: createTag(data: {
+    category: "Interesting"
+    tag: "DG"
+    name: "Drugs/Drinks"
+    description: "Girls getting drugged or drunk. Bad things happen."
+  }) {
+    id
+  }
+  m_048: createTag(data: {
+    category: "Interesting"
+    tag: "SC"
+    name: "School"
+    description: "Takes place in or around a school, teachers are obviously often involved."
+  }) {
+    id
+  }
+  m_049: createTag(data: {
+    category: "Interesting"
+    tag: "PB"
+    name: "Public"
+    description: "In a weird location, out in public, exhibitionists..."
+  }) {
+    id
+  }
+  m_050: createTag(data: {
+    category: "Interesting"
+    tag: "SR"
+    name: "Sharking"
+    description: "Wonderful sharking videos."
+  }) {
+    id
+  }
+  m_051: createTag(data: {
+    category: "Interesting"
+    tag: "RP"
+    name: "Role-playing"
+    description: "Generic costumes like nun, police, or maid; acting while acting."
+  }) {
+    id
+  }
+  m_052: createTag(data: {
+    category: "Interesting"
+    tag: "CO"
+    name: "Cosplay"
+    description: "Costumes are involved that imply \"named\" characters."
+  }) {
+    id
+  }
+  m_053: createTag(data: {
+    category: "Interesting"
+    tag: "OG"
+    name: "Orgy"
+    description: "Consensual group sex, not gang rapes."
+  }) {
+    id
+  }
+  m_054: createTag(data: {
+    category: "Interesting"
+    tag: "SL"
+    name: "Sleeping"
+    description: "Whether just sleeping or drugged, girl is asleep when sexy happens."
+  }) {
+    id
+  }
+  m_055: createTag(data: {
+    category: "Fetish"
+    tag: "RA"
+    name: "Rape"
+    description: "Forced, usually by strangers."
+  }) {
+    id
+  }
+  m_056: createTag(data: {
+    category: "Fetish"
+    tag: "CR"
+    name: "Crying"
+    description: "Girl really isn't having much fun; ugly crying- tears, snot, etc required."
+  }) {
+    id
+  }
+  m_057: createTag(data: {
+    category: "Fetish"
+    tag: "LD"
+    name: "Loud"
+    description: "Loud moaning, screaming, sweaty, intense orgasms, whatever."
+  }) {
+    id
+  }
+  m_058: createTag(data: {
+    category: "Fetish"
+    tag: "RC"
+    name: "Rough Core"
+    description: "Uncomfortable and rough sex. Can involve stuff like wrestling, physical exertion."
+  }) {
+    id
+  }
+  m_059: createTag(data: {
+    category: "Fetish"
+    tag: "TO"
+    name: "Torture (Mild)"
+    description: "Simple vibrator torture. Sensory overload, maybe a tiny bit of pain, but nothing serious."
+  }) {
+    id
+  }
+  m_060: createTag(data: {
+    category: "Fetish"
+    tag: "TR"
+    name: "Torture (Intense)"
+    description: "A notch about rough core, usually the creepy Night24 stuff. Pain."
+  }) {
+    id
+  }
+  m_061: createTag(data: {
+    category: "Fetish"
+    tag: "GR"
+    name: "Gang Rape"
+    description: "Forced, by multiple."
+  }) {
+    id
+  }
+  m_062: createTag(data: {
+    category: "Fetish"
+    tag: "FC"
+    name: "Forced Creampie"
+    description: "Girl is upset -in particular- about getting creampied."
+  }) {
+    id
+  }
+  m_063: createTag(data: {
+    category: "Fetish"
+    tag: "HE"
+    name: "Heinous"
+    description: "Some really bad shit happens. Reserved for the extra fucked up stuff."
+  }) {
+    id
+  }
+  m_064: createTag(data: {
+    category: "Fetish"
+    tag: "IS"
+    name: "Insemination"
+    description: "Somehow separates itself from usual creampie. Point is that they're making a baby."
+  }) {
+    id
+  }
+  m_065: createTag(data: {
+    category: "Fetish"
+    tag: "AB"
+    name: "Abused"
+    description: "Girl is being bullied, teased - different from being rough or tortured."
+  }) {
+    id
+  }
+  m_066: createTag(data: {
+    category: "Fetish"
+    tag: "PN"
+    name: "Punished"
+    description: "Punishment and other general physical discipline or beating."
+  }) {
+    id
+  }
+  m_067: createTag(data: {
+    category: "Fetish"
+    tag: "CH"
+    name: "Chikan"
+    description: "Girls getting molested in a crowded area."
+  }) {
+    id
+  }
+  m_068: createTag(data: {
+    category: "Fetish"
+    tag: "BD"
+    name: "Bondage"
+    description: "Ropes, restraints, etc."
+  }) {
+    id
+  }
+  m_069: createTag(data: {
+    category: "Fetish"
+    tag: "FE"
+    name: "Fear"
+    description: "Scared girls feeling their well being is in danger. Fearful."
+  }) {
+    id
+  }
+  m_070: createTag(data: {
+    category: "Fetish"
+    tag: "OR"
+    name: "Orgasm"
+    description: "Girls made to cum specifically."
+  }) {
+    id
+  }
+  m_071: createTag(data: {
+    category: "Gross"
+    tag: "SP"
+    name: "Sperm"
+    description: "Absurd amounts of jizz everywhere."
+  }) {
+    id
+  }
+  m_072: createTag(data: {
+    category: "Gross"
+    tag: "PE"
+    name: "Pee"
+    description: "Girls peeing freely, girls inconstinent, doesn't matter."
+  }) {
+    id
+  }
+  m_073: createTag(data: {
+    category: "Gross"
+    tag: "PO"
+    name: "Poop"
+    description: "Scat stuff... uhhgg."
+  }) {
+    id
+  }
+  m_074: createTag(data: {
+    category: "Gross"
+    tag: "VO"
+    name: "Vomit"
+    description: "Dry heaving, retching, vomiting, all that gross stuff."
+  }) {
+    id
+  }
+  m_075: createTag(data: {
+    category: "Other"
+    tag: "FO"
+    name: "Foreign"
+    description: "White girls, black guys, traveling, outside of Asia."
+  }) {
+    id
+  }
+  m_076: createTag(data: {
+    category: "Other"
+    tag: "QV"
+    name: "Quality Video"
+    description: "1080p or 60fps or both. Eye candy awaits."
+  }) {
+    id
+  }
+  m_077: createTag(data: {
+    category: "Other"
+    tag: "BQ"
+    name: "Bad Quality"
+    description: "Low pixels, bad frame rate, low bitrate."
+  }) {
+    id
+  }
+  m_078: createTag(data: {
+    category: "Other"
+    tag: "UC"
+    name: "Uncensored"
+    description: "No mosaics here."
+  }) {
+    id
+  }
+  m_079: createTag(data: {
+    category: "Other"
+    tag: "CL"
+    name: "Collection"
+    description: "Folder than contains many single-shots that are all pretty much identical."
+  }) {
+    id
+  }
+  m_080: createTag(data: {
+    category: "Incest"
+    tag: "MO"
+    name: "Mother-Son"
+    description: "Also includes grandmothers-grandsons."
+  }) {
+    id
+  }
+  m_081: createTag(data: {
+    category: "Incest"
+    tag: "FD"
+    name: "Father-Daughter"
+    description: "Also includes grandfathers-granddaughters."
+  }) {
+    id
+  }
+  m_082: createTag(data: {
+    category: "Incest"
+    tag: "BS"
+    name: "Brother-Sister"
+    description: "Siblings in general."
+  }) {
+    id
+  }
+  m_083: createTag(data: {
+    category: "Incest"
+    tag: "MD"
+    name: "Mother-Daughter"
+    description: "Also includes any type of lesbian incest."
+  }) {
+    id
+  }
+  m_084: createTag(data: {
+    category: "Incest"
+    tag: "FI"
+    name: "Faux Incest"
+    description: "Step-siblings, step-parents, etc."
+  }) {
+    id
+  }
+  m_085: createTag(data: {
+    category: "Incest"
+    tag: "EF"
+    name: "Extended Family"
+    description: "Aunts, uncles, cousins, etc."
+  }) {
+    id
+  }
+  m_086: createTag(data: {
+    category: "Incest"
+    tag: "JF"
+    name: "Jumble Family"
+    description: "Multiple relations abound."
+  }) {
+    id
+  }
+  m_087: createTag(data: {
+    category: "Incest"
+    tag: "RI"
+    name: "Realistic Incest"
+    description: "Realistic incest that does its best to make you believe they're related."
+  }) {
+    id
+  }
+  m_088: createTag(data: {
+    category: "Incest"
+    tag: "GI"
+    name: "Goofy Incest"
+    description: "Not fooling anybody saying they're related."
+  }) {
+    id
+  }
+  m_089: createTag(data: {
+    category: "Incest"
+    tag: "MU"
+    name: "Mutual"
+    description: "Taboo is there, but they love each other/are so horny together."
+  }) {
+    id
+  }
+  m_090: createTag(data: {
+    category: "Incest"
+    tag: "FR"
+    name: "Forced"
+    description: "Family member forces another."
+  }) {
+    id
+  }
+  m_091: createTag(data: {
+    category: "Incest"
+    tag: "PR"
+    name: "Perversion"
+    description: "Family fucking is totally accepted."
+  }) {
+    id
+  }
+  m_092: createTag(data: {
+    category: "Incest"
+    tag: "BL"
+    name: "Blood Relation"
+    description: "Within reasoned odds that the actual people involved are related, often mother+daughter teams."
+  }) {
+    id
+  }
+  m_093: createTag(data: {
+    category: "Voyeur"
+    tag: "VR"
+    name: "Voyeur-Real"
+    description: "This guy would probably be put in jail for this."
+  }) {
+    id
+  }
+  m_094: createTag(data: {
+    category: "Voyeur"
+    tag: "VP"
+    name: "Voyeur-Pseudo"
+    description: "Plausible angles, but the girls are just too good to be true."
+  }) {
+    id
+  }
+  m_095: createTag(data: {
+    category: "Voyeur"
+    tag: "VF"
+    name: "Voyeur-Fake"
+    description: "They're not fooling anyone / they're not even trying to be real here."
+  }) {
+    id
+  }
+  m_096: createTag(data: {
+    category: "Voyeur"
+    tag: "MB"
+    name: "Masturbation"
+    description: "Spying on a girl who is masturbating is a leading piece."
+  }) {
+    id
+  }
+  m_097: createTag(data: {
+    category: "Voyeur"
+    tag: "WC"
+    name: "Toilet"
+    description: "Spying on a girl who's using the toilet."
+  }) {
+    id
+  }
+  m_098: createTag(data: {
+    category: "Idol"
+    tag: "U14"
+    name: "Under 14"
+    description: "Yeah, very young girls."
+  }) {
+    id
+  }
+  m_099: createTag(data: {
+    category: "Idol"
+    tag: "O14"
+    name: "Over 14"
+    description: "Yeah, slightly less young."
+  }) {
+    id
+  }
+  m_100: createTag(data: {
+    category: "Idol"
+    tag: "AD"
+    name: "Adult"
+    description: "Legal girls just not taking it off."
+  }) {
+    id
+  }
+  m_101: createTag(data: {
+    category: "Girl"
+    tag: "GN"
+    name: "Ganguro"
+    description: "Orange, sparkly girls that make JWoww look normal."
+  }) {
+    id
+  }
+  m_102: createTag(data: {
+    category: "Girl"
+    tag: "TN"
+    name: "Tanned"
+    description: "Girl is significantly tanned or tanned lined."
+  }) {
+    id
+  }
+  m_103: createTag(data: {
+    category: "Girl"
+    tag: "FT"
+    name: "Fit"
+    description: "Trim and slim, but not buff."
+  }) {
+    id
+  }
+  m_104: createTag(data: {
+    category: "Girl"
+    tag: "MS"
+    name: "Muscle"
+    description: "Trim and buff, showing off muscles and veins, always appears with FT."
+  }) {
+    id
+  }
+  m_105: createTag(data: {
+    category: "Girl"
+    tag: "SK"
+    name: "Skinny"
+    description: "Usually overrides fit and muscle, girl is skin and bones."
+  }) {
+    id
+  }
+  m_106: createTag(data: {
+    category: "Girl"
+    tag: "CB"
+    name: "Chubby"
+    description: "Fatty or big-boned girl."
+  }) {
+    id
+  }
+  m_107: createTag(data: {
+    category: "Girl"
+    tag: "DA"
+    name: "Dat Ass-et"
+    description: "Super asses or tits."
+  }) {
+    id
+  }
+  m_108: createTag(data: {
+    category: "Girl"
+    tag: "TI"
+    name: "Tiny"
+    description: "Super short, though not necessarily super young."
+  }) {
+    id
+  }
+  m_109: createTag(data: {
+    category: "Girl"
+    tag: "TL"
+    name: "Tall"
+    description: "Very tall girl."
+  }) {
+    id
+  }
+  m_110: createTag(data: {
+    category: "Girl"
+    tag: "BG"
+    name: "Big Girl"
+    description: "Girl is tall and wide, bulky, often huge tits."
+  }) {
+    id
+  }
+  m_111: createTag(data: {
+    category: "Girl"
+    tag: "SH"
+    name: "Short Hair"
+    description: "Short haired girl."
+  }) {
+    id
+  }
+  m_112: createTag(data: {
+    category: "Girl"
+    tag: "TB"
+    name: "Tomboy"
+    description: "Girl trying to hide her feminine side."
+  }) {
+    id
+  }
+  m_113: createTag(data: {
+    category: "Girl"
+    tag: "CU"
+    name: "Cute"
+    description: "Shockingly cute girl."
+  }) {
+    id
+  }
+  m_114: createTag(data: {
+    category: "Girl"
+    tag: "VI"
+    name: "Virginal"
+    description: "Someone here is a virgin, male or female; or its their first time on camera."
+  }) {
+    id
+  }
+  m_115: createTag(data: {
+    category: "Girl"
+    tag: "AV"
+    name: "Acted Virgin"
+    description: "Obviously this is a porn actress, but her character is a virgin and really sells it."
+  }) {
+    id
+  }
+  m_116: createTag(data: {
+    category: "Girl"
+    tag: "CS"
+    name: "Curious"
+    description: "Dunno, the girl just looks interesting. Eyes, face, demeanor, expression. Catches the eye."
+  }) {
+    id
+  }
+  m_117: createTag(data: {
+    category: "Girl"
+    tag: "GF"
+    name: "Goofy"
+    description: "Sorta like curious, but for weird or ugly looking women."
+  }) {
+    id
+  }
+  m_118: createTag(data: {
+    category: "Girl"
+    tag: "FB"
+    name: "Full-bodied"
+    description: "That look that FAD and FAX videos always have. Woman is full sized and ready for lovin'."
+  }) {
+    id
+  }
+  m_119: createTag(data: {
+    category: "Series"
+    tag: "MUS"
+    name: "Muscle"
+    description: "Part of the muscle series folder. While the tag MS is there, this makes it easy to find."
+  }) {
+    id
+  }
+  m_120: createTag(data: {
+    category: "Series"
+    tag: "BAK"
+    name: "Bakky Series"
+    description: "The Bakky Insane Series. Really heinous and twisted shit."
+  }) {
+    id
+  }
+  m_121: createTag(data: {
+    category: "Series"
+    tag: "N24"
+    name: "Night24"
+    description: "Similar to Bakky. Really twisted shit."
+  }) {
+    id
+  }
+  m_122: createTag(data: {
+    category: "Series"
+    tag: "RRA"
+    name: "Real Rape"
+    description: "Established subseries that involve rape crimes that are very realistic. Often outside. FAD and FAX."
+  }) {
+    id
+  }
+  m_123: createTag(data: {
+    category: "Series"
+    tag: "CND"
+    name: "Chikan Nakadashi"
+    description: "Public rape on trains and buses + creampies."
+  }) {
+    id
+  }
+  m_124: createTag(data: {
+    category: "Series"
+    tag: "GQU"
+    name: "G-Queen"
+    description: "Super soft-core that feature uncensored, totally bald pussy of incredibly innocent and young looking girls."
+  }) {
+    id
+  }
+  m_125: createTag(data: {
+    category: "Series"
+    tag: "RTG"
+    name: "Rocket Games"
+    description: "Large series of incest gameshows that I have over a dozen of."
+  }) {
+    id
+  }
+  m_126: createTag(data: {
+    category: "Series"
+    tag: "SPK"
+    name: "Spikespen"
+    description: "\"Translations\" of key incest themed JAV videos."
+  }) {
+    id
+  }
+}
