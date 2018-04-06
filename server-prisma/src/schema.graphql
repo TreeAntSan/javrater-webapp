@@ -1,22 +1,22 @@
-# import Post from "./generated/prisma.graphql"
+# import Movie, Genre, Rating from "./generated/prisma.graphql"
 
 type Query {
-  feed: [Post!]!
-  drafts: [Post!]!
-  post(id: ID!): Post
+  feed: [Movie!]!
+  movie(id: ID!): Movie
+  genre(id: ID!): Genre
+  rating(id: ID!): Rating
   me: User
 }
 
 type Mutation {
   signup(email: String!, password: String!, name: String!): AuthPayload!
   login(email: String!, password: String!): AuthPayload!
-  createDraft(title: String!, text: String!): Post!
-  publish(id: ID!): Post!
-  deletePost(id: ID!): Post!
+  addMovie(title: String!, prodCode: String!, genre: String!, rating: String!, tags: [String]!): Movie!
+  deleteMovie(id: ID!): Movie!
 }
 
 type Subscription {
-  feedSubscription: PostSubscriptionPayload!
+  feedSubscription: MovieSubscriptionPayload!
 }
 
 type AuthPayload {
@@ -28,5 +28,5 @@ type User {
   id: ID!
   email: String!
   name: String!
-  posts: [Post!]!
+  movies: [Movie!]!
 }
