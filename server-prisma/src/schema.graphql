@@ -1,0 +1,56 @@
+# import Movie, Genre, Rating, Tag, Query.movies from "./generated/prisma.graphql"
+
+type Query {
+  movie(id: ID!): Movie
+  genre(id: ID!): Genre
+  rating(id: ID!): Rating
+  tag(id: ID!): Tag
+  allGenres: [SimpleGenre]!
+  allRatings: [SimpleRating]!
+  allTags: [SimpleTag]!
+  me: User
+}
+
+type Mutation {
+  signup(email: String!, password: String!, name: String!): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  addMovie(title: String!, prodCode: String!, genre: String!, rating: String!, tags: [String]!): Movie!
+  deleteMovie(id: ID!): Movie!
+  updateMovie(id: ID!, title: String, prodCode: String, rating: String, genre: String, tags: [String!], replaceTags: Boolean, createdBy: String): Movie!
+}
+
+type Subscription {
+  feedSubscription: MovieSubscriptionPayload!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  movies: [Movie!]!
+}
+
+type SimpleGenre {
+  id: ID!
+  code: String!
+  description: String!
+}
+
+type SimpleRating {
+  id: ID!
+  rating: String!
+  description: String!
+}
+
+type SimpleTag {
+  id: ID!
+  category: String!
+  tag: String!
+  name: String!
+  description: String!
+}

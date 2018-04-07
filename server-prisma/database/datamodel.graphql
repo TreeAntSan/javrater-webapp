@@ -1,0 +1,42 @@
+type User {
+  id: ID! @unique
+  email: String! @unique
+  password: String!
+  name: String!
+  type: Int!
+  status: Int!
+  movies: [Movie!]! @relation(name: "UserToMovie")
+}
+
+type Rating {
+  id: ID! @unique
+  rating: String!
+  description: String!
+  movies: [Movie!]! @relation(name: "RatingToMovie")
+}
+
+type Genre {
+  id: ID! @unique
+  code: String! @unique
+  description: String!
+  movies: [Movie!]! @relation(name: "GenreToMovie")
+}
+
+type Tag {
+  id: ID! @unique
+  category: String!
+  tag: String! @unique
+  name: String!
+  description: String!
+  movies: [Movie!]! @relation(name: "TagToMovie")
+}
+
+type Movie {
+  id: ID! @unique
+  title: String!
+  prodCode: String!
+  rating: Rating @relation(name: "RatingToMovie")
+  genre: Genre @relation(name: "GenreToMovie")
+  tags: [Tag!]! @relation(name: "TagToMovie")
+  createdBy: User @relation(name: "UserToMovie")
+}

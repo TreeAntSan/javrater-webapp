@@ -1,0 +1,996 @@
+# This is the SFW version of the seed. Change the seed with the seed: import: setting in prisma.yml.
+# To apply seed use `prisma delete` to nuke the DB and `prisma deploy` to apply the
+# datamodel.graphql and this seed file.
+# Otherwise just run the whole mutation in the playground.
+
+mutation {
+
+#################################### Ratings
+  m_001: createRating(data: {
+    rating: "_"
+    description: "No rating"
+  }) {
+    id
+  }
+  m_002: createRating(data: {
+    rating: "1"
+    description: "Bad"
+  }) {
+    id
+  }
+  m_003: createRating(data: {
+    rating: "2"
+    description: "Below Average"
+  }) {
+    id
+  }
+  m_004: createRating(data: {
+    rating: "3"
+    description: "Average"
+  }) {
+    id
+  }
+  m_005: createRating(data: {
+    rating: "4"
+    description: "Good"
+  }) {
+    id
+  }
+  m_006: createRating(data: {
+    rating: "5"
+    description: "Great"
+  }) {
+    id
+  }
+  m_007: createRating(data: {
+    rating: "6"
+    description: "Awesome"
+  }) {
+    id
+  }
+
+#################################### Genres
+  m_008: createGenre(data: {
+    code: "ACT"
+    description: "Action"
+  }) {
+    id
+  }
+  m_009: createGenre(data: {
+    code: "ADV"
+    description: "Adventure"
+  }) {
+    id
+  }
+  m_010: createGenre(data: {
+    code: "DRA"
+    description: "Drama"
+  }) {
+    id
+  }
+  m_011: createGenre(data: {
+    code: "CLA"
+    description: "Classic"
+  }) {
+    id
+  }
+  m_012: createGenre(data: {
+    code: "SAM"
+    description: "Samurai"
+  }) {
+    id
+  }
+  m_013: createGenre(data: {
+    code: "WES"
+    description: "Western"
+  }) {
+    id
+  }
+  m_014: createGenre(data: {
+    code: "ANM"
+    description: "Animated"
+  }) {
+    id
+  }
+  m_015: createGenre(data: {
+    code: "ANI"
+    description: "Anime"
+  }) {
+    id
+  }
+  m_016: createGenre(data: {
+    code: "OTH"
+    description: "Other"
+  }) {
+    id
+  }
+
+#################################### Tags
+  m_017: createTag(data: {
+    category: "Reward"
+    tag: "BF"
+    name: "Best Film"
+    description: "Description"
+  }) {
+    id
+  }
+  m_018: createTag(data: {
+    category: "Reward"
+    tag: "BN"
+    name: "Best Film Nominee"
+    description: "Description"
+  }) {
+    id
+  }
+  m_019: createTag(data: {
+    category: "Reward"
+    tag: "BA"
+    name: "Best Actor"
+    description: "Description"
+  }) {
+    id
+  }
+  m_020: createTag(data: {
+    category: "Reward"
+    tag: "BC"
+    name: "Best Actress"
+    description: "Description"
+  }) {
+    id
+  }
+  m_021: createTag(data: {
+    category: "Reward"
+    tag: "OW"
+    name: "Other Winner"
+    description: "Description"
+  }) {
+    id
+  }
+  m_022: createTag(data: {
+    category: "Story"
+    tag: "FF"
+    name: "Far Future"
+    description: "Description"
+  }) {
+    id
+  }
+  m_023: createTag(data: {
+    category: "Story"
+    tag: "CF"
+    name: "Near Future"
+    description: "Description"
+  }) {
+    id
+  }
+  m_024: createTag(data: {
+    category: "Story"
+    tag: "MD"
+    name: "Modern Day"
+    description: "Description"
+  }) {
+    id
+  }
+  m_025: createTag(data: {
+    category: "Story"
+    tag: "PP"
+    name: "Period Piece"
+    description: "Description"
+  }) {
+    id
+  }
+  m_026: createTag(data: {
+    category: "Story"
+    tag: "FA"
+    name: "Fantasy"
+    description: "Description"
+  }) {
+    id
+  }
+  m_027: createTag(data: {
+    category: "Story"
+    tag: "MA"
+    name: "Magic"
+    description: "Description"
+  }) {
+    id
+  }
+  m_028: createTag(data: {
+    category: "Story"
+    tag: "SF"
+    name: "Sci-Fi"
+    description: "Description"
+  }) {
+    id
+  }
+  m_029: createTag(data: {
+    category: "Story"
+    tag: "CO"
+    name: "Comic"
+    description: "Description"
+  }) {
+    id
+  }
+  m_030: createTag(data: {
+    category: "Story"
+    tag: "FT"
+    name: "Fairytale"
+    description: "Description"
+  }) {
+    id
+  }
+  m_031: createTag(data: {
+    category: "Story"
+    tag: "NF"
+    name: "Non Fiction"
+    description: "Description"
+  }) {
+    id
+  }
+  m_032: createTag(data: {
+    category: "Story"
+    tag: "BI"
+    name: "Biography"
+    description: "Description"
+  }) {
+    id
+  }
+  m_033: createTag(data: {
+    category: "Story"
+    tag: "LO"
+    name: "Love"
+    description: "Description"
+  }) {
+    id
+  }
+  m_034: createTag(data: {
+    category: "Story"
+    tag: "RE"
+    name: "Revenge"
+    description: "Description"
+  }) {
+    id
+  }
+  m_035: createTag(data: {
+    category: "Story"
+    tag: "TT"
+    name: "Time Travel"
+    description: "Description"
+  }) {
+    id
+  }
+  m_036: createTag(data: {
+    category: "Character"
+    tag: "PM"
+    name: "Male Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_037: createTag(data: {
+    category: "Character"
+    tag: "PF"
+    name: "Female Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_038: createTag(data: {
+    category: "Character"
+    tag: "PC"
+    name: "Child Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_039: createTag(data: {
+    category: "Character"
+    tag: "PT"
+    name: "Teen Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_040: createTag(data: {
+    category: "Character"
+    tag: "PE"
+    name: "Elder Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_041: createTag(data: {
+    category: "Character"
+    tag: "PN"
+    name: "No Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_042: createTag(data: {
+    category: "Character"
+    tag: "PS"
+    name: "Multiple Protags"
+    description: "Description"
+  }) {
+    id
+  }
+  m_043: createTag(data: {
+    category: "Character"
+    tag: "PA"
+    name: "Anti-Hero Protag"
+    description: "Description"
+  }) {
+    id
+  }
+  m_044: createTag(data: {
+    category: "Character"
+    tag: "PR"
+    name: "Protag Sacrifice"
+    description: "Description"
+  }) {
+    id
+  }
+  m_045: createTag(data: {
+    category: "Character"
+    tag: "PD"
+    name: "Protag Death"
+    description: "Description"
+  }) {
+    id
+  }
+  m_046: createTag(data: {
+    category: "Character"
+    tag: "PL"
+    name: "Protag Loss"
+    description: "Description"
+  }) {
+    id
+  }
+  m_047: createTag(data: {
+    category: "Character"
+    tag: "RL"
+    name: "Real Life"
+    description: "Description"
+  }) {
+    id
+  }
+  m_048: createTag(data: {
+    category: "Character"
+    tag: "SE"
+    name: "As Self"
+    description: "Description"
+  }) {
+    id
+  }
+  m_049: createTag(data: {
+    category: "Character"
+    tag: "FM"
+    name: "No Family"
+    description: "Description"
+  }) {
+    id
+  }
+  m_050: createTag(data: {
+    category: "Character"
+    tag: "MS"
+    name: "Marysue/Gary Stu"
+    description: "Description"
+  }) {
+    id
+  }
+  m_051: createTag(data: {
+    category: "Character"
+    tag: "HT"
+    name: "Heel Turn"
+    description: "Description"
+  }) {
+    id
+  }
+  m_052: createTag(data: {
+    category: "Character"
+    tag: "RH"
+    name: "Reverse Heel Turn"
+    description: "Description"
+  }) {
+    id
+  }
+  m_053: createTag(data: {
+    category: "Character"
+    tag: "RD"
+    name: "Redemption"
+    description: "Description"
+  }) {
+    id
+  }
+  m_054: createTag(data: {
+    category: "Character"
+    tag: "ND"
+    name: "Not Dead"
+    description: "Description"
+  }) {
+    id
+  }
+  m_055: createTag(data: {
+    category: "Cinematography"
+    tag: "DL"
+    name: "Dolly"
+    description: "Description"
+  }) {
+    id
+  }
+  m_056: createTag(data: {
+    category: "Cinematography"
+    tag: "TL"
+    name: "Timelapse"
+    description: "Description"
+  }) {
+    id
+  }
+  m_057: createTag(data: {
+    category: "Cinematography"
+    tag: "SM"
+    name: "Slo-mo"
+    description: "Description"
+  }) {
+    id
+  }
+  m_058: createTag(data: {
+    category: "Cinematography"
+    tag: "RT"
+    name: "Reverse Time"
+    description: "Description"
+  }) {
+    id
+  }
+  m_059: createTag(data: {
+    category: "Cinematography"
+    tag: "SC"
+    name: "Steady Cam"
+    description: "Description"
+  }) {
+    id
+  }
+  m_060: createTag(data: {
+    category: "Cinematography"
+    tag: "CZ"
+    name: "Crash Zoom"
+    description: "Description"
+  }) {
+    id
+  }
+  m_061: createTag(data: {
+    category: "Cinematography"
+    tag: "RF"
+    name: "Rack Focus"
+    description: "Description"
+  }) {
+    id
+  }
+  m_062: createTag(data: {
+    category: "Cinematography"
+    tag: "MR"
+    name: "Mirror Shot"
+    description: "Description"
+  }) {
+    id
+  }
+  m_063: createTag(data: {
+    category: "Cinematography"
+    tag: "DA"
+    name: "Dutch Angle"
+    description: "Description"
+  }) {
+    id
+  }
+  m_064: createTag(data: {
+    category: "Cinematography"
+    tag: "BW"
+    name: "Black and White"
+    description: "Description"
+  }) {
+    id
+  }
+  m_065: createTag(data: {
+    category: "Cinematography"
+    tag: "DE"
+    name: "Double Exposure"
+    description: "Description"
+  }) {
+    id
+  }
+  m_066: createTag(data: {
+    category: "Cinematography"
+    tag: "CC"
+    name: "Character Camera"
+    description: "Description"
+  }) {
+    id
+  }
+  m_067: createTag(data: {
+    category: "Cinematography"
+    tag: "TS"
+    name: "Trick Shot"
+    description: "Description"
+  }) {
+    id
+  }
+  m_068: createTag(data: {
+    category: "Cinematography"
+    tag: "MI"
+    name: "Miniatures"
+    description: "Description"
+  }) {
+    id
+  }
+  m_069: createTag(data: {
+    category: "Cinematography"
+    tag: "UW"
+    name: "Underwater"
+    description: "Description"
+  }) {
+    id
+  }
+  m_070: createTag(data: {
+    category: "Cinematography"
+    tag: "VM"
+    name: "Vehicle Mounted"
+    description: "Description"
+  }) {
+    id
+  }
+  m_071: createTag(data: {
+    category: "Music"
+    tag: "DG"
+    name: "Digetic"
+    description: "Description"
+  }) {
+    id
+  }
+  m_072: createTag(data: {
+    category: "Music"
+    tag: "SR"
+    name: "Score"
+    description: "Description"
+  }) {
+    id
+  }
+  m_073: createTag(data: {
+    category: "Music"
+    tag: "ST"
+    name: "Sound Track"
+    description: "Description"
+  }) {
+    id
+  }
+  m_074: createTag(data: {
+    category: "Music"
+    tag: "MU"
+    name: "Musical"
+    description: "Description"
+  }) {
+    id
+  }
+  m_075: createTag(data: {
+    category: "Sound"
+    tag: "DU"
+    name: "Dub"
+    description: "Description"
+  }) {
+    id
+  }
+  m_076: createTag(data: {
+    category: "Sound"
+    tag: "SS"
+    name: "Shell Shock"
+    description: "Description"
+  }) {
+    id
+  }
+  m_077: createTag(data: {
+    category: "Sound"
+    tag: "VA"
+    name: "Vamp"
+    description: "Description"
+  }) {
+    id
+  }
+  m_078: createTag(data: {
+    category: "Sound"
+    tag: "SI"
+    name: "Silent"
+    description: "Description"
+  }) {
+    id
+  }
+  m_079: createTag(data: {
+    category: "Sound"
+    tag: "FR"
+    name: "Field Recording"
+    description: "Description"
+  }) {
+    id
+  }
+  m_080: createTag(data: {
+    category: "Animation"
+    tag: "SO"
+    name: "Smooth"
+    description: "Description"
+  }) {
+    id
+  }
+  m_081: createTag(data: {
+    category: "Animation"
+    tag: "ME"
+    name: "Messy"
+    description: "Description"
+  }) {
+    id
+  }
+  m_082: createTag(data: {
+    category: "Animation"
+    tag: "CM"
+    name: "Composite"
+    description: "Description"
+  }) {
+    id
+  }
+  m_083: createTag(data: {
+    category: "Animation"
+    tag: "CG"
+    name: "CGI"
+    description: "Description"
+  }) {
+    id
+  }
+  m_084: createTag(data: {
+    category: "Animation"
+    tag: "MX"
+    name: "Mixed CGI/Real"
+    description: "Description"
+  }) {
+    id
+  }
+  m_085: createTag(data: {
+    category: "Animation"
+    tag: "SN"
+    name: "Stop Motion"
+    description: "Description"
+  }) {
+    id
+  }
+  m_086: createTag(data: {
+    category: "Animation"
+    tag: "RO"
+    name: "Rotoscope"
+    description: "Description"
+  }) {
+    id
+  }
+  m_087: createTag(data: {
+    category: "Animation"
+    tag: "WJ"
+    name: "Western via Japan"
+    description: "Description"
+  }) {
+    id
+  }
+  m_088: createTag(data: {
+    category: "Animation"
+    tag: "JW"
+    name: "Japanese via West"
+    description: "Description"
+  }) {
+    id
+  }
+  m_089: createTag(data: {
+    category: "Animation"
+    tag: "TR"
+    name: "Transform"
+    description: "Description"
+  }) {
+    id
+  }
+  m_090: createTag(data: {
+    category: "Animation"
+    tag: "AL"
+    name: "Analog"
+    description: "Description"
+  }) {
+    id
+  }
+  m_091: createTag(data: {
+    category: "Animation"
+    tag: "DI"
+    name: "Digital"
+    description: "Description"
+  }) {
+    id
+  }
+  m_092: createTag(data: {
+    category: "Animation"
+    tag: "SY"
+    name: "Styled"
+    description: "Description"
+  }) {
+    id
+  }
+  m_093: createTag(data: {
+    category: "Violence"
+    tag: "CE"
+    name: "Comedic"
+    description: "Description"
+  }) {
+    id
+  }
+  m_094: createTag(data: {
+    category: "Violence"
+    tag: "RS"
+    name: "Realistic"
+    description: "Description"
+  }) {
+    id
+  }
+  m_095: createTag(data: {
+    category: "Violence"
+    tag: "GO"
+    name: "Gore"
+    description: "Description"
+  }) {
+    id
+  }
+  m_096: createTag(data: {
+    category: "Violence"
+    tag: "WA"
+    name: "War"
+    description: "Description"
+  }) {
+    id
+  }
+  m_097: createTag(data: {
+    category: "Violence"
+    tag: "CR"
+    name: "Crime"
+    description: "Description"
+  }) {
+    id
+  }
+  m_098: createTag(data: {
+    category: "Language"
+    tag: "NT"
+    name: "Native Tongue"
+    description: "Description"
+  }) {
+    id
+  }
+  m_099: createTag(data: {
+    category: "Language"
+    tag: "ES"
+    name: "English Speakers"
+    description: "Description"
+  }) {
+    id
+  }
+  m_100: createTag(data: {
+    category: "Language"
+    tag: "EA"
+    name: "Everyone is American"
+    description: "Description"
+  }) {
+    id
+  }
+  m_101: createTag(data: {
+    category: "SFX"
+    tag: "XM"
+    name: "Miniatures"
+    description: "Description"
+  }) {
+    id
+  }
+  m_102: createTag(data: {
+    category: "SFX"
+    tag: "XE"
+    name: "Early CGI"
+    description: "Description"
+  }) {
+    id
+  }
+  m_103: createTag(data: {
+    category: "SFX"
+    tag: "XB"
+    name: "Bad CGI"
+    description: "Description"
+  }) {
+    id
+  }
+  m_104: createTag(data: {
+    category: "SFX"
+    tag: "XG"
+    name: "Good CGI"
+    description: "Description"
+  }) {
+    id
+  }
+  m_105: createTag(data: {
+    category: "SFX"
+    tag: "DP"
+    name: "Disaster Porn"
+    description: "Description"
+  }) {
+    id
+  }
+  m_106: createTag(data: {
+    category: "SFX"
+    tag: "XX"
+    name: "Too Much CGI"
+    description: "Description"
+  }) {
+    id
+  }
+  m_107: createTag(data: {
+    category: "SFX"
+    tag: "XP"
+    name: "Practical Effects"
+    description: "Description"
+  }) {
+    id
+  }
+  m_108: createTag(data: {
+    category: "SFX"
+    tag: "MP"
+    name: "Matte Paintings"
+    description: "Description"
+  }) {
+    id
+  }
+  m_109: createTag(data: {
+    category: "SFX"
+    tag: "CS"
+    name: "Costumes"
+    description: "Description"
+  }) {
+    id
+  }
+  m_110: createTag(data: {
+    category: "SFX"
+    tag: "MK"
+    name: "Make-up"
+    description: "Description"
+  }) {
+    id
+  }
+  m_111: createTag(data: {
+    category: "SFX"
+    tag: "XC"
+    name: "CGI Character"
+    description: "Description"
+  }) {
+    id
+  }
+  m_112: createTag(data: {
+    category: "SFX"
+    tag: "NC"
+    name: "Not CGI Character"
+    description: "Description"
+  }) {
+    id
+  }
+  m_113: createTag(data: {
+    category: "SFX"
+    tag: "CW"
+    name: "Crowd"
+    description: "Description"
+  }) {
+    id
+  }
+  m_114: createTag(data: {
+    category: "SFX"
+    tag: "SP"
+    name: "Space"
+    description: "Description"
+  }) {
+    id
+  }
+  m_115: createTag(data: {
+    category: "SFX"
+    tag: "DR"
+    name: "Dream"
+    description: "Description"
+  }) {
+    id
+  }
+  m_116: createTag(data: {
+    category: "SFX"
+    tag: "RC"
+    name: "Recreation"
+    description: "Description"
+  }) {
+    id
+  }
+  m_117: createTag(data: {
+    category: "SFX"
+    tag: "EX"
+    name: "Explosions"
+    description: "Description"
+  }) {
+    id
+  }
+  m_118: createTag(data: {
+    category: "SFX"
+    tag: "DS"
+    name: "Digital Squibs"
+    description: "Description"
+  }) {
+    id
+  }
+  m_119: createTag(data: {
+    category: "Director"
+    tag: "WAN"
+    name: "Wes Anderson"
+    description: "Description"
+  }) {
+    id
+  }
+  m_120: createTag(data: {
+    category: "Director"
+    tag: "AKU"
+    name: "Akira Kurosawa"
+    description: "Description"
+  }) {
+    id
+  }
+  m_121: createTag(data: {
+    category: "Director"
+    tag: "HMI"
+    name: "Hayao Miyazaki"
+    description: "Description"
+  }) {
+    id
+  }
+  m_122: createTag(data: {
+    category: "Director"
+    tag: "QTA"
+    name: "Quentin Tarantino"
+    description: "Description"
+  }) {
+    id
+  }
+  m_123: createTag(data: {
+    category: "Director"
+    tag: "SSP"
+    name: "Steven Spielberg"
+    description: "Description"
+  }) {
+    id
+  }
+  m_124: createTag(data: {
+    category: "Director"
+    tag: "WAL"
+    name: "Woody Allen"
+    description: "Description"
+  }) {
+    id
+  }
+  m_125: createTag(data: {
+    category: "Director"
+    tag: "DLE"
+    name: "David Lean"
+    description: "Description"
+  }) {
+    id
+  }
+  m_126: createTag(data: {
+    category: "Director"
+    tag: "SLE"
+    name: "Sergio Leone"
+    description: "Description"
+  }) {
+    id
+  }
+  makeUser: createUser(data: {
+    name: "Test"
+    email: "test@example.com"
+    password: "$2a$10$jWAFPtxWSCEYD7F5G.dYReLSUzlFfVgy7Rdv5WCXSMUuTPBWLwAi" # plaintext password is "password"
+  }) {
+    id
+  }
+}
