@@ -986,4 +986,11 @@ mutation {
   }) {
     id
   }
+  makeUser: createUser(data: {
+    name: "Test"
+    email: "test@example.com"
+    password: "$2a$10$jWAFPtxWSCEYD7F5G.dYReLSUzlFfVgy7Rdv5WCXSMUuTPBWLwAi" # plaintext password is "password"
+  }) {
+    id
+  }
 }

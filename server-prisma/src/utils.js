@@ -35,6 +35,12 @@ async function getRatingId(ctx, rating) {
   throw new Error(`No such rating found for rating: "${rating}"`);
 }
 
+/**
+ * Returns an array of { id } for each Tag defined by the text tag field
+ * @param ctx
+ * @param tags  string array of Tags
+ * @returns {Promise<*>}
+ */
 async function getTagList(ctx, tags) {
   if (tags.length === 0) {
     return [];
