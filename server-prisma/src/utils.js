@@ -11,18 +11,6 @@ function getUserId(ctx) {
   throw new AuthError();
 }
 
-async function getGenreId(ctx, genreCode) {
-  if (genreCode.length === 0) {
-    return false;
-  }
-
-  const genreObject = await ctx.db.query.genre({ where: { code: genreCode } });
-  if (genreObject && genreObject.id) {
-    return genreObject.id;
-  }
-  throw new Error(`No such genre found for code: "${genreCode}"`);
-}
-
 async function getRatingId(ctx, rating) {
   if (rating.length === 0) {
     return false;
@@ -36,7 +24,7 @@ async function getRatingId(ctx, rating) {
 }
 
 /**
- * Returns an array of { id } for each Tag defined by the text tag field
+ * Returns an array of { id } for each Tag defined by either tag or id.
  * @param ctx
  * @param tags  string array of Tags
  * @returns {Promise<*>}
@@ -46,12 +34,23 @@ async function getTagList(ctx, tags) {
     return [];
   }
 
-  const tagObject = await ctx.db.query.tags({ where: { tag_in: tags } });
+  // Support mixed input of tags OR ids.
+  const tagTags = tags.filter(tag => tag.length !== 25);
+  const tagIds = tags.filter(tag => tag.length === 25);
+
+  const tagObject = await ctx.db.query.tags({
+    where: {
+      OR: [
+        { tag_in: tagTags},
+        { id_in: tagIds },
+      ],
+    },
+  });
+
   if (tagObject && tagObject.length > 0) {
     return tagObject.map(tag => ({ id: tag.id }));
   }
   throw new Error(`No such tags found for tag(s): "${tags}"`);
-
 }
 
 class AuthError extends Error {
@@ -62,7 +61,6 @@ class AuthError extends Error {
 
 module.exports = {
   getUserId,
-  getGenreId,
   getRatingId,
   getTagList,
   AuthError,

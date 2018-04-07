@@ -14,6 +14,21 @@ const Query = {
   },
 
   /**
+   * Pass app query movies to database query exposing all data.
+   * Keep in mind that stuff like this is potentially dangerous if written incorrectly, if type User
+   * wasn't redefined in schema.graphql to NOT have the password a bad person could get the
+   * hashed+salted password of a User by a movie's createdBy field.
+   * @param parent
+   * @param args
+   * @param ctx
+   * @param info
+   * @returns {*}
+   */
+  movies(parent, args, ctx, info) {
+    return ctx.db.query.movies(args, info);
+  },
+
+  /**
    * Return a single Genre by its ID. Movies are accessible.
    * @param parent
    * @param id

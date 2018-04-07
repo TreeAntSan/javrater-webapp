@@ -1,6 +1,18 @@
-const { getUserId, getGenreId, getRatingId, getTagList } = require("../../utils");
+const { getUserId, getRatingId, getTagList } = require("../../utils");
 
 const movie = {
+  /**
+   * Supports mixed args for genre (id or core), rating (id or rating), and tags (mixed id or tag).
+   * Title, ProdCode, Genre, Rating by schema are all required. Tags is partially optional - an empty
+   * array must be provided at the very least. This is personal preference. The first two are super
+   * obvious, Genre I never leave blank, Rating has a Not Rated choice. Tags, though, are oftentimes
+   * added on later through updates.
+   * @param parent
+   * @param args
+   * @param ctx
+   * @param info
+   * @returns {Promise<*>}
+   */
   async addMovie(parent, args, ctx, info) {
     const userId = getUserId(ctx);
     const tagList = await getTagList(ctx, args.tags);
@@ -11,17 +23,15 @@ const movie = {
       createdBy: {
         connect: { id: userId },
       },
+      genre: {
+        connect: args.genre.length === 25 ? { id: args.genre } : { code: args.genre },
+      },
       tags: {
         connect: tagList,
       },
     };
 
-    const genreId = await getGenreId(ctx, args.genre);
-    if (genreId !== false) {
-      data.genre = { connect: { id: genreId } };
-    }
-
-    const ratingId = await getRatingId(ctx, args.rating);
+    const ratingId = args.rating.length === 25 ? args.rating : await getRatingId(ctx, args.rating);
     if (ratingId !== false) {
       data.rating = { connect: { id: ratingId } };
     }
@@ -30,6 +40,7 @@ const movie = {
   },
 
   async deleteMovie(parent, { id }, ctx, info) {
+    getUserId(ctx);  // Checking to see that this is a logged-in user
     const movieExists = await ctx.db.exists.Movie({ id });
     if (!movieExists) {
       throw new Error(`Movie not found.`);
@@ -39,6 +50,7 @@ const movie = {
   },
 
   async updateMovie(parent, args, ctx, info) {
+    getUserId(ctx);  // Checking to see that this is a logged-in user
     const movieExists = await ctx.db.exists.Movie({ id: args.id });
     if (!movieExists) {
       throw new Error(`Movie not found.`);
