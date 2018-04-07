@@ -49,21 +49,24 @@ const movie = {
     }
 
     if (!Array.isArray(args.tags)) {
-      throw new Error(`Tags must be an array. An empty array is acceptable.`);
+      throw new Error(`Argument tags must be an array.`);
     }
 
     const data = {};
     data.tags = {};
 
-    // If the string length is 25, we assume it's an ID, else we treat it as a tag
-    // (both are unique identifiers and both are valid)
+    // If the string length is 25 we assume it's an ID, else we treat it as a tag.
+    // (Both are unique identifiers and both are valid keys to connect with)
     data.tags.connect = args.tags.map(mTag => ( mTag.length === 25 ? { id: mTag } : { tag: mTag }));
 
     // Disconnect existing tags
     if (args.replaceTags) {
       // Grab the existing tags in a sorta roundabout way...
       const tagsByMovie = await ctx.db.query.tags({ where: { movies_some: { id : args.id } } });
-      data.tags.disconnect = tagsByMovie.map(tag => ({ id: tag.id })); // TODO filter out tags in connect
+      // Only disconnect tags that aren't also being connected
+      data.tags.disconnect = tagsByMovie
+        .filter(tag => (args.tags.indexOf(tag.tag) === -1 && args.tags.indexOf(tag.id) === -1))
+        .map(tag => ({ id: tag.id }));
     }
 
     if (args.title) data.title = args.title;
@@ -82,8 +85,6 @@ const movie = {
     }
 
     return ctx.db.mutation.updateMovie({ where: { id: args.id }, data }, info);
-
-
   },
 };
 
