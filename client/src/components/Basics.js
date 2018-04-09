@@ -101,27 +101,4 @@ Basics.propTypes = {
   allGenres: PropTypes.object.isRequired,
 };
 
-const ALL_GENRES_QUERY = gql`
-  query AllGenresQuery {
-    allGenres {
-      id
-      code
-      description
-    }
-  }
-`;
-
-const ALL_RATINGS_QUERY = gql`
-  query AllRatingsQuery {
-    allRatings {
-      id
-      rating
-      description
-    }
-  }
-`;
-
-export default compose(
-  graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
-  graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
-)(Basics);
+export default Basics;

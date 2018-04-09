@@ -1,19 +1,19 @@
-
 /**
- * Takes return value from fetch for tags
+ * Takes return value from fetch for tags and sorts them into an array based on
+ * the individual categories found.
  * @param tags  return value from fetch for tag/all
- * @returns {Array} { title: "x", tags: { id, tag, name, description } }
+ * @returns {Array} { category: "x", tags: { id, tag, name, description } }
  */
 const tagOptionFormatter = (tags) => {
   const tagOptions = [];
-  tags.response.forEach((tag) => {
-    let index = tagOptions.findIndex(element => element.title === tag.category);
+  tags.forEach(({ category, id, tag, name, description }) => {
+    let index = tagOptions.findIndex(element => element.category === category);
     if (index === -1) {
-      tagOptions.push({ title: tag.category, tags: [] });
+      tagOptions.push({ category, tags: [] });
       index = tagOptions.length - 1;
     }
     tagOptions[index].tags.push({
-      id: tag.id, tag: tag.tag, name: tag.name, description: tag.description
+      id, tag, name, description,
     });
   });
   return tagOptions;
@@ -35,7 +35,7 @@ const makeTagDict = (tagOptions) => {
     tagCategory.tags.forEach((tag) => {
       tagDict[tag.tag] = {};
       tagDict[tag.tag].name = tag.name;
-      tagDict[tag.tag].category = tagCategory.title;
+      tagDict[tag.tag].category = tagCategory.category;
       tagSeed[tag.tag] = {};
       tagSeed[tag.tag].checked = false;
       tagSeed[tag.tag].id = tag.id;

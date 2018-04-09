@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
 import { cloneDeep } from "lodash";
@@ -34,8 +37,6 @@ class GridWindow extends Component {
       },
       tagsOnly: false,
     },
-    genreOptions: [],
-    ratingOptions: [],
     tagOptions: [],
     tallyTags: {
       tags: [],
@@ -51,23 +52,23 @@ class GridWindow extends Component {
     this.state = this.initialState;
   }
 
-  componentWillMount() {
-    this._fetchTags();
+  componentWillUpdate() {
+    if (!this.props.allTags.loading && this.state.tagOptions.length === 0) {
+      this._handleTags();
+    }
   }
 
-  _fetchTags = () => {
-    client.getTags((tags) => {
-      const tagOptions = utils.tagOptionFormatter(tags);
+  _handleTags = () => {
+    const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
 
-      // Need to update initial state so it's reset to these values each time.
-      this.initialState.tagOptions = tagOptions;
-      const { tagDict, tagSeed } = utils.makeTagDict(tagOptions);
-      this.initialState.checkedTags = tagSeed;
-      this.tagDict = tagDict;
+    // Need to update initial state so it's reset to these values each time.
+    this.initialState.tagOptions = tagOptions;
+    const { tagDict, tagSeed } = utils.makeTagDict(tagOptions);
+    this.initialState.checkedTags = tagSeed;
+    this.tagDict = tagDict;
 
-      // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-      this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
-    });
+    // Need to deep copy or the component state will update initialState, breaking the reset functionality.
+    this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
   };
 
   handleTagChange = (tag, tagState) => {
@@ -184,6 +185,8 @@ class GridWindow extends Component {
                   <Basics
                     onChange={this.handleBasicsChange}
                     values={this.state.basicValues}
+                    allRatings={this.props.allRatings}
+                    allGenres={this.props.allGenres}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -271,7 +274,10 @@ class GridWindow extends Component {
               onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
-              ready={this.state.tagOptions.length > 0}
+              ready={!this.props.allRatings.loading &&
+                !this.props.allGenres.loading &&
+                !this.props.allTags.loading
+              }
             />
           </Grid.Column>
         </Grid.Row>
@@ -280,4 +286,46 @@ class GridWindow extends Component {
   }
 }
 
-export default GridWindow;
+GridWindow.propType = {
+  allRatings: PropTypes.object.isRequired,
+  allGenres: PropTypes.object.isRequired,
+  allTags: PropTypes.object.isRequired,
+};
+
+const ALL_GENRES_QUERY = gql`
+  query AllGenresQuery {
+    allGenres {
+      id
+      code
+      description
+    }
+  }
+`;
+
+const ALL_RATINGS_QUERY = gql`
+  query AllRatingsQuery {
+    allRatings {
+      id
+      rating
+      description
+    }
+  }
+`;
+
+const ALL_TAGS_QUERY = gql`
+  query AllTagsQuery {
+    allTags {
+      id
+      category
+      tag
+      name
+      description
+    }
+  }
+`;
+
+export default compose(
+  graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
+  graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
+  graphql(ALL_TAGS_QUERY, { name: "allTags" }),
+)(GridWindow);
