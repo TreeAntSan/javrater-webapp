@@ -1,45 +1,45 @@
 const getGenres = (cb) => {
-  return fetch(`/api/v1/genre/all`, {
+  return fetch("/api/v1/genre/all", {
     method: "get",
     accept: "application/json",
   }).then(checkStatus)
     .then(parseJSON)
     .then(cb)
-    .catch((error) => console.log(error.message));
+    .catch(error => console.log(error.message));
 };
 
 const getRatings = (cb) => {
-  return fetch(`/api/v1/rating/all`, {
+  return fetch("/api/v1/rating/all", {
     method: "get",
     accept: "application/json",
   }).then(checkStatus)
-  .then(parseJSON)
-  .then(cb)
-  .catch((error) => console.log(error.message));
+    .then(parseJSON)
+    .then(cb)
+    .catch(error => console.log(error.message));
 };
 
 const getTags = (cb) => {
-  return fetch(`/api/v1/tag/all`, {
+  return fetch("/api/v1/tag/all", {
     method: "get",
     accept: "application/json",
   }).then(checkStatus)
-  .then(parseJSON)
-  .then(cb)
-  .catch((error) => console.log(error.message));
+    .then(parseJSON)
+    .then(cb)
+    .catch(error => console.log(error.message));
 };
 
 const getMovie = (cb) => {
-  return fetch(`/api/v1/movie/all`, {
+  return fetch("/api/v1/movie/all", {
     method: "get",
     accept: "application/json",
   }).then(checkStatus)
-  .then(parseJSON)
-  .then(cb)
-  .catch((error) => console.log(error.message));
+    .then(parseJSON)
+    .then(cb)
+    .catch(error => console.log(error.message));
 };
 
 const postMovie = (payload, cb) => {
-  return fetch(`/api/v1/movie/add`, {
+  return fetch("/api/v1/movie/add", {
     headers: {
       Accept: "application/json",
       "Content-type": "application/json",
@@ -47,9 +47,9 @@ const postMovie = (payload, cb) => {
     method: "post",
     body: JSON.stringify(payload),
   }).then(checkStatus)
-  .then(parseJSON)
-  .then(cb)
-  .catch((error) => console.log(error.message));
+    .then(parseJSON)
+    .then(cb)
+    .catch(error => console.log(error.message));
 };
 
 const checkStatus = (response) => {

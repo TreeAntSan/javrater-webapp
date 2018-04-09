@@ -15,7 +15,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
               label="Title"
               type="text"
               placeholder="Movie Title"
-              onChange={(e) => (onChange({ title: e.target.value }))}
+              onChange={e => (onChange({ title: e.target.value }))}
               value={values.title}
             />
           </Form.Field>
@@ -26,7 +26,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
               label="Code"
               type="text"
               placeholder="ABC-123"
-              onChange={(e) => (onChange({ prodcode: e.target.value }))}
+              onChange={e => (onChange({ prodcode: e.target.value }))}
               value={values.code}
             />
           </Form.Field>
@@ -36,11 +36,12 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Dropdown
               placeholder="Select Genre"
               selection
-              options={[{ id: 0, text:"", value: "" }, ...genreOptions]}
+              options={[{ id: 0, text: "", value: "" }, ...genreOptions]}
               onChange={(event, data) => (onChange({
                 genre: data.value,
-                genreid: data.options[data.options.findIndex(
-                  option => option.value === data.value)].id }))  // Only way to find index of selection
+                genreid: data.options[data.options.findIndex(option =>
+                  option.value === data.value)].id, // Only way to find index of selection
+              }))
               }
               value={values.genre}
             />

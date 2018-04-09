@@ -13,8 +13,6 @@ describe("App", () => {
   });
 
   it("should have the `App` element", () => {
-    expect(
-      wrapper.find(App)
-    ).toBeTruthy();
+    expect(wrapper.find(App)).toBeTruthy();
   });
 });

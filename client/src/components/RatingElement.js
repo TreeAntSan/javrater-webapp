@@ -2,13 +2,17 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Rating } from "semantic-ui-react";
 
-const RatingElement = ({ maxRating, ratingOptions, onRate, rating }) => (
+const RatingElement = ({
+  maxRating, ratingOptions, onRate, rating,
+}) => (
   <div>
     <Rating
       clearable
       rating={rating}
       maxRating={maxRating}
-      onRate={(event, { rating }) => onRate({ rating, ratingid: ratingOptions[rating].id })}
+      // eslint-disable-next-line no-shadow
+      onRate={(event, { rating }) =>
+        onRate({ rating, ratingid: ratingOptions[rating].id })}
     />
     {rating}: {(ratingOptions[rating] &&
                             ratingOptions[rating].description) || "ERROR"}

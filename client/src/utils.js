@@ -25,17 +25,17 @@ const ratingOptionFormatter = ratings => (
  * @param tags  return value from fetch for tag/all
  * @returns {Array} { title: "x", tags: { id, tag, name, description } }
  */
-const tagOptionFormatter = tags => {
-  let tagOptions = [];
+const tagOptionFormatter = (tags) => {
+  const tagOptions = [];
   tags.response.forEach((tag) => {
     let index = tagOptions.findIndex(element => element.title === tag.category);
     if (index === -1) {
       tagOptions.push({ title: tag.category, tags: [] });
       index = tagOptions.length - 1;
     }
-    tagOptions[index].tags.push(
-      { id: tag.id, tag: tag.tag, name: tag.name, description: tag.description }
-    );
+    tagOptions[index].tags.push({
+      id: tag.id, tag: tag.tag, name: tag.name, description: tag.description
+    });
   });
   return tagOptions;
 };
@@ -49,9 +49,9 @@ const tagOptionFormatter = tags => {
  * @param tagOptions
  * @returns {{tagDict, tagSeed}} { name, category }, { checked, id }
  */
-const makeTagDict = tagOptions => {
-  let tagDict = {};
-  let tagSeed = {};
+const makeTagDict = (tagOptions) => {
+  const tagDict = {};
+  const tagSeed = {};
   tagOptions.forEach((tagCategory) => {
     tagCategory.tags.forEach((tag) => {
       tagDict[tag.tag] = {};

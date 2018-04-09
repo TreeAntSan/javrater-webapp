@@ -2,8 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Segment, Label, Form, Input, Grid, Button, Dimmer, Loader } from "semantic-ui-react";
 
-const Output = ({ onOutputChange, outputValue, onMakeClick, onSaveClick,
-                  onParseClick, onResetClick, ready }) => (
+const Output = ({
+  onOutputChange, outputValue, onSaveClick,
+  onParseClick, onResetClick, ready,
+}) => (
   <Segment>
     <Label attached="top left">Output</Label>
     <Form>

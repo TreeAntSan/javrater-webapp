@@ -1,8 +1,8 @@
 import React from "react";
 import { mount } from "enzyme";
 
-import TagSection from "../TagSection";
 import { Segment, Dimmer, Form } from "semantic-ui-react";
+import TagSection from "../TagSection";
 
 import mockTags from "../../__mocks__/tag_all";
 
@@ -34,15 +34,11 @@ describe("TagSection", () => {
   });
 
   it("should have the `Segment` element", () => {
-    expect(
-      wrapper.find(Segment)
-    ).toHaveLength(1);
+    expect(wrapper.find(Segment)).toHaveLength(1);
   });
 
   it("should have the `Dimmer` element", () => {
-    expect(
-      wrapper.find(Dimmer)
-    ).toHaveLength(1);
+    expect(wrapper.find(Dimmer)).toHaveLength(1);
   });
 
   describe("receives `tagValues`", () => {
@@ -51,15 +47,11 @@ describe("TagSection", () => {
     });
 
     it("should have the `Form` element", () => {
-      expect(
-        wrapper.find(Form)
-      ).toHaveLength(1);
+      expect(wrapper.find(Form)).toHaveLength(1);
     });
 
     it("should have correct number of checkbox elements", () => {
-      expect(
-        wrapper.find(Form.Checkbox)
-      ).toHaveLength(tagData.tags.length);
+      expect(wrapper.find(Form.Checkbox)).toHaveLength(tagData.tags.length);
     });
 
     // Giving up on this test. onChange appears to be triggered but it does not
@@ -73,13 +65,8 @@ describe("TagSection", () => {
     //   });
     //
     //   it("should call `onTagChange` function", () => {
-    //     expect(
-    //       onTagChange.mock.calls
-    //     ).toHaveLength(1);
-    //   })
+    //     expect(onTagChange.mock.calls).toHaveLength(1);
+    //   });
     // });
-  });
-
-  afterEach(() => {
   });
 });
