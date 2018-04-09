@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const getGenres = (cb) => {
   return fetch("/api/v1/genre/all", {
     method: "get",

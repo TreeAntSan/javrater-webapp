@@ -1,10 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
 import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader } from "semantic-ui-react";
 
 import RatingElement from "./RatingElement";
 
-const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
+const Basics = ({ onChange, values, allRatings, allGenres }) => (
   <Segment>
     <Label attached="top left">Basics</Label>
     <Form>
@@ -36,7 +38,17 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Dropdown
               placeholder="Select Genre"
               selection
-              options={[{ id: 0, text: "", value: "" }, ...genreOptions]}
+              options={
+                [
+                  { id: 0, text: "", value: "" },
+                  ...(allGenres.loading ?
+                    [] :
+                    allGenres.allGenres.map(({ id, code, description }) =>
+                      ({ id, text: `${code} - ${description}`, value: code })
+                    )
+                  ),
+                ]
+              }
               onChange={(event, data) => (onChange({
                 genre: data.value,
                 genreid: data.options[data.options.findIndex(option =>
@@ -51,7 +63,13 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
           <Form.Field>
             <RatingElement
               maxRating={ratingOptions.length - 1}
-              ratingOptions={ratingOptions}
+              ratingOptions={
+                allRatings.loading ?
+                  [] :
+                  allRatings.allRatings.map(({ id, rating, description }) =>
+                    ({ id, value: rating, description })
+                  )
+              }
               onRate={onChange}
               rating={values.rating}
             />
@@ -68,7 +86,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
       </List>
     </Form>
-    <Dimmer inverted active={!(ratingOptions.length && genreOptions.length)}>
+    <Dimmer inverted active={(allRatings.loading || allGenres.loading)}>
       <Loader>Loading</Loader>
     </Dimmer>
   </Segment>
@@ -77,8 +95,29 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
 Basics.propTypes = {
   onChange: PropTypes.func.isRequired,
   values: PropTypes.object.isRequired,
-  ratingOptions: PropTypes.array.isRequired,
-  genreOptions: PropTypes.array.isRequired,
 };
 
-export default Basics;
+const ALL_GENRES_QUERY = gql`
+  query AllGenresQuery {
+    allGenres {
+      id
+      code
+      description
+    }
+  }
+`;
+
+const ALL_RATINGS_QUERY = gql`
+  query AllRatingsQuery {
+    allRatings {
+      id
+      rating
+      description
+    }
+  }
+`;
+
+export default compose(
+  graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
+  graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
+)(Basics);

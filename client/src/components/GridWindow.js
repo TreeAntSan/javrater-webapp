@@ -46,30 +46,8 @@ class GridWindow extends Component {
   }
 
   componentWillMount() {
-    this._fetchGenres();
-    this._fetchRatings();
     this._fetchTags();
   }
-
-  _fetchGenres = () => {
-    client.getGenres((genres) => {
-      const genreOptions = utils.genreOptionFormatter(genres);
-
-      // Need to update initial state so it's reset to these values each time.
-      this.initialState.genreOptions = genreOptions;
-      this.setState({ genreOptions });
-    });
-  };
-
-  _fetchRatings = () => {
-    client.getRatings((ratings) => {
-      const ratingOptions = utils.ratingOptionFormatter(ratings);
-
-      // Need to update initial state so it's reset to these values each time.
-      this.initialState.ratingOptions = ratingOptions;
-      this.setState({ ratingOptions });
-    });
-  };
 
   _fetchTags = () => {
     client.getTags((tags) => {
@@ -202,8 +180,6 @@ class GridWindow extends Component {
                   <Basics
                     onChange={this.handleBasicsChange}
                     values={this.state.basicValues}
-                    ratingOptions={this.state.ratingOptions}
-                    genreOptions={this.state.genreOptions}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -291,9 +267,7 @@ class GridWindow extends Component {
               onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
-              ready={this.state.genreOptions.length > 0 &&
-                      this.state.ratingOptions.length > 0 &&
-                      this.state.tagOptions.length > 0}
+              ready={this.state.tagOptions.length > 0}
             />
           </Grid.Column>
         </Grid.Row>

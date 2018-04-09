@@ -1,24 +1,3 @@
-/**
- * Takes return value from fetch for genres
- * @param genres  return value from fetch for genre/all
- * @returns {Array} { id, value, text }
- */
-const genreOptionFormatter = genres => (
-  genres.response.map((genre) => (
-    { id: genre.id, value: genre.code, text: `${genre.code} - ${genre.description}` }
-  ))
-);
-
-/**
- * Takes return value from fetch for ratings
- * @param ratings return value from fetch for rating/all
- * @returns {Array} { id, value, description }
- */
-const ratingOptionFormatter = ratings => (
-  ratings.response.map((rating) => (
-    { id: rating.id, value: rating.rating, description: rating.description }
-  ))
-);
 
 /**
  * Takes return value from fetch for tags
@@ -66,8 +45,6 @@ const makeTagDict = (tagOptions) => {
 };
 
 const utils = {
-  genreOptionFormatter,
-  ratingOptionFormatter,
   tagOptionFormatter,
   makeTagDict,
 };
