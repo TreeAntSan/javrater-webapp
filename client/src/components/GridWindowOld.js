@@ -21,17 +21,11 @@ class GridWindow extends Component {
     checkedTags: {},
     basicValues: {
       title: "",
-      prodcode: "",
-      genre: {
-        genrecode: "",
-        genreid: "",
-      },
-      rating: {
-        ratingnum: 0,
-        ratingtext: "",
-        ratingdescription: "",
-        ratingid: "",
-      },
+      prodCode: "",
+      genre: "",
+      genreid: 0,
+      rating: 0,
+      ratingid: 0,
       tagsOnly: false,
     },
     genreOptions: [],
@@ -52,8 +46,30 @@ class GridWindow extends Component {
   }
 
   componentWillMount() {
+    this._fetchGenres();
+    this._fetchRatings();
     this._fetchTags();
   }
+
+  _fetchGenres = () => {
+    client.getGenres((genres) => {
+      const genreOptions = utils.genreOptionFormatter(genres);
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.genreOptions = genreOptions;
+      this.setState({ genreOptions });
+    });
+  };
+
+  _fetchRatings = () => {
+    client.getRatings((ratings) => {
+      const ratingOptions = utils.ratingOptionFormatter(ratings);
+
+      // Need to update initial state so it's reset to these values each time.
+      this.initialState.ratingOptions = ratingOptions;
+      this.setState({ ratingOptions });
+    });
+  };
 
   _fetchTags = () => {
     client.getTags((tags) => {
@@ -76,13 +92,15 @@ class GridWindow extends Component {
     this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
   };
 
-  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genreid, ratingid }) => {
     // TODO There must be a more elegant way to accomplish this...
     const basicValues = {...this.state.basicValues};
     if (title !== undefined) basicValues.title = title;
     if (prodcode !== undefined) basicValues.prodcode = prodcode;
     if (genre !== undefined) basicValues.genre = genre;
+    if (genreid !== undefined) basicValues.genreid = genreid;
     if (rating !== undefined) basicValues.rating = rating;
+    if (ratingid !== undefined) basicValues.ratingid = ratingid;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
     this.setState({ basicValues }, this.renderOutput);
   };
@@ -121,9 +139,9 @@ class GridWindow extends Component {
     if (this.state.basicValues.tagsOnly) {
       output = `(${tagList})`;
     } else {
-      output = deline`${this.state.basicValues.genre.genrecode}
-                      ${seriesList} ${this.state.basicValues.rating.ratingtext} -
-                      ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${tagList})`;
+      output = deline`${this.state.basicValues.genre}
+                      ${seriesList} ${this.state.ratingOptions[this.state.basicValues.rating].value} -
+                      ${this.state.basicValues.title} [${this.state.basicValues.prodCode}] (${tagList})`;
     }
 
     this.setState({ output });
@@ -133,7 +151,7 @@ class GridWindow extends Component {
     const { tagIds } = this._tallyTags();
     const payload = {
       title: this.state.basicValues.title,
-      prodcode: this.state.basicValues.prodcode,
+      prodCode: this.state.basicValues.prodCode,
       genreid: this.state.basicValues.genreid,
       ratingid: this.state.basicValues.ratingid,
       tags: tagIds.join(","),
@@ -184,6 +202,8 @@ class GridWindow extends Component {
                   <Basics
                     onChange={this.handleBasicsChange}
                     values={this.state.basicValues}
+                    ratingOptions={this.state.ratingOptions}
+                    genreOptions={this.state.genreOptions}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -271,7 +291,9 @@ class GridWindow extends Component {
               onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
-              ready={this.state.tagOptions.length > 0}
+              ready={this.state.genreOptions.length > 0 &&
+              this.state.ratingOptions.length > 0 &&
+              this.state.tagOptions.length > 0}
             />
           </Grid.Column>
         </Grid.Row>

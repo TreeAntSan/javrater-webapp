@@ -10,9 +10,15 @@ const RatingElement = ({
       clearable
       rating={rating}
       maxRating={maxRating}
-      // eslint-disable-next-line no-shadow
-      onRate={(event, { rating }) =>
-        onRate({ rating, ratingid: ratingOptions[rating].id })}
+      onRate={(event, data) =>
+        onRate({
+          rating: {
+            ratingnum: data.rating,
+            ratingtext: ratingOptions[data.rating].value,
+            ratingdescription: ratingOptions[data.rating].description,
+            ratingid: ratingOptions[data.rating].id,
+          },
+        })}
     />
     {rating}: {(ratingOptions[rating] &&
                             ratingOptions[rating].description) || "ERROR"}

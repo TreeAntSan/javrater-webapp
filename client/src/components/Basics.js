@@ -50,19 +50,21 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
                 ]
               }
               onChange={(event, data) => (onChange({
-                genre: data.value,
-                genreid: data.options[data.options.findIndex(option =>
-                  option.value === data.value)].id, // Only way to find index of selection
+                genre: {
+                  genrecode: data.value,
+                  genreid: data.options[data.options.findIndex(option =>
+                    option.value === data.value)].id, // Only way to find index of selection
+                },
               }))
               }
-              value={values.genre}
+              value={values.genre.genrecode}
             />
           </Form.Field>
         </List.Item>
         <List.Item>
           <Form.Field>
             <RatingElement
-              maxRating={ratingOptions.length - 1}
+              maxRating={allRatings.loading ? 0 : allRatings.allRatings.length - 1}
               ratingOptions={
                 allRatings.loading ?
                   [] :
@@ -71,7 +73,7 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
                   )
               }
               onRate={onChange}
-              rating={values.rating}
+              rating={values.rating.ratingnum}
             />
           </Form.Field>
         </List.Item>
@@ -95,6 +97,8 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
 Basics.propTypes = {
   onChange: PropTypes.func.isRequired,
   values: PropTypes.object.isRequired,
+  allRatings: PropTypes.object.isRequired,
+  allGenres: PropTypes.object.isRequired,
 };
 
 const ALL_GENRES_QUERY = gql`
