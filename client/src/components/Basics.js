@@ -4,6 +4,7 @@ import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader }
 
 import RatingElement from "./RatingElement";
 
+// TODO add form validation
 const Basics = ({ onChange, values, allRatings, allGenres }) => (
   <Segment>
     <Label attached="top left">Basics</Label>

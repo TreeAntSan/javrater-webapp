@@ -42,7 +42,6 @@ class GridWindow extends Component {
       series: [],
       tagIds: [],
     },
-    userid: 1,
     output: "",
   };
 
@@ -51,14 +50,15 @@ class GridWindow extends Component {
     this.state = this.initialState;
   }
 
-  componentWillUpdate() {
-    if (!this.props.allTags.loading && this.state.tagOptions.length === 0) {
-      this._handleTags();
+  // TODO figure out why Create link must be pressed twice to load tags and fix it...
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.allTags.loading && this.state.tagOptions.length === 0) {
+      this._handleTags(nextProps);
     }
   }
 
-  _handleTags = () => {
-    const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
+  _handleTags = (nextProps) => {
+    const tagOptions = utils.tagOptionFormatter(nextProps.allTags.allTags);
 
     // Need to update initial state so it's reset to these values each time.
     this.initialState.tagOptions = tagOptions;
@@ -67,7 +67,7 @@ class GridWindow extends Component {
     this.tagDict = tagDict;
 
     // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-    this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
+    this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) });
   };
 
   handleTagChange = (tag, tagState) => {
@@ -166,7 +166,7 @@ class GridWindow extends Component {
   };
 
   handleResetClick = () => {
-    this.setState(this.initialState);
+    this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
   };
 
   render () {
