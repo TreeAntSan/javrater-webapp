@@ -9,7 +9,6 @@ import { cloneDeep } from "lodash";
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import client from "../client";
 import utils from "../utils";
 
 class GridWindow extends Component {
@@ -130,24 +129,20 @@ class GridWindow extends Component {
     this.setState({ output });
   };
 
-  handleSaveClick = () => {
+  handleSaveClick = async () => {
     const { tagIds } = this._tallyTags();
-    const payload = {
-      title: this.state.basicValues.title,
-      prodcode: this.state.basicValues.prodcode,
-      genreid: this.state.basicValues.genreid,
-      ratingid: this.state.basicValues.ratingid,
-      tags: tagIds.join(","),
-      createdby: this.state.userid,
-    };
-
-    client.postMovie(payload, (res) => {
-      if (res.error) {
-        this.setState({ output: `Error: ${res.error}` });
-      } else {
-        this.setState({ output: `Status ${res.status} - MovieId: ${res.response}` });
+    const result = await this.props.addMovie({
+      variables: {
+        title: this.state.basicValues.title,
+        prodCode: this.state.basicValues.prodcode,
+        genre: this.state.basicValues.genre.genreid,
+        rating: this.state.basicValues.rating.ratingid,
+        tags: tagIds,
       }
     });
+
+    const { id } = result.data.addMovie;
+    this.setState({ output: `Success: ${id}` });
   };
 
   handleParseClick = () => {
@@ -324,8 +319,17 @@ const ALL_TAGS_QUERY = gql`
   }
 `;
 
+const ADD_MOVIE_MUTATION = gql`
+  mutation AddMovieMutation($title: String!, $prodCode: String!, $genre: String!, $rating: String!, $tags: [String]!) {
+    addMovie(title: $title, prodCode: $prodCode, genre: $genre, rating: $rating, tags: $tags) {
+      id
+    }
+  }
+`;
+
 export default compose(
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
+  graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
 )(GridWindow);

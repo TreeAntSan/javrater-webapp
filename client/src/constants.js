@@ -1,3 +1,5 @@
+export const AUTH_TOKEN = "auth-token";
+
 export const RATING_OPTIONS = [
   {
     value: "_",

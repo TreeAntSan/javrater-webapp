@@ -1,7 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
 import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader } from "semantic-ui-react";
 
 import RatingElement from "./RatingElement";

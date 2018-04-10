@@ -5,6 +5,7 @@
   "proxy": "http://localhost:3001/",
   "dependencies": {
     "apollo-client-preset": "^1.0.8",
+    "apollo-link-ws": "^1.0.7",
     "deline": "^1.0.4",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.8.0",
@@ -16,7 +17,8 @@
     "react-scripts": "1.1.1",
     "react-tooltip": "^3.4.0",
     "semantic-ui-css": "^2.3.1",
-    "semantic-ui-react": "^0.79.0"
+    "semantic-ui-react": "^0.79.0",
+    "subscriptions-transport-ws": "^0.9.7"
   },
   "scripts": {
     "start": "react-scripts start",
