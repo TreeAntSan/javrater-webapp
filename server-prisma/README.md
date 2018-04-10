@@ -7,6 +7,37 @@
 <div align="center"><strong>🚀 Bootstrap your GraphQL server within seconds</strong></div>
 <div align="center">Advanced starter kit for a flexible GraphQL server for Node.js - based on best practices from the GraphQL community.</div>
 
+## dotenv
+
+There is a secret file that is not in this repo. .env
+(located at `./server-prisma/.env`)
+
+This file has a few things that need to be kept secret and a few things that aren't really that secret:
+```
+PRISMA_STAGE="dev"
+PRISMA_ENDPOINT="http://localhost:4466/server-prisma/dev"
+PRISMA_CLUSTER="local"
+PRISMA_SECRET="SOME_SECRET_KEY"
+APP_SECRET="ANOTHER_SECRET_KEY"
+```
+
+The first three lines pertain to simple Prisma server settings. You start the Prisma server by using the command `prisma deploy` if you're installed the prisma module globally, otherwise `yarn prisma deploy`/`npm run prisma deploy` should work. Also, if you run into issues `prisma local stop` and `prisma local stop` tend to help.
+
+The next two variables are secret keys that you should set to random strings of characters and digits and symbols. I used two random [`UUID4`](https://www.uuidgenerator.net/)s for mine.
+
+`PRISMA_SECRET` is the secret key for the Prisma server (a local Docker container). If you change this secret you'll need to re-deploy the Prisma server. From there you can use `prisma token` to grab a new token if needed. This token is used when using the Playground when you add to the HTTP header like this:
+```
+{
+  "Authorization" : "Bearer <token>"
+}
+```
+
+`APP_SECRET` is used by the login system for the server. It is used as the secret key to the [`JWT token`](https://jwt.io/) signing process in `src/utils.js`. If you change this secret all users will have to log in again.
+
+You *need to create this file* before things can run. You can even copy the example I have above if you want.
+
+This file is used by the module [`dotenv`](https://github.com/motdotla/dotenv)
+
 ## Features
 
 - **Scalable GraphQL server:** The server uses [`graphql-yoga`](https://github.com/prisma/graphql-yoga) which is based on Apollo Server & Express

@@ -4,7 +4,7 @@ import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader }
 
 import RatingElement from "./RatingElement";
 
-const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
+const Basics = ({ onChange, values, allRatings, allGenres }) => (
   <Segment>
     <Label attached="top left">Basics</Label>
     <Form>
@@ -15,7 +15,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
               label="Title"
               type="text"
               placeholder="Movie Title"
-              onChange={(e) => (onChange({ title: e.target.value }))}
+              onChange={e => (onChange({ title: e.target.value }))}
               value={values.title}
             />
           </Form.Field>
@@ -26,7 +26,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
               label="Code"
               type="text"
               placeholder="ABC-123"
-              onChange={(e) => (onChange({ prodcode: e.target.value }))}
+              onChange={e => (onChange({ prodcode: e.target.value }))}
               value={values.code}
             />
           </Form.Field>
@@ -36,23 +36,42 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
             <Dropdown
               placeholder="Select Genre"
               selection
-              options={[{ id: 0, text:"", value: "" }, ...genreOptions]}
-              onChange={(event, data) => (onChange({
-                genre: data.value,
-                genreid: data.options[data.options.findIndex(
-                  option => option.value === data.value)].id }))  // Only way to find index of selection
+              options={
+                [
+                  { id: 0, text: "", value: "" },
+                  ...(allGenres.loading ?
+                    [] :
+                    allGenres.allGenres.map(({ id, code, description }) =>
+                      ({ id, text: `${code} - ${description}`, value: code })
+                    )
+                  ),
+                ]
               }
-              value={values.genre}
+              onChange={(event, data) => (onChange({
+                genre: {
+                  genrecode: data.value,
+                  genreid: data.options[data.options.findIndex(option =>
+                    option.value === data.value)].id, // Only way to find index of selection
+                },
+              }))
+              }
+              value={values.genre.genrecode}
             />
           </Form.Field>
         </List.Item>
         <List.Item>
           <Form.Field>
             <RatingElement
-              maxRating={ratingOptions.length - 1}
-              ratingOptions={ratingOptions}
+              maxRating={allRatings.loading ? 0 : allRatings.allRatings.length - 1}
+              ratingOptions={
+                allRatings.loading ?
+                  [] :
+                  allRatings.allRatings.map(({ id, rating, description }) =>
+                    ({ id, value: rating, description })
+                  )
+              }
               onRate={onChange}
-              rating={values.rating}
+              rating={values.rating.ratingnum}
             />
           </Form.Field>
         </List.Item>
@@ -67,7 +86,7 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
         </List.Item>
       </List>
     </Form>
-    <Dimmer inverted active={!(ratingOptions.length && genreOptions.length)}>
+    <Dimmer inverted active={(allRatings.loading || allGenres.loading)}>
       <Loader>Loading</Loader>
     </Dimmer>
   </Segment>
@@ -76,8 +95,8 @@ const Basics = ({ onChange, values, ratingOptions, genreOptions }) => (
 Basics.propTypes = {
   onChange: PropTypes.func.isRequired,
   values: PropTypes.object.isRequired,
-  ratingOptions: PropTypes.array.isRequired,
-  genreOptions: PropTypes.array.isRequired,
+  allRatings: PropTypes.object.isRequired,
+  allGenres: PropTypes.object.isRequired,
 };
 
 export default Basics;

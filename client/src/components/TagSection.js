@@ -8,10 +8,10 @@ const TagSection = ({ tagData, onTagChange, tagValues }) => (
     {tagData !== undefined && tagValues !== undefined
       ?
       <div>
-        <Label attached="top left">{tagData.title} Tags</Label>
+        <Label attached="top left">{tagData.category} Tags</Label>
         <Form>
           <List>
-            {tagData.tags.map((tagOption) => (
+            {tagData.tags.map(tagOption => (
               <List.Item key={tagOption.tag}>
                 <Form.Checkbox
                   label={`${tagOption.tag} - ${tagOption.name}`}

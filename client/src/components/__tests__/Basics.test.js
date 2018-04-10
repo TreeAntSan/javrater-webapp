@@ -1,8 +1,8 @@
 import React from "react";
 import { mount } from "enzyme";
 
-import Basics from "../Basics";
 import { Segment, Dimmer, Form } from "semantic-ui-react";
+import Basics from "../Basics";
 
 import utils from "../../utils";
 
@@ -36,15 +36,11 @@ describe("Basics", () => {
   });
 
   it("should have the `Segment` element", () => {
-    expect(
-      wrapper.find(Segment)
-    ).toHaveLength(1);
+    expect(wrapper.find(Segment)).toHaveLength(1);
   });
 
   it("should have the `Dimmer` element", () => {
-    expect(
-      wrapper.find(Dimmer)
-    ).toHaveLength(1);
+    expect(wrapper.find(Dimmer)).toHaveLength(1);
   });
 
   describe("receives `ratingOptions` and `genreOptions`", () => {
@@ -53,9 +49,7 @@ describe("Basics", () => {
     });
 
     it("should have the `Form` element", () => {
-      expect(
-        wrapper.find(Form)
-      ).toHaveLength(1);
+      expect(wrapper.find(Form)).toHaveLength(1);
     });
   });
 

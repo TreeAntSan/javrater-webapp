@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
 import { cloneDeep } from "lodash";
@@ -6,7 +9,6 @@ import { cloneDeep } from "lodash";
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import client from "../client";
 import utils from "../utils";
 
 class GridWindow extends Component {
@@ -22,14 +24,18 @@ class GridWindow extends Component {
     basicValues: {
       title: "",
       prodcode: "",
-      genre: "",
-      genreid: 0,
-      rating: 0,
-      ratingid: 0,
+      genre: {
+        genrecode: "",
+        genreid: "",
+      },
+      rating: {
+        ratingnum: 0,
+        ratingtext: "",
+        ratingdescription: "",
+        ratingid: "",
+      },
       tagsOnly: false,
     },
-    genreOptions: [],
-    ratingOptions: [],
     tagOptions: [],
     tallyTags: {
       tags: [],
@@ -45,45 +51,23 @@ class GridWindow extends Component {
     this.state = this.initialState;
   }
 
-  componentWillMount() {
-    this._fetchGenres();
-    this._fetchRatings();
-    this._fetchTags();
+  componentWillUpdate() {
+    if (!this.props.allTags.loading && this.state.tagOptions.length === 0) {
+      this._handleTags();
+    }
   }
 
-  _fetchGenres = () => {
-    client.getGenres((genres) => {
-      const genreOptions = utils.genreOptionFormatter(genres);
+  _handleTags = () => {
+    const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
 
-      // Need to update initial state so it's reset to these values each time.
-      this.initialState.genreOptions = genreOptions;
-      this.setState({ genreOptions });
-    });
-  };
+    // Need to update initial state so it's reset to these values each time.
+    this.initialState.tagOptions = tagOptions;
+    const { tagDict, tagSeed } = utils.makeTagDict(tagOptions);
+    this.initialState.checkedTags = tagSeed;
+    this.tagDict = tagDict;
 
-  _fetchRatings = () => {
-    client.getRatings((ratings) => {
-      const ratingOptions = utils.ratingOptionFormatter(ratings);
-
-      // Need to update initial state so it's reset to these values each time.
-      this.initialState.ratingOptions = ratingOptions;
-      this.setState({ ratingOptions });
-    });
-  };
-
-  _fetchTags = () => {
-    client.getTags((tags) => {
-      const tagOptions = utils.tagOptionFormatter(tags);
-
-      // Need to update initial state so it's reset to these values each time.
-      this.initialState.tagOptions = tagOptions;
-      const { tagDict, tagSeed } = utils.makeTagDict(tagOptions);
-      this.initialState.checkedTags = tagSeed;
-      this.tagDict = tagDict;
-
-      // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-      this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
-    });
+    // Need to deep copy or the component state will update initialState, breaking the reset functionality.
+    this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
   };
 
   handleTagChange = (tag, tagState) => {
@@ -92,15 +76,13 @@ class GridWindow extends Component {
     this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
   };
 
-  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly, genreid, ratingid }) => {
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
     // TODO There must be a more elegant way to accomplish this...
     const basicValues = {...this.state.basicValues};
     if (title !== undefined) basicValues.title = title;
     if (prodcode !== undefined) basicValues.prodcode = prodcode;
     if (genre !== undefined) basicValues.genre = genre;
-    if (genreid !== undefined) basicValues.genreid = genreid;
     if (rating !== undefined) basicValues.rating = rating;
-    if (ratingid !== undefined) basicValues.ratingid = ratingid;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
     this.setState({ basicValues }, this.renderOutput);
   };
@@ -139,32 +121,28 @@ class GridWindow extends Component {
     if (this.state.basicValues.tagsOnly) {
       output = `(${tagList})`;
     } else {
-      output = deline`${this.state.basicValues.genre}
-                      ${seriesList} ${this.state.ratingOptions[this.state.basicValues.rating].value} -
+      output = deline`${this.state.basicValues.genre.genrecode}
+                      ${seriesList} ${this.state.basicValues.rating.ratingtext} -
                       ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${tagList})`;
     }
 
     this.setState({ output });
   };
 
-  handleSaveClick = () => {
+  handleSaveClick = async () => {
     const { tagIds } = this._tallyTags();
-    const payload = {
-      title: this.state.basicValues.title,
-      prodcode: this.state.basicValues.prodcode,
-      genreid: this.state.basicValues.genreid,
-      ratingid: this.state.basicValues.ratingid,
-      tags: tagIds.join(","),
-      createdby: this.state.userid,
-    };
-
-    client.postMovie(payload, (res) => {
-      if (res.error) {
-        this.setState({ output: `Error: ${res.error}` });
-      } else {
-        this.setState({ output: `Status ${res.status} - MovieId: ${res.response}` });
+    const result = await this.props.addMovie({
+      variables: {
+        title: this.state.basicValues.title,
+        prodCode: this.state.basicValues.prodcode,
+        genre: this.state.basicValues.genre.genreid,
+        rating: this.state.basicValues.rating.ratingid,
+        tags: tagIds,
       }
     });
+
+    const { id } = result.data.addMovie;
+    this.setState({ output: `Success: ${id}` });
   };
 
   handleParseClick = () => {
@@ -202,8 +180,8 @@ class GridWindow extends Component {
                   <Basics
                     onChange={this.handleBasicsChange}
                     values={this.state.basicValues}
-                    ratingOptions={this.state.ratingOptions}
-                    genreOptions={this.state.genreOptions}
+                    allRatings={this.props.allRatings}
+                    allGenres={this.props.allGenres}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -291,9 +269,10 @@ class GridWindow extends Component {
               onSaveClick={this.handleSaveClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
-              ready={this.state.genreOptions.length > 0 &&
-                      this.state.ratingOptions.length > 0 &&
-                      this.state.tagOptions.length > 0}
+              ready={!this.props.allRatings.loading &&
+                !this.props.allGenres.loading &&
+                !this.props.allTags.loading
+              }
             />
           </Grid.Column>
         </Grid.Row>
@@ -302,4 +281,55 @@ class GridWindow extends Component {
   }
 }
 
-export default GridWindow;
+GridWindow.propType = {
+  allRatings: PropTypes.object.isRequired,
+  allGenres: PropTypes.object.isRequired,
+  allTags: PropTypes.object.isRequired,
+};
+
+const ALL_GENRES_QUERY = gql`
+  query AllGenresQuery {
+    allGenres {
+      id
+      code
+      description
+    }
+  }
+`;
+
+const ALL_RATINGS_QUERY = gql`
+  query AllRatingsQuery {
+    allRatings {
+      id
+      rating
+      description
+    }
+  }
+`;
+
+const ALL_TAGS_QUERY = gql`
+  query AllTagsQuery {
+    allTags {
+      id
+      category
+      tag
+      name
+      description
+    }
+  }
+`;
+
+const ADD_MOVIE_MUTATION = gql`
+  mutation AddMovieMutation($title: String!, $prodCode: String!, $genre: String!, $rating: String!, $tags: [String]!) {
+    addMovie(title: $title, prodCode: $prodCode, genre: $genre, rating: $rating, tags: $tags) {
+      id
+    }
+  }
+`;
+
+export default compose(
+  graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
+  graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
+  graphql(ALL_TAGS_QUERY, { name: "allTags" }),
+  graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
+)(GridWindow);

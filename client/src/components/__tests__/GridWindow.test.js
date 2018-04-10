@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { mount } from "enzyme";
 
 import GridWindow from "../GridWindow";
 import client from "../../client";
@@ -22,9 +22,7 @@ describe("GridWindow", () => {
   });
 
   it("should have the `GridWindow` element", () => {
-    expect(
-      wrapper.find(GridWindow)
-    ).toBeTruthy();
+    expect(wrapper.find(GridWindow)).toBeTruthy();
   });
 
   describe("then calls the APIs", () => {
@@ -50,23 +48,16 @@ describe("GridWindow", () => {
       });
 
       it("should have genreOptions", () => {
-        expect(
-          wrapper.state().genreOptions.length
-        ).toBe(9);
+        expect(wrapper.state().genreOptions.length).toBe(9);
       });
 
       it("should have ratingOptions", () => {
-        expect(
-          wrapper.state().ratingOptions.length
-        ).toBe(7);
+        expect(wrapper.state().ratingOptions.length).toBe(7);
       });
 
       it("should have tagOptions", () => {
-        expect(
-          wrapper.state().tagOptions.length
-        ).toBe(11);
+        expect(wrapper.state().tagOptions.length).toBe(11);
       });
-
     });
   });
 });
