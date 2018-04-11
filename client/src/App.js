@@ -15,32 +15,33 @@ const App = () => (
     <HeaderMenu />
     <Switch>
       <Route exact path="/" render={() => <Redirect to="/welcome" />} />
-      <Route exact path="/welcome" render={props =>
+      <Route exact path="/welcome" render={() =>
         <UserWrapper>
-          <Welcome {...props} />
+          <Welcome />
         </UserWrapper>}
       />
-      <Route exact path="/create" render={props =>
+      <Route exact path="/create" render={() =>
         <UserWrapper>
-          <Create {...props} />
+          <Create />
         </UserWrapper>}
       />
-      <Route exact path="/movies" render={props =>
+      <Route exact path="/movies" render={() =>
         <UserWrapper>
-          <Movies {...props} />
+          <Movies />
         </UserWrapper>}
       />
       {/* TODO The loginPath prop here is a little hacky, consider a better solution... */}
-      <Route exact path="/login" render={props =>
+      <Route exact path="/login" render={() =>
         <UserWrapper>
-          <Login loginPath={"/login"} {...props} />
+          <Login loginPath={"/login"} />
         </UserWrapper>}
       />
-      <Route exact path="/signup" render={props =>
+      <Route exact path="/signup" render={() =>
         <UserWrapper>
-          <Login loginPath={"/login"} {...props} />
+          <Login loginPath={"/login"} />
         </UserWrapper>}
       />
+      <Route path="*" render={() => <Redirect to="/" />} />
     </Switch>
     <Footer />
   </UserWrapper>

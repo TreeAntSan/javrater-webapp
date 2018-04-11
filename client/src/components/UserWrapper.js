@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+import { withRouter } from "react-router";
 
 class UserWrapper extends PureComponent {
   render() {
@@ -34,4 +35,6 @@ const ME_QUERY = gql`
   }
 `;
 
-export default graphql(ME_QUERY, { name: "meQuery" })(UserWrapper);
+// A note to myself: withRouter passes Route props (history, location, match) to this component.
+// All my components that are children of this component should also have this withRouter call.
+export default withRouter(graphql(ME_QUERY, { name: "meQuery" })(UserWrapper));

@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from "react-router";
 import { Image, Header } from "semantic-ui-react";
 
 const Welcome = props => (
@@ -17,4 +18,4 @@ const Welcome = props => (
   </div>
 );
 
-export default Welcome;
+export default withRouter(Welcome);

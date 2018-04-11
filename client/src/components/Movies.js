@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+import { withRouter } from "react-router";
 import { Container, Loader, Message } from "semantic-ui-react";
 
 import MovieTable from "./MovieTable";
@@ -68,4 +69,4 @@ const ALL_MOVIES_QUERY = gql`
   }
 `;
 
-export default graphql(ALL_MOVIES_QUERY, { name: "allMovies" })(Movies);
+export default withRouter(graphql(ALL_MOVIES_QUERY, { name: "allMovies" })(Movies));

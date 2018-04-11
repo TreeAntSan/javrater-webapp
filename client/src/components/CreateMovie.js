@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
 import { cloneDeep } from "lodash";
@@ -286,4 +287,4 @@ CreateMovie.propType = {
   addMovie: PropTypes.func.isRequired,
 };
 
-export default CreateMovie;
+export default withRouter(CreateMovie);

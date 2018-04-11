@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Grid, Header, Segment, Form, Button, Container } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { withRouter } from "react-router";
+import { Grid, Header, Segment, Form, Button, Container } from "semantic-ui-react";
 
 import { AUTH_TOKEN } from "../constants";
 
@@ -141,7 +142,7 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-export default compose(
+export default withRouter(compose(
   graphql(SIGNUP_MUTATION, { name: 'signupMutation' }),
   graphql(LOGIN_MUTATION, { name: 'loginMutation' }),
-)(Login);
+)(Login));

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
+import { withRouter } from "react-router";
 import { Container, Segment, Loader, Message } from "semantic-ui-react";
 
 import CreateMovie from "./CreateMovie";
@@ -91,9 +92,9 @@ const ADD_MOVIE_MUTATION = gql`
   }
 `;
 
-export default compose(
+export default withRouter(compose(
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
   graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
-)(Create);
+)(Create));
