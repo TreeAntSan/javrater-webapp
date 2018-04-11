@@ -285,6 +285,7 @@ GridWindow.propType = {
   allRatings: PropTypes.object.isRequired,
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
+  addMovie: PropTypes.func.isRequired,
 };
 
 const ALL_GENRES_QUERY = gql`

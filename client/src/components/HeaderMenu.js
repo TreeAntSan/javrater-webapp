@@ -20,6 +20,11 @@ const HeaderMenu = () => (
         Movies
       </Link>
     </Menu.Item>
+    <Menu.Item>
+      <Link to="/login">
+        Login
+      </Link>
+    </Menu.Item>
   </Menu>
 );
 

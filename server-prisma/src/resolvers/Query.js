@@ -101,6 +101,18 @@ const Query = {
   },
 
   /**
+   * Return user information on a User minus their password and email.
+   * @param parent
+   * @param id
+   * @param ctx
+   * @param info
+   * @returns {*}
+   */
+  user(parent, { id }, ctx, info) {
+    return ctx.db.query.user({ where: { id } }, info);
+  },
+
+  /**
    * Return information on the requesting User minus their password.
    * @param parent
    * @param args

@@ -2,13 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Table } from "semantic-ui-react";
 
+import TagsTipped from "./TagsTipped";
+
 const MovieTable = ({ movies }) => (
-  <Table celled>
+  <Table celled compact>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell>Genre</Table.HeaderCell>
-        <Table.HeaderCell>Title</Table.HeaderCell>
         <Table.HeaderCell>ProdCode</Table.HeaderCell>
+        <Table.HeaderCell>Title</Table.HeaderCell>
+        <Table.HeaderCell>Genre</Table.HeaderCell>
         <Table.HeaderCell>Rating</Table.HeaderCell>
         <Table.HeaderCell>Tags</Table.HeaderCell>
         <Table.HeaderCell>Author</Table.HeaderCell>
@@ -17,13 +19,12 @@ const MovieTable = ({ movies }) => (
     <Table.Body>
       {movies.map(row => (
         <Table.Row key={row.id}>
-          <Table.Cell>{row.genre.code} ({row.genre.description})</Table.Cell>
-          <Table.Cell>{row.title}</Table.Cell>
           <Table.Cell>{row.prodCode}</Table.Cell>
+          <Table.Cell>{row.title}</Table.Cell>
+          <Table.Cell>{row.genre.code} ({row.genre.description})</Table.Cell>
           <Table.Cell>{row.rating.rating}</Table.Cell>
-          {/* TODO Make a tool-tip supported list of tags */}
           <Table.Cell>{row.tags.length ?
-            row.tags.map(tag => tag.tag).join(", ") :
+            <TagsTipped tags={row.tags} /> :
             <i>(No Tags)</i>
           }</Table.Cell>
           <Table.Cell>{row.createdBy.name}</Table.Cell>

@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 
 import MovieTable from "./MovieTable";
 
+// TODO Bug: page doesn't refresh when navigated to it when there is a new movie saved
 class Movies extends Component {
   render() {
     if (this.props.allMovies.loading) {
@@ -54,8 +55,11 @@ const ALL_MOVIES_QUERY = gql`
         description
       }
       tags {
+        id
         tag
         name
+        category
+        description
       }
       createdBy {
         name
