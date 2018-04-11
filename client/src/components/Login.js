@@ -2,56 +2,83 @@ import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
-import { Grid, Header, Segment, Form, Button, Container } from "semantic-ui-react";
+import { Grid, Header, Segment, Form, Button, Container, Dimmer, Loader, Message } from "semantic-ui-react";
 
-import { AUTH_TOKEN } from "../constants";
+import utils from "../utils";
 
 class Login extends Component {
   state = {
     name: "",
     email: "",
     password: "",
+    submissionInProgress: false,
+    submissionFailure: "",
+    shouldRedirect: false,
   };
 
 
   _confirm = async () => {
+    // Login
     if (this.props.location.pathname === this.props.loginPath) {
-      const result = await this.props.loginMutation({
-        variables: {
-          email: this.state.email,
-          password: this.state.password,
-        },
-      });
-      const { token } = result.data.login;
-      this._saveUserData(token);
+      this.setState({ submissionInProgress: true });
+      try {
+        const result = await this.props.loginMutation({
+          variables: {
+            email: this.state.email,
+            password: this.state.password,
+          },
+        });
+        const { token } = result.data.login;
+        utils.setToken(token);
+        this.setState({ shouldRedirect: true });
+      } catch (error) {
+        this.setState({ submissionInProgress: false, submissionFailure: error.message });
+      }
 
+    // Signup
     } else {
-      const result = await this.props.signupMutation({
-        variables: {
-          name: this.state.name,
-          email: this.state.email,
-          password: this.state.password,
-        },
-      });
-      const { token } = result.data.signup;
-      this._saveUserData(token);
+      this.setState({ submissionInProgress: true });
+      try {
+        const result = await this.props.signupMutation({
+          variables: {
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password,
+          },
+        });
+        const { token } = result.data.signup;
+        utils.setToken(token);
+        this.setState({ shouldRedirect: true });
+      } catch (error) {
+        this.setState({ submissionInProgress: false, submissionFailure: error.message });
+      }
     }
-
-    this.props.history.push("/");
   };
 
-  _saveUserData = token => {
-    localStorage.setItem(AUTH_TOKEN, token);
+  _redirectPath = () => {
+    const locationState = this.props.location.state;
+    const pathname = (
+      locationState && locationState.from && locationState.from.pathname
+    );
+    return pathname || "/";
   };
 
   render () {
+    // TODO Bug UserWrapper doesn't get the name to the client immediately after being redirected
+    if (this.state.shouldRedirect) {
+      return (
+        <Redirect to={this._redirectPath()} />
+      )
+    }
+
     // Necessary in order to deal with "Update Blocking". See:
     // https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md
     const loginPage = this.props.location.pathname === this.props.loginPath;
     const widths = { mobile: 16, tablet: 8, computer: 8 }; // Responsive sizing support
 
+    // TODO Form validation needed!
     return (
       <Grid padded centered columns={2}>
         <Grid.Row>
@@ -67,6 +94,9 @@ class Login extends Component {
         <Grid.Row>
           <Grid.Column {...widths}>
             <Segment>
+              <Dimmer inverted active={this.state.submissionInProgress}>
+                <Loader />
+              </Dimmer>
               <Form>
                 {!loginPage && (
                   <Form.Input
@@ -95,6 +125,14 @@ class Login extends Component {
                   placeholder={loginPage ? "Enter your password" : "Choose a safe password"}
                   type="password"
                 />
+                {this.state.submissionFailure &&
+                <Container>
+                  <Message negative>
+                    <Message.Header>Error</Message.Header>
+                    {this.state.submissionFailure}
+                  </Message>
+                </Container>
+                }
                 <Container textAlign="right">
                   <Button
                     primary

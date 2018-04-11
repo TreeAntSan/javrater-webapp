@@ -8,13 +8,21 @@ import { getMainDefinition } from "apollo-utilities";
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
+
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import { AUTH_TOKEN } from "./constants";
-import { BrowserRouter } from "react-router-dom";
+import util from "./utils";
 
 const httpLink = new HttpLink({ uri: "http://localhost:4000" });
+
+let token = null;
+try {
+  token = util.getToken();
+} catch (error) {
+  console.log(error.message);
+}
 
 // ApolloLink for authentication
 // "This middleware will be invoked every time ApolloClient sends a request to the server. You can
@@ -23,7 +31,6 @@ const httpLink = new HttpLink({ uri: "http://localhost:4000" });
 // at the end of the middleware function to pass the operation to the next middleware function in
 // the chain."
 const middlewareAuthLink = new ApolloLink((operation, forward) => {
-  const token = localStorage.getItem(AUTH_TOKEN);
   const authorizationHeader = token ? `Bearer ${token}` : null;
   operation.setContext({
     headers: {
@@ -44,7 +51,7 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: {
-      authToken: localStorage.getItem(AUTH_TOKEN),
+      authToken: token,
     },
   },
 });

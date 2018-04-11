@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { graphql } from "react-apollo/index";
-import gql from "graphql-tag";
 import { Menu, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+
+import utils from "../utils";
 
 const HeaderMenu = props => (
   <Menu stackable>
@@ -23,33 +22,27 @@ const HeaderMenu = props => (
         Movies
       </Link>
     </Menu.Item>
-    <Menu.Menu position="right">
-      <Menu.Item>
-        <p>Hello{props.meQuery && !props.meQuery.error && !props.meQuery.loading && `, ${props.meQuery.me.name}`}</p>
-      </Menu.Item>
-      <Menu.Item>
-        <Link to="/signup">
-          Sign-up
-        </Link>
-      </Menu.Item>
-    </Menu.Menu>
+    {utils.loggedIn(props.user) ?
+      <Menu.Menu position="right">
+        <Menu.Item>
+          <p>Hello{utils.grabName(props.user, ", %s")}</p>
+        </Menu.Item>
+        <Menu.Item>
+          <Link to="/logout">
+            Logout
+          </Link>
+        </Menu.Item>
+      </Menu.Menu>
+      :
+      <Menu.Menu position="right">
+        <Menu.Item>
+          <Link to="/login">
+            Login
+          </Link>
+        </Menu.Item>
+      </Menu.Menu>
+    }
   </Menu>
 );
 
-
-HeaderMenu.propTypes = {
-  children: PropTypes.array,
-  meQuery: PropTypes.object.isRequired,
-};
-
-const ME_QUERY = gql`
-  query MeQuery {
-    me {
-      id
-      name
-      email
-    }
-  }
-`;
-
-export default graphql(ME_QUERY, { name: "meQuery" })(HeaderMenu);
+export default HeaderMenu;
