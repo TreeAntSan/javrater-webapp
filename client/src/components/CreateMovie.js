@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
 import { cloneDeep } from "lodash";
@@ -11,7 +9,7 @@ import TagSection from "./TagSection";
 import Output from "./Output";
 import utils from "../utils";
 
-class GridWindow extends Component {
+class CreateMovie extends Component {
 
   // TODO Bonus: add a tooltip timing function
 
@@ -281,56 +279,11 @@ class GridWindow extends Component {
   }
 }
 
-GridWindow.propType = {
+CreateMovie.propType = {
   allRatings: PropTypes.object.isRequired,
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
 };
 
-const ALL_GENRES_QUERY = gql`
-  query AllGenresQuery {
-    allGenres {
-      id
-      code
-      description
-    }
-  }
-`;
-
-const ALL_RATINGS_QUERY = gql`
-  query AllRatingsQuery {
-    allRatings {
-      id
-      rating
-      description
-    }
-  }
-`;
-
-const ALL_TAGS_QUERY = gql`
-  query AllTagsQuery {
-    allTags {
-      id
-      category
-      tag
-      name
-      description
-    }
-  }
-`;
-
-const ADD_MOVIE_MUTATION = gql`
-  mutation AddMovieMutation($title: String!, $prodCode: String!, $genre: String!, $rating: String!, $tags: [String]!) {
-    addMovie(title: $title, prodCode: $prodCode, genre: $genre, rating: $rating, tags: $tags) {
-      id
-    }
-  }
-`;
-
-export default compose(
-  graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
-  graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
-  graphql(ALL_TAGS_QUERY, { name: "allTags" }),
-  graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
-)(GridWindow);
+export default CreateMovie;
