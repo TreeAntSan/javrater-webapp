@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Container, Loader, Message } from "semantic-ui-react";
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+import { Container, Loader, Message } from "semantic-ui-react";
 
 import MovieTable from "./MovieTable";
 

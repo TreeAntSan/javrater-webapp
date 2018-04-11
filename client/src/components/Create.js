@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Container, Segment, Loader, Message } from "semantic-ui-react";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
+import { Container, Segment, Loader, Message } from "semantic-ui-react";
 
 import CreateMovie from "./CreateMovie";
 
+// TODO Bug with glitchy loading, requiring a second click on a link to work
 class Create extends Component {
   render() {
     if (this.props.allRatings.loading ||

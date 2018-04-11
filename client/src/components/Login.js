@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import { Grid, Header, Segment, Form, Button, Container } from "semantic-ui-react";
-import { Link } from "react-router-dom";
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
+import { Grid, Header, Segment, Form, Button, Container } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+
+import { AUTH_TOKEN } from "../constants";
 
 class Login extends Component {
   state = {
@@ -12,15 +14,47 @@ class Login extends Component {
     password: "",
   };
 
+
+  _confirm = async () => {
+    if (this.props.location.pathname === this.props.loginPath) {
+      const result = await this.props.loginMutation({
+        variables: {
+          email: this.state.email,
+          password: this.state.password,
+        },
+      });
+      const { token } = result.data.login;
+      this._saveUserData(token);
+
+    } else {
+      const result = await this.props.signupMutation({
+        variables: {
+          name: this.state.name,
+          email: this.state.email,
+          password: this.state.password,
+        },
+      });
+      const { token } = result.data.signup;
+      this._saveUserData(token);
+    }
+
+    this.props.history.push("/");
+  };
+
+  _saveUserData = token => {
+    localStorage.setItem(AUTH_TOKEN, token);
+  };
+
   render () {
     // Necessary in order to deal with "Update Blocking". See:
     // https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md
     const loginPage = this.props.location.pathname === this.props.loginPath;
+    const widths = { mobile: 16, tablet: 8, computer: 8 }; // Responsive sizing support
 
     return (
       <Grid padded centered columns={2}>
         <Grid.Row>
-          <Grid.Column mobile={16} tablet={8} computer={8}>
+          <Grid.Column {...widths}>
             <Header as="h1" textAlign="center">
               <Header.Content>
                 Please {loginPage ? "login" : "sign-up"} below!
@@ -30,7 +64,7 @@ class Login extends Component {
         </Grid.Row>
 
         <Grid.Row>
-          <Grid.Column mobile={16} tablet={8} computer={8}>
+          <Grid.Column {...widths}>
             <Segment>
               <Form>
                 {!loginPage && (
@@ -61,7 +95,13 @@ class Login extends Component {
                   type="password"
                 />
                 <Container textAlign="right">
-                  <Button type="submit">{loginPage ? "Login" : "Sign-up"}</Button>
+                  <Button
+                    primary
+                    type="submit"
+                    onClick={() => this._confirm()}
+                  >
+                    {loginPage ? "Login" : "Sign-up"}
+                  </Button>
                   <br />
                   <br />
                   <Link

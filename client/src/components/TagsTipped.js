@@ -17,7 +17,7 @@ const TagsTipped = ({ tags }) => (
 );
 
 TagsTipped.propTypes = {
-  tags: PropTypes.object.isRequired,
+  tags: PropTypes.array.isRequired,
 };
 
 export default TagsTipped;

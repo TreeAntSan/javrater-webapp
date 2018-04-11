@@ -36,7 +36,7 @@ const MovieTable = ({ movies }) => (
 );
 
 MovieTable.propTypes = {
-  movies: PropTypes.object.isRequired,
+  movies: PropTypes.array.isRequired,
 };
 
 export default MovieTable;
