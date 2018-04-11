@@ -2,7 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 
 import { Segment, Dimmer, Form } from "semantic-ui-react";
-import Basics from "../Basics";
+import Basics from "../create/Basics";
 
 import utils from "../../utils";
 

@@ -2,7 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 
 import CreateMovie from "../CreateMovie";
-import client from "../../client";
+import client from "../../../client";
 
 jest.mock("../../client");
 

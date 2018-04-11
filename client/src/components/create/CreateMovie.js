@@ -8,7 +8,7 @@ import { cloneDeep } from "lodash";
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import utils from "../utils";
+import utils from "../../utils";
 
 class CreateMovie extends Component {
 
