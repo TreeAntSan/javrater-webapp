@@ -5,10 +5,10 @@ import gql from "graphql-tag";
 import { withRouter } from "react-router";
 import { Container, Segment, Loader, Message } from "semantic-ui-react";
 
-import CreateMovie from "./CreateMovie";
+import MovieEditor from "./MovieEditor";
 
 // TODO Bug with glitchy loading, requiring a second click on a link to work
-class Create extends Component {
+class Movie extends Component {
   render() {
     if (this.props.allRatings.loading ||
       this.props.allGenres.loading ||
@@ -37,7 +37,7 @@ class Create extends Component {
       );
     }
     return (
-      <CreateMovie
+      <MovieEditor
         allRatings={this.props.allRatings}
         allGenres={this.props.allGenres}
         allTags={this.props.allTags}
@@ -47,7 +47,7 @@ class Create extends Component {
   }
 }
 
-Create.propTypes = {
+Movie.propTypes = {
   allRatings: PropTypes.object.isRequired,
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
@@ -99,4 +99,4 @@ export default withRouter(compose(
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
   graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
-)(Create));
+)(Movie));

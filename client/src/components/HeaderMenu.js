@@ -13,7 +13,7 @@ const HeaderMenu = props => (
       </Link>
     </Menu.Item>
     <Menu.Item>
-      <Link to="/create">
+      <Link to="/movie/create">
         Create
       </Link>
     </Menu.Item>

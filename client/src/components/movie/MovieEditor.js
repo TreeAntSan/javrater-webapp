@@ -10,7 +10,7 @@ import TagSection from "./TagSection";
 import Output from "./Output";
 import utils from "../../utils";
 
-class CreateMovie extends Component {
+class MovieEditor extends Component {
 
   // TODO Bonus: add a tooltip timing function
 
@@ -286,11 +286,11 @@ class CreateMovie extends Component {
   }
 }
 
-CreateMovie.propType = {
+MovieEditor.propType = {
   allRatings: PropTypes.object.isRequired,
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
 };
 
-export default withRouter(CreateMovie);
+export default withRouter(MovieEditor);

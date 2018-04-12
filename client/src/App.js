@@ -4,7 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import UserWrapper from "./components/UserWrapper";
 import HeaderMenu from "./components/HeaderMenu";
 import Welcome from "./components/Welcome";
-import Create from "./components/create/Create";
+import Movie from "./components/movie/Movie";
 import Movies from "./components/movies/Movies";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
@@ -26,9 +26,9 @@ const App = () => (
           <Welcome />
         </UserWrapper>}
       />
-      <Route exact path="/create" render={() =>
+      <Route exact path="/movie/create" render={() =>
         <UserWrapper>
-          <Create />
+          <Movie />
         </UserWrapper>}
       />
       <Route exact path="/movies" render={() =>

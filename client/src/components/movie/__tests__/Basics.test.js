@@ -2,12 +2,12 @@ import React from "react";
 import { mount } from "enzyme";
 
 import { Segment, Dimmer, Form } from "semantic-ui-react";
-import Basics from "../create/Basics";
+import Basics from "../Basics";
 
-import utils from "../../utils";
+import utils from "../../../utils";
 
-import mockGenres from "../../__mocks__/genre_all";
-import mockRatings from "../../__mocks__/rating_all";
+import mockGenres from "../../../__mocks__/genre_all";
+import mockRatings from "../../../__mocks__/rating_all";
 
 describe("Basics", () => {
   const onChange = jest.fn();
