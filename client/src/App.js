@@ -8,6 +8,7 @@ import Create from "./components/create/Create";
 import Movies from "./components/movies/Movies";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
+import User from "./components/user/User";
 import Footer from "./components/Footer";
 
 // TODO Use context to clean up the repeated use of UserWrapper. See https://stackoverflow.com/a/49726454/3120546
@@ -16,6 +17,7 @@ const App = () => (
     <UserWrapper>
       <HeaderMenu />
     </UserWrapper>
+    <br />
     <Switch>
       <Route exact path="/" render={() => <Redirect to="/welcome" />} />
       <Route exact path="/welcome" render={() =>
@@ -49,9 +51,15 @@ const App = () => (
           <Logout />
         </UserWrapper>}
       />
+      <Route exact path="/user/:userid" render={() =>
+        <UserWrapper private>
+          <User />
+        </UserWrapper>}
+      />
       <Route path="*" render={() => <Redirect to="/" />} />
     </Switch>
     <Footer />
+    <br />
   </div>
 );
 

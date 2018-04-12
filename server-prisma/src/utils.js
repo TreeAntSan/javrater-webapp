@@ -4,8 +4,15 @@ function getUserId(ctx) {
   const Authorization = ctx.request.get("Authorization");
   if (Authorization) {
     const token = Authorization.replace("Bearer ", "");
-    const { userId } = jwt.verify(token, process.env.APP_SECRET);
-    return userId;
+    try {
+      const { userId } = jwt.verify(token, process.env.APP_SECRET);
+      return userId;
+    } catch (error) {
+      if (error.name === "JsonWebTokenError") {
+        throw new AuthError();
+      }
+      throw error;
+    }
   }
 
   throw new AuthError();

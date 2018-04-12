@@ -49,6 +49,12 @@ class CreateMovie extends Component {
     this.state = this.initialState;
   }
 
+  /*
+    TODO Add transition blocking to prevent a user from accidentally navigating away
+    from the page when making changes. See
+    https://reacttraining.com/react-router/web/example/preventing-transitions
+  */
+
   // TODO figure out why Create link must be pressed twice to load tags and fix it...
   componentWillReceiveProps(nextProps) {
     if (!nextProps.allTags.loading && this.state.tagOptions.length === 0) {

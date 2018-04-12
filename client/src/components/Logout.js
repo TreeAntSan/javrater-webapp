@@ -1,5 +1,4 @@
-import React, { PureComponent } from 'react';
-import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
 import { Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
 
@@ -12,6 +11,8 @@ class Logout extends PureComponent {
     try {
       utils.removeToken();
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error.message);
       // Well, shouldn't have been logged in, either!
     }
   }

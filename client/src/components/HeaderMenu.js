@@ -8,7 +8,7 @@ const HeaderMenu = props => (
   <Menu stackable>
     <Menu.Item>
       <Link to="/welcome">
-        <Image src="treeant.jpeg" avatar />
+        <Image src="/treeant.jpeg" avatar />
         <span>JavRater</span>
       </Link>
     </Menu.Item>

@@ -4,8 +4,9 @@ import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Link, Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
-import { Grid, Header, Segment, Form, Button, Container, Dimmer, Loader, Message } from "semantic-ui-react";
+import { Header, Segment, Form, Button, Container, Dimmer, Loader, Message } from "semantic-ui-react";
 
+import FloatingCenterGrid from "./FloatingCenterGrid";
 import utils from "../utils";
 
 class Login extends Component {
@@ -76,83 +77,73 @@ class Login extends Component {
     // Necessary in order to deal with "Update Blocking". See:
     // https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md
     const loginPage = this.props.location.pathname === this.props.loginPath;
-    const widths = { mobile: 16, tablet: 8, computer: 8 }; // Responsive sizing support
 
     // TODO Form validation needed!
     return (
-      <Grid padded centered columns={2}>
-        <Grid.Row>
-          <Grid.Column {...widths}>
-            <Header as="h1" textAlign="center">
-              <Header.Content>
-                Please {loginPage ? "login" : "sign-up"} below!
-              </Header.Content>
-            </Header>
-          </Grid.Column>
-        </Grid.Row>
-
-        <Grid.Row>
-          <Grid.Column {...widths}>
-            <Segment>
-              <Dimmer inverted active={this.state.submissionInProgress}>
-                <Loader />
-              </Dimmer>
-              <Form>
-                {!loginPage && (
-                  <Form.Input
-                    required={!loginPage}
-                    value={this.state.name}
-                    onChange={e => this.setState({ name: e.target.value })}
-                    label="Name"
-                    autoComplete="username"
-                    placeholder="A username"
-                  />
-                )}
-                <Form.Input
-                  required={!loginPage}
-                  value={this.state.email}
-                  onChange={e => this.setState({ email: e.target.value })}
-                  label="Email"
-                  autoComplete="email"
-                  placeholder="Your email"
-                />
-                <Form.Input
-                  required={!loginPage}
-                  value={this.state.password}
-                  onChange={e => this.setState({ password: e.target.value })}
-                  label="Password"
-                  autoComplete={loginPage ? "current-password" : "new-password"}
-                  placeholder={loginPage ? "Enter your password" : "Choose a safe password"}
-                  type="password"
-                />
-                {this.state.submissionFailure &&
-                <Container>
-                  <Message negative>
-                    <Message.Header>Error</Message.Header>
-                    {this.state.submissionFailure}
-                  </Message>
-                </Container>
-                }
-                <Container textAlign="right">
-                  <Button
-                    primary
-                    type="submit"
-                    onClick={() => this._confirm()}
-                  >
-                    {loginPage ? "Login" : "Sign-up"}
-                  </Button>
-                  <br />
-                  <br />
-                  <Link
-                    to={loginPage ? "/signup" : "/login"}>
-                    Click here if you {loginPage ? "need to make" : "already have"} an account.
-                  </Link>
-                </Container>
-              </Form>
-            </Segment>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <FloatingCenterGrid>
+        <Header as="h1" textAlign="center">
+          <Header.Content>
+            Please {loginPage ? "login" : "sign-up"} below!
+          </Header.Content>
+        </Header>
+        <Segment>
+          <Dimmer inverted active={this.state.submissionInProgress}>
+            <Loader />
+          </Dimmer>
+          <Form>
+            {!loginPage && (
+              <Form.Input
+                required={!loginPage}
+                value={this.state.name}
+                onChange={e => this.setState({ name: e.target.value })}
+                label="Name"
+                autoComplete="username"
+                placeholder="A username"
+              />
+            )}
+            <Form.Input
+              required={!loginPage}
+              value={this.state.email}
+              onChange={e => this.setState({ email: e.target.value })}
+              label="Email"
+              autoComplete="email"
+              placeholder="Your email"
+            />
+            <Form.Input
+              required={!loginPage}
+              value={this.state.password}
+              onChange={e => this.setState({ password: e.target.value })}
+              label="Password"
+              autoComplete={loginPage ? "current-password" : "new-password"}
+              placeholder={loginPage ? "Enter your password" : "Choose a safe password"}
+              type="password"
+            />
+            {this.state.submissionFailure &&
+            <Container>
+              <Message negative>
+                <Message.Header>Error</Message.Header>
+                {this.state.submissionFailure}
+              </Message>
+            </Container>
+            }
+            <Container textAlign="right">
+              <Button
+                primary
+                type="submit"
+                onClick={() => this._confirm()}
+              >
+                {loginPage ? "Login" : "Sign-up"}
+              </Button>
+              <br />
+              <br />
+              <Link
+                to={loginPage ? "/signup" : "/login"}>
+                Click here if you {loginPage ? "need to make" : "already have"} an account.
+              </Link>
+            </Container>
+          </Form>
+        </Segment>
+      </FloatingCenterGrid>
     );
   }
 }
@@ -162,7 +153,6 @@ Login.propType = {
   loginMutation: PropTypes.func.isRequired,
   loginPath: PropTypes.string.isRequired,
 };
-
 
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {

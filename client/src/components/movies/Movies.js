@@ -63,6 +63,7 @@ const ALL_MOVIES_QUERY = gql`
         description
       }
       createdBy {
+        id
         name
       }
     }
