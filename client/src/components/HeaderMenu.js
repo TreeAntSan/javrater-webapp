@@ -25,7 +25,7 @@ const HeaderMenu = props => (
     {utils.loggedIn(props.user) ?
       <Menu.Menu position="right">
         <Menu.Item>
-          <p>Hello{utils.grabName(props.user, ", %s")}</p>
+          <p>Hello, <Link to="/user/me">{utils.grabName(props.user)}</Link></p>
         </Menu.Item>
         <Menu.Item>
           <Link to="/logout">

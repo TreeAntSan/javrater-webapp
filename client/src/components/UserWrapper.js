@@ -15,6 +15,7 @@ import FloatingCenterGrid from "./FloatingCenterGrid";
 // At the moment I don't know how to like... NOT send the query when using the graphql
 // function call at the bottom of this file. Probably just need to fire off manual queries?
 // Yeah... probably that...
+// TODO is PureComponent correct here? It wraps everything, it doesn't affect its children, right?
 class UserWrapper extends PureComponent {
   render() {
     // This route is private and requires that you be a user
@@ -23,7 +24,9 @@ class UserWrapper extends PureComponent {
         return (
           <FloatingCenterGrid>
             <Segment>
-              <Loader>Checking if you're a recognized user!</Loader>
+              <br />
+              <Loader active>Checking if you're a recognized user...</Loader>
+              <br />
             </Segment>
           </FloatingCenterGrid>
         );

@@ -16,7 +16,9 @@ class Create extends Component {
       return (
         <Container>
           <Segment>
-            <Loader>Loading</Loader>
+            <br />
+            <Loader active>Loading</Loader>
+            <br />
           </Segment>
         </Container>
       );

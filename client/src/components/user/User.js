@@ -8,11 +8,13 @@ import UserDetail from "./UserDetail";
 
 const User = (props) => {
   let userDetail = null;
+  // TODO check if the userid belongs to user (via UserWrapper) - either force me version or
+  // explain "this is your public profile!"
   if (props.match.params.userid === "me") {
     userDetail = (
       <Query query={ME_QUERY}>
         {queryProps => (
-          <UserDetail self {...queryProps} />
+          <UserDetail {...queryProps} />
         )}
       </Query>
     );
@@ -20,7 +22,7 @@ const User = (props) => {
     userDetail = (
       <Query query={USER_QUERY} variables={{ id: props.match.params.userid }}>
         {queryProps => (
-          <UserDetail {...queryProps} />
+          <UserDetail {...queryProps} userId={props.match.params.userid} />
         )}
       </Query>
     );
@@ -52,7 +54,6 @@ const USER_QUERY = gql`
         }
         rating {
           rating
-          description
         }
         tags {
           id
@@ -82,7 +83,6 @@ const ME_QUERY = gql`
         }
         rating {
           rating
-          description
         }
         tags {
           id

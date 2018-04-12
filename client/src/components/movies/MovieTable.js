@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Table } from "semantic-ui-react";
+import { Link } from "react-router-dom";
 
 import TagsTipped from "./TagsTipped";
 
-const MovieTable = ({ movies }) => (
+const MovieTable = props => (
   <Table celled compact>
     <Table.Header>
       <Table.Row>
@@ -13,11 +14,11 @@ const MovieTable = ({ movies }) => (
         <Table.HeaderCell>Genre</Table.HeaderCell>
         <Table.HeaderCell>Rating</Table.HeaderCell>
         <Table.HeaderCell>Tags</Table.HeaderCell>
-        <Table.HeaderCell>Author</Table.HeaderCell>
+        {!props.hideCreatedBy && <Table.HeaderCell>Created By</Table.HeaderCell>}
       </Table.Row>
     </Table.Header>
     <Table.Body>
-      {movies.map(row => (
+      {props.movies.map(row => (
         <Table.Row key={row.id}>
           <Table.Cell>{row.prodCode}</Table.Cell>
           <Table.Cell>{row.title}</Table.Cell>
@@ -27,7 +28,12 @@ const MovieTable = ({ movies }) => (
             <TagsTipped tags={row.tags} /> :
             <i>(No Tags)</i>
           }</Table.Cell>
-          <Table.Cell>{row.createdBy.name}</Table.Cell>
+          {!props.hideCreatedBy &&
+            <Table.Cell>
+              <Link to={`/user/${row.createdBy.id}`}>
+                {row.createdBy.name}
+              </Link>
+            </Table.Cell>}
         </Table.Row>
       ))}
     </Table.Body>
@@ -37,6 +43,7 @@ const MovieTable = ({ movies }) => (
 
 MovieTable.propTypes = {
   movies: PropTypes.array.isRequired,
+  hideCreatedBy: PropTypes.bool,
 };
 
 export default MovieTable;
