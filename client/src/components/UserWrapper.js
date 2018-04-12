@@ -4,9 +4,8 @@ import { graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
-import { Segment, Loader, Message } from "semantic-ui-react";
 
-import FloatingCenterGrid from "./FloatingCenterGrid";
+import LoadingError from "./LoadingError";
 
 // TODO there is a significant problem with this style that will require research:
 // Every page load it hits the server with a me() query when you're logged out.
@@ -18,38 +17,32 @@ import FloatingCenterGrid from "./FloatingCenterGrid";
 // TODO is PureComponent correct here? It wraps everything, it doesn't affect its children, right?
 class UserWrapper extends PureComponent {
   render() {
+
+    const { children, meQuery } = this.props;
+
     // This route is private and requires that you be a user
     if (this.props.private) {
-      if (this.props.meQuery.loading) {
+      if (meQuery.loading || meQuery.error) {
         return (
-          <FloatingCenterGrid>
-            <Segment>
-              <br />
-              <Loader active>Checking if you're a recognized user...</Loader>
-              <br />
-            </Segment>
-          </FloatingCenterGrid>
-        );
-      }
-      if (this.props.meQuery.error) {
-        return (
-          <FloatingCenterGrid>
-            <Message negative>
-              <Message.Header>Error</Message.Header>
-              <p>{this.props.meQuery.error.message}</p>
-              <p>
-                Please <Link to="/login">Login</Link> {" "}
-                or <Link to="/signup">Sign-up</Link>!
-              </p>
-            </Message>
-          </FloatingCenterGrid>
+          <LoadingError
+            error={meQuery.error}
+            errorMessage={(
+              <div>
+                <p>{meQuery.error && meQuery.error.message}</p>
+                <p>
+                  Please <Link to="/login">Login</Link> {" "}
+                  or <Link to="/signup">Sign-up</Link>!
+                </p>
+              </div>
+            )}
+            loadingMessage="Checking if you're a recognized user..."
+          />
         );
       }
     }
-    const { children } = this.props;
 
     const childrenWithProps = React.Children.map(children, child =>
-      React.cloneElement(child, { user: this.props.meQuery }));
+      React.cloneElement(child, { user: meQuery }));
 
     return (
       <div>{childrenWithProps}</div>

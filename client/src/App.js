@@ -10,6 +10,7 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import User from "./components/user/User";
 import Footer from "./components/Footer";
+import LoadingError from "./components/LoadingError";
 
 // TODO Use context to clean up the repeated use of UserWrapper. See https://stackoverflow.com/a/49726454/3120546
 const App = () => (
@@ -56,7 +57,13 @@ const App = () => (
           <User />
         </UserWrapper>}
       />
-      <Route path="*" render={() => <Redirect to="/" />} />
+      <Route path="*" render={() =>
+        <LoadingError
+          error={true}
+          errorHeader="404"
+          errorMessage="Page Not Found"
+        />}
+      />
     </Switch>
     <Footer />
     <br />

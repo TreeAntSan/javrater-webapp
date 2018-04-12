@@ -6,7 +6,7 @@ const date = new Date();
 const Footer = () => (
   <div>
     <Container textAlign="center">
-      © {date.getFullYear()} TreeAntSan. All rights reserved.
+      © {date.getFullYear()} - All rights reserved.
     </Container>
   </div>
 );

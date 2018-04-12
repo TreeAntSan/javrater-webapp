@@ -14,7 +14,8 @@ const MovieTable = props => (
         <Table.HeaderCell>Genre</Table.HeaderCell>
         <Table.HeaderCell>Rating</Table.HeaderCell>
         <Table.HeaderCell>Tags</Table.HeaderCell>
-        {!props.hideCreatedBy && <Table.HeaderCell>Created By</Table.HeaderCell>}
+        {props.showCreatedBy && <Table.HeaderCell>Created By</Table.HeaderCell>}
+        {props.showDelete && <Table.HeaderCell>Delete</Table.HeaderCell>}
       </Table.Row>
     </Table.Header>
     <Table.Body>
@@ -28,11 +29,15 @@ const MovieTable = props => (
             <TagsTipped tags={row.tags} /> :
             <i>(No Tags)</i>
           }</Table.Cell>
-          {!props.hideCreatedBy &&
+          {props.showCreatedBy &&
             <Table.Cell>
               <Link to={`/user/${row.createdBy.id}`}>
                 {row.createdBy.name}
               </Link>
+            </Table.Cell>}
+          {props.showDelete &&
+            <Table.Cell>
+              <button onClick={e => props.onDelete(e, row.id)}>Delete</button>
             </Table.Cell>}
         </Table.Row>
       ))}
@@ -43,7 +48,9 @@ const MovieTable = props => (
 
 MovieTable.propTypes = {
   movies: PropTypes.array.isRequired,
-  hideCreatedBy: PropTypes.bool,
+  showCreatedBy: PropTypes.bool,
+  showDelete: PropTypes.bool,
+  onDelete: PropTypes.func,
 };
 
 export default MovieTable;
