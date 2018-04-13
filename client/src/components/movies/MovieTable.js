@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Table } from "semantic-ui-react";
+import { Table, Button } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 import TagsTipped from "./TagsTipped";
@@ -38,8 +38,14 @@ const MovieTable = props => (
             </Table.Cell>}
           {(props.showDelete || props.showEdit) &&
             <Table.Cell>
-              {props.showDelete && <button onClick={e => props.onDelete(e, row.id)}>Delete</button>}
-              {props.showEdit && <Link to={`/movie/edit/${row.id}`}>Edit</Link>}
+              {props.showEdit &&
+                <Link to={`/movie/edit/${row.id}`}>
+                  <Button compact color="yellow">Edit</Button>
+                </Link>}
+              {props.showDelete &&
+              <Button onClick={e => props.onDelete(e, row.id)} compact color="red">
+                Delete
+              </Button>}
             </Table.Cell>}
         </Table.Row>
       ))}

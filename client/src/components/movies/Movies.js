@@ -12,10 +12,7 @@ import LoadingError from "../LoadingError";
 class Movies extends Component {
   handleDeleteClick = (e, movieId) => {
     e.preventDefault();
-    this._executeDelete(movieId);
-  };
 
-  _executeDelete = (movieId) => {
     // Inspiration taken from:
     // https://github.com/apollographql/apollo-client/blob/master/docs/source/basics/mutations.md#updating-the-cache-after-a-mutation
     this.props.client.mutate({

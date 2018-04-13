@@ -39,8 +39,6 @@ class Movie extends Component {
 
     if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
       allRatings.error || allGenres.error || allTags.error || editMovie.error) {
-    // if (!utils.queryOK(allRatings, true) && !utils.queryOK(allGenres, true) &&
-    //   !utils.queryOK(allRatings, true) && !utils.queryOK(editMovie, true)) {
       return (
         <LoadingError
           error={(allRatings.error || allGenres.error || allTags.error || editMovie.error)}
