@@ -63,10 +63,12 @@ const ALL_MOVIES_QUERY = gql`
       title
       prodCode
       genre {
+        id
         code
         description
       }
       rating {
+        id
         rating
         description
       }

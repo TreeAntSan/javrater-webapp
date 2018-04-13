@@ -5,10 +5,11 @@ import { Grid } from "semantic-ui-react";
 import deline from 'deline';
 import { cloneDeep, isEmpty } from "lodash";
 
+import utils from "../../utils";
+
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import utils from "../../utils";
 
 class MovieEditor extends Component {
 
@@ -44,7 +45,10 @@ class MovieEditor extends Component {
       tagIds: [],
     },
     output: "",
+    loaded: false,
   };
+
+  editMoviePopulated = false;
 
   constructor(props) {
     super(props);
@@ -57,15 +61,27 @@ class MovieEditor extends Component {
     https://reacttraining.com/react-router/web/example/preventing-transitions
   */
 
-  // TODO figure out why Create link must be pressed twice to load tags and fix it...
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.allTags.loading && this.state.tagOptions.length === 0) {
-      this._handleTags(nextProps);
+  componentDidMount() {
+    if (this._checkIfReady()) {
+      this.setState({ loaded: true });
+    }
+
+    if (utils.queryOK(this.props.allTags, this.props.allTags.allTags) &&
+      this.state.tagOptions.length === 0) {
+      this._handleTags();
+    }
+
+    if (!this.editMoviePopulated &&
+      utils.queryOK(this.props.editMovie, this.props.editMovie.data) &&
+      utils.queryOK(this.props.allRatings, this.props.allRatings.allRatings)
+    ) {
+      this.editMoviePopulated = true;
+      this._handleEditMovie();
     }
   }
 
-  _handleTags = (nextProps) => {
-    const tagOptions = utils.tagOptionFormatter(nextProps.allTags.allTags);
+  _handleTags = () => {
+    const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
 
     // Need to update initial state so it's reset to these values each time.
     this.initialState.tagOptions = tagOptions;
@@ -78,9 +94,9 @@ class MovieEditor extends Component {
   };
 
   handleTagChange = (tag, tagState) => {
-    const checkedTags = {...this.state.checkedTags};
+    const checkedTags = cloneDeep(this.state.checkedTags);
     checkedTags[tag].checked = tagState;
-    this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.generateOutput);
+    this.setState({ checkedTags, tallyTags: this._tallyTags(checkedTags) }, this.generateOutput);
   };
 
   handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
@@ -98,12 +114,12 @@ class MovieEditor extends Component {
     this.setState({ output: data.value});
   };
 
-  _tallyTags = () => {
+  _tallyTags = (checkedTags) => {
     let tagsList = [];
     let seriesList = [];
     let tagIds = [];
-    Object.keys(this.state.checkedTags).forEach(key => {
-      const tag = this.state.checkedTags[key];
+    Object.keys(checkedTags).forEach(key => {
+      const tag = checkedTags[key];
       if (tag.checked) {
         tagIds.push(tag.id);
         if (this.tagDict[key].category.toLowerCase() === "series" ||
@@ -150,28 +166,29 @@ class MovieEditor extends Component {
         genre: this.state.basicValues.genre.genreid,
         rating: this.state.basicValues.rating.ratingid,
         tags: tagIds,
-      }
+      },
     });
 
     const { id } = result.data.addMovie;
-    this.setState({ output: `Success: ${id}` });
+    this.setState({ output: `Success: Added ${id}` });
   };
 
   handleUpdateClick = async () => {
     const { tagIds } = this.state.tallyTags;
     const result = await this.props.updateMovie({
       variables: {
+        id: this.props.editMovie.data.movie.id,
         title: this.state.basicValues.title,
         prodCode: this.state.basicValues.prodcode,
         genre: this.state.basicValues.genre.genreid,
         rating: this.state.basicValues.rating.ratingid,
         tags: tagIds,
         replaceTags: true,
-      }
+      },
     });
 
-    const { id } = result.data.addMovie;
-    this.setState({ output: `Success: ${id}` });
+    const { id } = result.data.updateMovie;
+    this.setState({ output: `Success: Updated ${id}` });
   };
 
   handleParseClick = () => {
@@ -196,6 +213,44 @@ class MovieEditor extends Component {
 
   handleResetClick = () => {
     this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
+  };
+
+  _handleEditMovie = () => {
+    const movieData = this.props.editMovie.data.movie;
+    const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
+    const checkedTags = cloneDeep(this.state.checkedTags);
+    movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
+
+    this.setState({
+      basicValues: {
+        title: movieData.title,
+        prodcode: movieData.prodCode,
+        genre: {
+          genrecode: movieData.genre.code,
+          genreid: movieData.genre.id,
+        },
+        rating: {
+          ratingnum: ratingNum,
+          ratingtext: movieData.rating.rating,
+          ratingdescription: movieData.rating.description,
+          ratingid: movieData.rating.id,
+        }
+      },
+      checkedTags,
+    });
+  };
+
+  _checkIfReady = () => {
+    const props = this.props;
+    const editMovieReady = !isEmpty(props.editMovie) ?
+      utils.queryOK(props.editMovie, props.editMovie.data) :
+      true;
+
+    return (utils.queryOK(props.allRatings, props.allRatings.allRatings) &&
+      utils.queryOK(props.allGenres, props.allGenres.allGenres) &&
+      utils.queryOK(props.allTags, props.allTags.allTags) &&
+      editMovieReady
+    );
   };
 
   render () {
@@ -299,10 +354,7 @@ class MovieEditor extends Component {
               onUpdateClick={this.handleUpdateClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
-              ready={!this.props.allRatings.loading &&
-                !this.props.allGenres.loading &&
-                !this.props.allTags.loading
-              }
+              ready={this.state.loaded}
               editMode={!isEmpty(this.props.editMovie)}
             />
           </Grid.Column>

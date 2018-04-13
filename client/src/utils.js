@@ -75,12 +75,22 @@ const getToken = () => {
 };
 
 const grabName = (meQuery, string = "%s") => (
-  meQuery && !meQuery.error && !meQuery.loading && meQuery.me ?
-    sprintf(string, meQuery.me.name) : ""
+  queryOK(meQuery, meQuery.me) ? sprintf(string, meQuery.me.name) : ""
 );
 
 const loggedIn = meQuery => (
-  meQuery && !meQuery.error && !meQuery.loading && meQuery.me
+  queryOK(meQuery, meQuery.me)
+);
+
+/**
+ * Feed this function your query (and the data, as it may be named differently)
+ * and it'll quickly return whether it's OK to continue.
+ * @param query
+ * @param data
+ * @returns boolean
+ */
+const queryOK = (query, data) => (
+  query && data && !query.loading && !query.error
 );
 
 const utils = {
@@ -91,6 +101,7 @@ const utils = {
   getToken,
   grabName,
   loggedIn,
+  queryOK,
 };
 
 export default utils;

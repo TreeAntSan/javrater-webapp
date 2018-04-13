@@ -4,17 +4,17 @@ import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
 
+import utils from "../../utils";
+
 import LoadingError from "../LoadingError";
 import MovieEditor from "./MovieEditor";
 
 // TODO Bug with glitchy loading, requiring a second click on a link to work
 class Movie extends Component {
-  // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
   state = {
     editMovie: {},
   };
   queryAttempted = false;
-
 
   _queryMovie = async id => {
     const result = await this.props.client.query({
@@ -24,6 +24,7 @@ class Movie extends Component {
       },
     });
 
+    // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
     this.setState({ editMovie: result });
   };
 
@@ -36,10 +37,10 @@ class Movie extends Component {
       this._queryMovie(this.props.match.params.id);
     }
 
-    console.log(this.state.editMovie);
-
     if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
       allRatings.error || allGenres.error || allTags.error || editMovie.error) {
+    // if (!utils.queryOK(allRatings, true) && !utils.queryOK(allGenres, true) &&
+    //   !utils.queryOK(allRatings, true) && !utils.queryOK(editMovie, true)) {
       return (
         <LoadingError
           error={(allRatings.error || allGenres.error || allTags.error || editMovie.error)}
@@ -117,12 +118,16 @@ const MOVIE_QUERY = gql`
       prodCode
       genre {
         id
+        code
       }
       rating {
         id
+        rating
+        description
       }
       tags {
         id
+        tag
       }
     }
   }

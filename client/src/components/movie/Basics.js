@@ -28,7 +28,7 @@ const Basics = props => (
               type="text"
               placeholder="ABC-123"
               onChange={e => (props.onChange({ prodcode: e.target.value }))}
-              value={props.values.code}
+              value={props.values.prodcode}
             />
           </Form.Field>
         </List.Item>
@@ -41,10 +41,10 @@ const Basics = props => (
                 [
                   { id: 0, text: "", value: "" },
                   ...(props.allGenres.loading ?
-                    [] :
-                      props.allGenres.allGenres.map(({ id, code, description }) =>
-                      ({ id, text: `${code} - ${description}`, value: code })
-                    )
+                    []
+                    :
+                    props.allGenres.allGenres.map(({ id, code, description }) =>
+                      ({ id, text: `${code} - ${description}`, value: code }))
                   ),
                 ]
               }
@@ -66,10 +66,10 @@ const Basics = props => (
               maxRating={props.allRatings.loading ? 0 : props.allRatings.allRatings.length - 1}
               ratingOptions={
                 props.allRatings.loading ?
-                  [] :
+                  []
+                  :
                   props.allRatings.allRatings.map(({ id, rating, description }) =>
-                    ({ id, value: rating, description })
-                  )
+                    ({ id, value: rating, description }))
               }
               onRate={props.onChange}
               rating={props.values.rating.ratingnum}

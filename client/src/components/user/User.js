@@ -78,10 +78,12 @@ const ME_QUERY = gql`
         title
         prodCode
         genre {
+          id
           code
           description
         }
         rating {
+          id
           rating
         }
         tags {
