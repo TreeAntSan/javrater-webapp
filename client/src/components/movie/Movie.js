@@ -1,47 +1,41 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
-import { Container, Segment, Loader, Message } from "semantic-ui-react";
 
+import LoadingError from "../LoadingError";
 import MovieEditor from "./MovieEditor";
 
 // TODO Bug with glitchy loading, requiring a second click on a link to work
 class Movie extends Component {
   render() {
-    if (this.props.allRatings.loading ||
-      this.props.allGenres.loading ||
-      this.props.allTags.loading) {
+    const { allRatings, allTags, allGenres } = this.props;
+
+    if (allRatings.loading || allGenres.loading || allTags.loading ||
+      allRatings.error || allGenres.error || allTags.error) {
       return (
-        <Container>
-          <Segment>
-            <br />
-            <Loader active>Loading</Loader>
-            <br />
-          </Segment>
-        </Container>
-      );
-    } else if (this.props.allRatings.error ||
-      this.props.allGenres.error ||
-      this.props.allTags.error) {
-      return (
-        <Container>
-          <Message negative>
-            <Message.Header>Error</Message.Header>
-            {this.props.allRatings.error && (<p>{this.props.allRatings.error.message} Ratings</p>)}
-            {this.props.allGenres.error && (<p>{this.props.allGenres.error.message} Genres</p>)}
-            {this.props.allTags.error && (<p>{this.props.allTags.error.message} Tags</p>)}
-          </Message>
-        </Container>
+        <LoadingError
+          error={(allRatings.error || allGenres.error || allTags.error)}
+          errorMessage={(
+            <div>
+              {allRatings.error && (<p>{allRatings.error.message} Ratings</p>)}
+              {allGenres.error && (<p>{allGenres.error.message} Genres</p>)}
+              {allTags.error && (<p>{allTags.error.message} Tags</p>)}
+            </div>
+          )}
+        />
       );
     }
+
     return (
       <MovieEditor
-        allRatings={this.props.allRatings}
-        allGenres={this.props.allGenres}
-        allTags={this.props.allTags}
+        allRatings={allRatings}
+        allGenres={allGenres}
+        allTags={allTags}
         addMovie={this.props.addMovie}
+        updateMovie={this.props.updateMovie}
+        edit={this.props.edit}
       />
     );
   }
@@ -52,6 +46,8 @@ Movie.propTypes = {
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
+  updateMovie: PropTypes.func.isRequired,
+  edit: PropTypes.bool,
 };
 
 const ALL_GENRES_QUERY = gql`
@@ -86,9 +82,66 @@ const ALL_TAGS_QUERY = gql`
   }
 `;
 
+const MOVIE_QUERY = gql`
+  query MovieQuery($id: ID!) {
+    movie(id: $id) {
+      id
+      title
+      prodCode
+      genre {
+        id
+      }
+      rating {
+        id
+      }
+      tags {
+        id
+      }
+    }
+  }
+`;
+
 const ADD_MOVIE_MUTATION = gql`
-  mutation AddMovieMutation($title: String!, $prodCode: String!, $genre: String!, $rating: String!, $tags: [String]!) {
-    addMovie(title: $title, prodCode: $prodCode, genre: $genre, rating: $rating, tags: $tags) {
+  mutation AddMovieMutation(
+    $title: String!,
+    $prodCode: String!,
+    $genre: String!,
+    $rating: String!,
+    $tags: [String]!
+  ) {
+    addMovie(
+      title: $title,
+      prodCode: $prodCode,
+      genre: $genre,
+      rating: $rating,
+      tags: $tags
+    ) {
+      id
+    }
+  }
+`;
+
+const UPDATE_MOVIE_MUTATION = gql`
+  mutation UpdateMovieMutation(
+    $id: ID!, 
+    $title: String, 
+    $prodCode: String, 
+    $rating: String, 
+    $genre: String, 
+    $tags: [String!], 
+    $replaceTags: Boolean, 
+    $createdBy: String
+  ) {
+    updateMovie(
+      id: $id,
+      title: $title,
+      prodCode: $prodCode,
+      rating: $rating,
+      genre: $genre,
+      tags: $tags,
+      replaceTags: $replaceTags,
+      createdBy: $createdBy
+    ) {
       id
     }
   }
@@ -99,4 +152,5 @@ export default withRouter(compose(
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
   graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
+  graphql(UPDATE_MOVIE_MUTATION, { name: "updateMovie" }),
 )(Movie));

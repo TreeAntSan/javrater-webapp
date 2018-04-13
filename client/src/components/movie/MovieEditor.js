@@ -150,6 +150,23 @@ class MovieEditor extends Component {
     this.setState({ output: `Success: ${id}` });
   };
 
+  handleUpdateClick = async () => {
+    const { tagIds } = this._tallyTags();
+    const result = await this.props.updateMovie({
+      variables: {
+        title: this.state.basicValues.title,
+        prodCode: this.state.basicValues.prodcode,
+        genre: this.state.basicValues.genre.genreid,
+        rating: this.state.basicValues.rating.ratingid,
+        tags: tagIds,
+        replaceTags: true,
+      }
+    });
+
+    const { id } = result.data.addMovie;
+    this.setState({ output: `Success: ${id}` });
+  };
+
   handleParseClick = () => {
     // Grab strings from inside parens if there
     const tagSection = this.state.output.match(/\(([^)]+)\) *$/);
@@ -272,12 +289,14 @@ class MovieEditor extends Component {
               onOutputChange={this.handleOutputChange}
               outputValue={this.state.output}
               onSaveClick={this.handleSaveClick}
+              onUpdateClick={this.handleUpdateClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
               ready={!this.props.allRatings.loading &&
                 !this.props.allGenres.loading &&
                 !this.props.allTags.loading
               }
+              edit={this.props.edit}
             />
           </Grid.Column>
         </Grid.Row>
@@ -291,6 +310,8 @@ MovieEditor.propType = {
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
+  updateMovie: PropTypes.func.isRequired,
+  edit: PropTypes.bool,
 };
 
 export default withRouter(MovieEditor);

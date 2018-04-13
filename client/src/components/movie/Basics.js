@@ -5,7 +5,7 @@ import { Segment, Input, Form, List, Label, Dropdown, Checkbox, Dimmer, Loader }
 import RatingElement from "./RatingElement";
 
 // TODO add form validation
-const Basics = ({ onChange, values, allRatings, allGenres }) => (
+const Basics = props => (
   <Segment>
     <Label attached="top left">Basics</Label>
     <Form>
@@ -16,8 +16,8 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
               label="Title"
               type="text"
               placeholder="Movie Title"
-              onChange={e => (onChange({ title: e.target.value }))}
-              value={values.title}
+              onChange={e => (props.onChange({ title: e.target.value }))}
+              value={props.values.title}
             />
           </Form.Field>
         </List.Item>
@@ -27,8 +27,8 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
               label="Code"
               type="text"
               placeholder="ABC-123"
-              onChange={e => (onChange({ prodcode: e.target.value }))}
-              value={values.code}
+              onChange={e => (props.onChange({ prodcode: e.target.value }))}
+              value={props.values.code}
             />
           </Form.Field>
         </List.Item>
@@ -40,15 +40,15 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
               options={
                 [
                   { id: 0, text: "", value: "" },
-                  ...(allGenres.loading ?
+                  ...(props.allGenres.loading ?
                     [] :
-                    allGenres.allGenres.map(({ id, code, description }) =>
+                      props.allGenres.allGenres.map(({ id, code, description }) =>
                       ({ id, text: `${code} - ${description}`, value: code })
                     )
                   ),
                 ]
               }
-              onChange={(event, data) => (onChange({
+              onChange={(event, data) => (props.onChange({
                 genre: {
                   genrecode: data.value,
                   genreid: data.options[data.options.findIndex(option =>
@@ -56,23 +56,23 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
                 },
               }))
               }
-              value={values.genre.genrecode}
+              value={props.values.genre.genrecode}
             />
           </Form.Field>
         </List.Item>
         <List.Item>
           <Form.Field>
             <RatingElement
-              maxRating={allRatings.loading ? 0 : allRatings.allRatings.length - 1}
+              maxRating={props.allRatings.loading ? 0 : props.allRatings.allRatings.length - 1}
               ratingOptions={
-                allRatings.loading ?
+                props.allRatings.loading ?
                   [] :
-                  allRatings.allRatings.map(({ id, rating, description }) =>
+                  props.allRatings.allRatings.map(({ id, rating, description }) =>
                     ({ id, value: rating, description })
                   )
               }
-              onRate={onChange}
-              rating={values.rating.ratingnum}
+              onRate={props.onChange}
+              rating={props.values.rating.ratingnum}
             />
           </Form.Field>
         </List.Item>
@@ -80,14 +80,14 @@ const Basics = ({ onChange, values, allRatings, allGenres }) => (
           <Form.Field>
             <Checkbox
               label="Tags Only"
-              checked={values.tagsOnly}
-              onChange={(event, data) => (onChange({ tagsOnly: data.checked }))}
+              checked={props.values.tagsOnly}
+              onChange={(event, data) => (props.onChange({ tagsOnly: data.checked }))}
             />
           </Form.Field>
         </List.Item>
       </List>
     </Form>
-    <Dimmer inverted active={(allRatings.loading || allGenres.loading)}>
+    <Dimmer inverted active={(props.allRatings.loading || props.allGenres.loading)}>
       <Loader>Loading</Loader>
     </Dimmer>
   </Segment>

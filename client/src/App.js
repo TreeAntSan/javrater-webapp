@@ -31,6 +31,11 @@ const App = () => (
           <Movie />
         </UserWrapper>}
       />
+      <Route exact path="/movie/edit/:id" render={() =>
+        <UserWrapper>
+          <Movie edit />
+        </UserWrapper>}
+      />
       <Route exact path="/movies" render={() =>
         <UserWrapper>
           <Movies />
