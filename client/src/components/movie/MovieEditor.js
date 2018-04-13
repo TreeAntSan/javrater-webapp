@@ -37,8 +37,10 @@ class MovieEditor extends Component {
     },
     tagOptions: [],
     tallyTags: {
-      tags: [],
-      series: [],
+      tagsList: [],
+      catTags: "",
+      seriesList: [],
+      catSeries: "",
       tagIds: [],
     },
     output: "",
@@ -78,7 +80,7 @@ class MovieEditor extends Component {
   handleTagChange = (tag, tagState) => {
     const checkedTags = {...this.state.checkedTags};
     checkedTags[tag].checked = tagState;
-    this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
+    this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.generateOutput);
   };
 
   handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
@@ -89,7 +91,7 @@ class MovieEditor extends Component {
     if (genre !== undefined) basicValues.genre = genre;
     if (rating !== undefined) basicValues.rating = rating;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
-    this.setState({ basicValues }, this.renderOutput);
+    this.setState({ basicValues }, this.generateOutput);
   };
 
   handleOutputChange = (event, data) => {
@@ -97,8 +99,8 @@ class MovieEditor extends Component {
   };
 
   _tallyTags = () => {
-    let tags = [];
-    let series = [];
+    let tagsList = [];
+    let seriesList = [];
     let tagIds = [];
     Object.keys(this.state.checkedTags).forEach(key => {
       const tag = this.state.checkedTags[key];
@@ -106,36 +108,41 @@ class MovieEditor extends Component {
         tagIds.push(tag.id);
         if (this.tagDict[key].category.toLowerCase() === "series" ||
           this.tagDict[key].category.toLowerCase() === "director") {
-          series.push(key);
+          seriesList.push(key);
         } else {
-          tags.push(key);
+          tagsList.push(key);
         }
       }
     });
-    return { tags, series, tagIds };
+
+    return {
+      tagsList,
+      seriesList,
+      tagIds,
+      catTags: tagsList.join(", "),
+      catSeries: seriesList.join(" "),
+    };
   };
 
-  renderOutput = () => {
-    const { tags, series } = this.state.tallyTags;
-
-    let tagList = tags.join(", ");
-    let seriesList = series.join(" ");
-    seriesList = seriesList.length ? " " + seriesList : seriesList;
+  generateOutput = () => {
+    const { catTags, catSeries } = this.state.tallyTags;
 
     let output = "";
     if (this.state.basicValues.tagsOnly) {
-      output = `(${tagList})`;
+      output = `(${catTags})`;
     } else {
-      output = deline`${this.state.basicValues.genre.genrecode}
-                      ${seriesList} ${this.state.basicValues.rating.ratingtext} -
-                      ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${tagList})`;
+      output = deline`
+        ${this.state.basicValues.genre.genrecode}
+        ${(catSeries && " ") + catSeries} ${this.state.basicValues.rating.ratingtext} -
+        ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${catTags})
+      `;
     }
 
     this.setState({ output });
   };
 
   handleSaveClick = async () => {
-    const { tagIds } = this._tallyTags();
+    const { tagIds } = this.state.tallyTags;
     const result = await this.props.addMovie({
       variables: {
         title: this.state.basicValues.title,
@@ -151,7 +158,7 @@ class MovieEditor extends Component {
   };
 
   handleUpdateClick = async () => {
-    const { tagIds } = this._tallyTags();
+    const { tagIds } = this.state.tallyTags;
     const result = await this.props.updateMovie({
       variables: {
         title: this.state.basicValues.title,
