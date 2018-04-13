@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router";
 import { Container, Segment, Header } from "semantic-ui-react";
 
 import FloatingCenterGrid from "../FloatingCenterGrid";
@@ -19,7 +20,7 @@ const UserDetail = (props) => {
       <LoadingError
         error={true}
         errorHeader="User not found"
-        errorMessage={(<p>No user was found with the ID "{props.userId}".</p>)}
+        errorMessage={(<p>No user was found with the ID "{props.match.params.id}".</p>)}
       />
     );
   }
@@ -48,6 +49,7 @@ const UserDetail = (props) => {
             </Header>
             <MovieTable
               movies={userData.movies}
+              showEdit={self}
             />
           </div>
           :
@@ -65,10 +67,9 @@ const UserDetail = (props) => {
 };
 
 UserDetail.propTypes = {
-  userId: PropTypes.string,
   loading: PropTypes.bool.isRequired,
   error: PropTypes.object,
   data: PropTypes.object,
 };
 
-export default UserDetail;
+export default withRouter(UserDetail);

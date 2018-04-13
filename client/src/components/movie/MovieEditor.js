@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 
 import Basics from "./Basics";
 import TagSection from "./TagSection";
@@ -296,7 +296,7 @@ class MovieEditor extends Component {
                 !this.props.allGenres.loading &&
                 !this.props.allTags.loading
               }
-              edit={this.props.edit}
+              editMode={!isEmpty(this.props.editMovie)}
             />
           </Grid.Column>
         </Grid.Row>
@@ -311,7 +311,7 @@ MovieEditor.propType = {
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
   updateMovie: PropTypes.func.isRequired,
-  edit: PropTypes.bool,
+  editMovie: PropTypes.object,
 };
 
 export default withRouter(MovieEditor);

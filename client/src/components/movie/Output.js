@@ -20,7 +20,7 @@ const Output = props => (
           </Grid.Column>
           <Grid.Column floated="right" width={5}>
             <Grid columns="equal">
-              {props.edit ?
+              {props.editMode ?
                 <Grid.Row>
                   <Grid.Column>
                     <Button
@@ -70,7 +70,7 @@ Output.propTypes = {
   onParseClick: PropTypes.func.isRequired,
   onResetClick: PropTypes.func.isRequired,
   ready: PropTypes.bool.isRequired,
-  edit: PropTypes.bool.isRequired,
+  editMode: PropTypes.bool.isRequired,
 };
 
 export default Output;

@@ -10,7 +10,7 @@ const User = (props) => {
   let userDetail = null;
   // TODO check if the userid belongs to user (via UserWrapper) - either force me version or
   // explain "this is your public profile!"
-  if (props.match.params.userid === "me") {
+  if (props.match.params.id === "me") {
     userDetail = (
       <Query query={ME_QUERY}>
         {queryProps => (
@@ -20,9 +20,9 @@ const User = (props) => {
     );
   } else {
     userDetail = (
-      <Query query={USER_QUERY} variables={{ id: props.match.params.userid }}>
+      <Query query={USER_QUERY} variables={{ id: props.match.params.id }}>
         {queryProps => (
-          <UserDetail {...queryProps} userId={props.match.params.userid} />
+          <UserDetail {...queryProps} />
         )}
       </Query>
     );

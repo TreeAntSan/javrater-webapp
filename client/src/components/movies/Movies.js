@@ -44,6 +44,7 @@ class Movies extends Component {
           showCreatedBy
           showDelete
           onDelete={this.handleDeleteClick}
+          showEdit
         />
         <br/>
       </Container>

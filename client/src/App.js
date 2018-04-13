@@ -33,7 +33,7 @@ const App = () => (
       />
       <Route exact path="/movie/edit/:id" render={() =>
         <UserWrapper>
-          <Movie edit />
+          <Movie editMode />
         </UserWrapper>}
       />
       <Route exact path="/movies" render={() =>
@@ -57,7 +57,7 @@ const App = () => (
           <Logout />
         </UserWrapper>}
       />
-      <Route exact path="/user/:userid" render={() =>
+      <Route exact path="/user/:id" render={() =>
         <UserWrapper private>
           <User />
         </UserWrapper>}

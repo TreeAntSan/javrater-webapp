@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
 
@@ -9,19 +9,46 @@ import MovieEditor from "./MovieEditor";
 
 // TODO Bug with glitchy loading, requiring a second click on a link to work
 class Movie extends Component {
+  // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
+  state = {
+    editMovie: {},
+  };
+  queryAttempted = false;
+
+
+  _queryMovie = async id => {
+    const result = await this.props.client.query({
+      query: MOVIE_QUERY,
+      variables: {
+        id,
+      },
+    });
+
+    this.setState({ editMovie: result });
+  };
+
   render() {
     const { allRatings, allTags, allGenres } = this.props;
+    const editMovie = this.state.editMovie;
 
-    if (allRatings.loading || allGenres.loading || allTags.loading ||
-      allRatings.error || allGenres.error || allTags.error) {
+    if (this.props.editMode && this.props.match && !this.queryAttempted) {
+      this.queryAttempted = true; // Just one attempt...
+      this._queryMovie(this.props.match.params.id);
+    }
+
+    console.log(this.state.editMovie);
+
+    if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
+      allRatings.error || allGenres.error || allTags.error || editMovie.error) {
       return (
         <LoadingError
-          error={(allRatings.error || allGenres.error || allTags.error)}
+          error={(allRatings.error || allGenres.error || allTags.error || editMovie.error)}
           errorMessage={(
             <div>
               {allRatings.error && (<p>{allRatings.error.message} Ratings</p>)}
               {allGenres.error && (<p>{allGenres.error.message} Genres</p>)}
               {allTags.error && (<p>{allTags.error.message} Tags</p>)}
+              {editMovie.error && (<p>{editMovie.error.message} Movie to Edit</p>)}
             </div>
           )}
         />
@@ -35,7 +62,7 @@ class Movie extends Component {
         allTags={allTags}
         addMovie={this.props.addMovie}
         updateMovie={this.props.updateMovie}
-        edit={this.props.edit}
+        editMovie={this.state.editMovie}
       />
     );
   }
@@ -47,7 +74,7 @@ Movie.propTypes = {
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
   updateMovie: PropTypes.func.isRequired,
-  edit: PropTypes.bool,
+  editMode: PropTypes.bool,
 };
 
 const ALL_GENRES_QUERY = gql`
@@ -148,6 +175,7 @@ const UPDATE_MOVIE_MUTATION = gql`
 `;
 
 export default withRouter(compose(
+  withApollo,
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),

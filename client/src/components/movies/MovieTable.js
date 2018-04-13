@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import TagsTipped from "./TagsTipped";
 
+// TODO How can I add delete support when this table is on the UserDetails page?
 const MovieTable = props => (
   <Table celled compact>
     <Table.Header>
@@ -15,7 +16,7 @@ const MovieTable = props => (
         <Table.HeaderCell>Rating</Table.HeaderCell>
         <Table.HeaderCell>Tags</Table.HeaderCell>
         {props.showCreatedBy && <Table.HeaderCell>Created By</Table.HeaderCell>}
-        {props.showDelete && <Table.HeaderCell>Delete</Table.HeaderCell>}
+        {(props.showDelete || props.showEdit) && <Table.HeaderCell>Options</Table.HeaderCell>}
       </Table.Row>
     </Table.Header>
     <Table.Body>
@@ -35,9 +36,10 @@ const MovieTable = props => (
                 {row.createdBy.name}
               </Link>
             </Table.Cell>}
-          {props.showDelete &&
+          {(props.showDelete || props.showEdit) &&
             <Table.Cell>
-              <button onClick={e => props.onDelete(e, row.id)}>Delete</button>
+              {props.showDelete && <button onClick={e => props.onDelete(e, row.id)}>Delete</button>}
+              {props.showEdit && <Link to={`/movie/edit/${row.id}`}>Edit</Link>}
             </Table.Cell>}
         </Table.Row>
       ))}
@@ -51,6 +53,7 @@ MovieTable.propTypes = {
   showCreatedBy: PropTypes.bool,
   showDelete: PropTypes.bool,
   onDelete: PropTypes.func,
+  showEdit: PropTypes.bool,
 };
 
 export default MovieTable;
