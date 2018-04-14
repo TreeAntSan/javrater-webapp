@@ -9,7 +9,7 @@ const HeaderMenu = props => (
     <Menu.Item>
       <Link to="/welcome">
         <Image src="/treeant.jpeg" avatar />
-        <span>JavRater</span>
+        <span>Rater</span>
       </Link>
     </Menu.Item>
     <Menu.Item>

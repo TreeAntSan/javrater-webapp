@@ -4,16 +4,16 @@ import { withRouter } from "react-router";
 import { Container, Segment, Header } from "semantic-ui-react";
 
 import FloatingCenterGrid from "../FloatingCenterGrid";
-import MovieTable from "../movies/MovieTable";
+import Movies from "../movies/Movies";
 import LoadingError from "../LoadingError";
 
 const UserDetail = (props) => {
-  if (props.loading || props.error) {
-    return (<LoadingError error={props.error}/>);
+  if (props.query.loading || props.query.error) {
+    return (<LoadingError error={props.query.error}/>);
   }
 
-  const userData = props.data.me || props.data.user;
-  const self = !!props.data.me;
+  const userData = props.query.data.me || props.query.data.user;
+  const self = !!props.query.data.me;
 
   if (userData === null) {
     return (
@@ -47,9 +47,12 @@ const UserDetail = (props) => {
                 {self ? "Your" : `${userData.name}'s`} Movies
               </Header.Content>
             </Header>
-            <MovieTable
-              movies={userData.movies}
+            <Movies
+              showCreatedBy={false}
+              showDelete={self}
               showEdit={self}
+              movies={userData.movies}
+              updateFunction={props.updateFunction}
             />
           </div>
           :
@@ -67,9 +70,8 @@ const UserDetail = (props) => {
 };
 
 UserDetail.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.object,
-  data: PropTypes.object,
+  query: PropTypes.object.isRequired,
+  updateFunction: PropTypes.func,
 };
 
 export default withRouter(UserDetail);

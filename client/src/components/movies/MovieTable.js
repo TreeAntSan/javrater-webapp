@@ -35,7 +35,8 @@ const MovieTable = props => (
               <Link to={`/user/${row.createdBy.id}`}>
                 {row.createdBy.name}
               </Link>
-            </Table.Cell>}
+            </Table.Cell>
+          }
           {(props.showDelete || props.showEdit) &&
             <Table.Cell>
               {props.showEdit &&
@@ -46,7 +47,8 @@ const MovieTable = props => (
               <Button onClick={e => props.onDelete(e, row.id)} compact color="red">
                 Delete
               </Button>}
-            </Table.Cell>}
+            </Table.Cell>
+          }
         </Table.Row>
       ))}
     </Table.Body>

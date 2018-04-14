@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql, Query, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
 import { Container } from "semantic-ui-react";
+
+import utils from "../../utils";
 
 import MovieTable from "./MovieTable";
 import LoadingError from "../LoadingError";
@@ -20,29 +22,44 @@ class Movies extends Component {
       variables: {
         id: movieId,
       },
-      update: (proxy, { data: { deleteMovie }}) => {
-        const data = proxy.readQuery({ query: ALL_MOVIES_QUERY });
-        // Remove the movie using the mutation return data.
-        data.movies.splice(data.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
-        proxy.writeQuery({ query: ALL_MOVIES_QUERY, data });
-      },
+      update: this.props.updateFunction ||
+      ((proxy, {data: {deleteMovie}}) => {
+          const data = proxy.readQuery({query: ALL_MOVIES_QUERY});
+          // Remove the movie using the mutation return data.
+          data.movies.splice(data.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
+          proxy.writeQuery({query: ALL_MOVIES_QUERY, data});
+        }
+      ),
     });
   };
 
   render() {
-    if (this.props.allMovies.loading || this.props.allMovies.error) {
-      return (<LoadingError error={this.props.allMovies.error} />);
-    }
-
     return (
       <Container>
-        <MovieTable
-          movies={this.props.allMovies.movies}
-          showCreatedBy
-          showDelete
-          onDelete={this.handleDeleteClick}
-          showEdit
-        />
+        {this.props.movies ?
+          <MovieTable
+            showCreatedBy={this.props.showCreatedBy}
+            showDelete={this.props.showDelete}
+            showEdit={this.props.showEdit}
+            onDelete={this.handleDeleteClick}
+            movies={this.props.movies}
+          />
+          :
+          <Query query={ALL_MOVIES_QUERY}>
+            {queryProps => (
+              utils.queryOK(queryProps, queryProps.data) ?
+                <MovieTable
+                  showCreatedBy
+                  showDelete
+                  showEdit
+                  onDelete={this.handleDeleteClick}
+                  movies={queryProps.data.movies}
+                />
+                :
+                <LoadingError error={queryProps.error} />
+            )}
+          </Query>
+        }
         <br/>
       </Container>
     );
@@ -50,7 +67,11 @@ class Movies extends Component {
 }
 
 Movies.propTypes = {
-  allMovies: PropTypes.object.isRequired,
+  showCreatedBy: PropTypes.bool,
+  showDelete: PropTypes.bool,
+  showEdit: PropTypes.bool,
+  movies: PropTypes.array,
+  updateFunction: PropTypes.func,
 };
 
 const ALL_MOVIES_QUERY = gql`
@@ -94,5 +115,4 @@ const DELETE_MOVIE_MUTATION = gql`
 
 export default withRouter(compose(
   withApollo,
-  graphql(ALL_MOVIES_QUERY, { name: "allMovies" }),
 )(Movies));

@@ -8,7 +8,7 @@ const Welcome = props => (
     <Header as="h1" textAlign="center">
       <Header.Content>
         <Image src="/treeant.jpeg" circular />
-        Welcome to JAVRater{utils.grabName(props.user, ", %s")}!
+        Welcome to Rater{utils.grabName(props.user, ", %s")}!
       </Header.Content>
     </Header>
   </div>
