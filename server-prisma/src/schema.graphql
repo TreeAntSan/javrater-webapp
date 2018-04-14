@@ -10,6 +10,7 @@ type Query {
   allTags: [SimpleTag]!
   user(id: ID!): User
   me: PrivateUser
+  currentUser: ID
 }
 
 type Mutation {

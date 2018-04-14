@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Menu, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
@@ -22,10 +23,10 @@ const HeaderMenu = props => (
         Movies
       </Link>
     </Menu.Item>
-    {utils.loggedIn(props.user) ?
+    {utils.loggedIn(props.currentUser) ?
       <Menu.Menu position="right">
         <Menu.Item>
-          <p>Hello, <Link to="/user/me">{utils.grabName(props.user)}</Link></p>
+          <p>Hello, <Link to="/user/me">{utils.grabName(props.currentUser)}</Link></p>
         </Menu.Item>
         <Menu.Item>
           <Link to="/logout">
@@ -44,5 +45,9 @@ const HeaderMenu = props => (
     }
   </Menu>
 );
+
+HeaderMenu.propTypes = {
+  currentUser: PropTypes.object,
+};
 
 export default HeaderMenu;

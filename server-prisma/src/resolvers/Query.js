@@ -124,6 +124,17 @@ const Query = {
     const id = getUserId(ctx);
     return ctx.db.query.user({ where: { id } }, info);
   },
+
+  /**
+   * Very simple query returns the current user's ID (if any).
+   * @param parent
+   * @param args
+   * @param ctx
+   * @returns {*}
+   */
+  currentUser(parent, args, ctx) {
+    return getUserId(ctx);
+  },
 };
 
 module.exports = { Query };

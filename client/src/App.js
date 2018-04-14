@@ -38,7 +38,11 @@ const App = () => (
       />
       <Route exact path="/movies" render={() =>
         <UserWrapper>
-          <Movies />
+          <Movies
+            showCreatedBy
+            showDelete
+            showEdit
+          />
         </UserWrapper>}
       />
       {/* TODO The loginPath prop here is a little hacky, consider a better solution... */}

@@ -49,9 +49,9 @@ class Movies extends Component {
             {queryProps => (
               utils.queryOK(queryProps, queryProps.data) ?
                 <MovieTable
-                  showCreatedBy
-                  showDelete
-                  showEdit
+                  showCreatedBy={this.props.showCreatedBy}
+                  showDelete={this.props.showDelete}
+                  showEdit={this.props.showEdit}
                   onDelete={this.handleDeleteClick}
                   movies={queryProps.data.movies}
                 />

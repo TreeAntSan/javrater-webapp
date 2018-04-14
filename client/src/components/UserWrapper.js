@@ -42,7 +42,7 @@ class UserWrapper extends PureComponent {
     }
 
     const childrenWithProps = React.Children.map(children, child =>
-      React.cloneElement(child, { user: meQuery }));
+      React.cloneElement(child, { currentUser: meQuery }));
 
     return (
       <div>{childrenWithProps}</div>
