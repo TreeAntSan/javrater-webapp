@@ -1,3 +1,6 @@
+import { sprintf } from "sprintf-js";
+import { AUTH_TOKEN } from "./constants";
+
 /**
  * Takes return value from fetch for tags and sorts them into an array based on
  * the individual categories found.
@@ -44,8 +47,61 @@ const makeTagDict = (tagOptions) => {
   return { tagDict, tagSeed };
 };
 
+// TODO better token management
+// Storing tokens in local storage is not recommended for production applications because
+// they are at risk of XSS attacks.
+// See: https://auth0.com/blog/cookies-vs-tokens-definitive-guide/
+const setToken = (token) => {
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem(AUTH_TOKEN, token);
+    return;
+  }
+  throw new Error("localStorage not available on this browser!");
+};
+
+const removeToken = () => {
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem(AUTH_TOKEN);
+    return;
+  }
+  throw new Error("localStorage not available on this browser!");
+};
+
+const getToken = () => {
+  if (typeof localStorage !== "undefined") {
+    return localStorage.getItem(AUTH_TOKEN);
+  }
+  throw new Error("localStorage not available on this browser!");
+};
+
+const grabName = (meQuery, string = "%s") => (
+  queryOK(meQuery, meQuery.me) ? sprintf(string, meQuery.me.name) : ""
+);
+
+const loggedIn = meQuery => (
+  queryOK(meQuery, meQuery.me)
+);
+
+/**
+ * Feed this function your query (and the data, as it may be named differently)
+ * and it'll quickly return whether it's OK to continue.
+ * @param query
+ * @param data
+ * @returns boolean
+ */
+const queryOK = (query, data) => (
+  query && data && !query.loading && !query.error
+);
+
 const utils = {
   tagOptionFormatter,
   makeTagDict,
+  setToken,
+  removeToken,
+  getToken,
+  grabName,
+  loggedIn,
+  queryOK,
 };
+
 export default utils;

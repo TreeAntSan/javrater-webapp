@@ -8,12 +8,21 @@ import { getMainDefinition } from "apollo-utilities";
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
+
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import { AUTH_TOKEN } from "./constants";
+import util from "./utils";
 
 const httpLink = new HttpLink({ uri: "http://localhost:4000" });
+
+let token = null;
+try {
+  token = util.getToken();
+} catch (error) {
+  console.log(error.message);
+}
 
 // ApolloLink for authentication
 // "This middleware will be invoked every time ApolloClient sends a request to the server. You can
@@ -22,13 +31,11 @@ const httpLink = new HttpLink({ uri: "http://localhost:4000" });
 // at the end of the middleware function to pass the operation to the next middleware function in
 // the chain."
 const middlewareAuthLink = new ApolloLink((operation, forward) => {
-  const token = localStorage.getItem(AUTH_TOKEN);
-  // const authorizationHeader = token ? `Bearer ${token}` : null;
-  const authorizationHeader = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjamZvNnkweHMwMHh5MDg2MGZvMnFoM25kIiwiaWF0IjoxNTIzMzE4Mjg3fQ.vl_ZdOjp4jq8nvpodSMfP3f9rUlNgMtU_Hbq8JNj14Y"; // Temporary token before I actually implement login
+  const authorizationHeader = token ? `Bearer ${token}` : null;
   operation.setContext({
     headers: {
       authorization: authorizationHeader,
-    }
+    },
   });
   return forward(operation);
 });
@@ -44,8 +51,7 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: {
-      // authToken: localStorage.getItem(AUTH_TOKEN),
-      authToken: localStorage.getItem("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjamZvNnkweHMwMHh5MDg2MGZvMnFoM25kIiwiaWF0IjoxNTIzMzE4Mjg3fQ.vl_ZdOjp4jq8nvpodSMfP3f9rUlNgMtU_Hbq8JNj14Y"),
+      authToken: token,
     },
   },
 });
@@ -74,9 +80,11 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </BrowserRouter>
   , document.getElementById("root"),
 );
 registerServiceWorker();

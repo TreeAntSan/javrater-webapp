@@ -2,26 +2,24 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Rating } from "semantic-ui-react";
 
-const RatingElement = ({
-  maxRating, ratingOptions, onRate, rating,
-}) => (
+const RatingElement = props => (
   <div>
     <Rating
       clearable
-      rating={rating}
-      maxRating={maxRating}
+      rating={props.rating}
+      maxRating={props.maxRating}
       onRate={(event, data) =>
-        onRate({
+        props.onRate({
           rating: {
             ratingnum: data.rating,
-            ratingtext: ratingOptions[data.rating].value,
-            ratingdescription: ratingOptions[data.rating].description,
-            ratingid: ratingOptions[data.rating].id,
+            ratingtext: props.ratingOptions[data.rating].value,
+            ratingdescription: props.ratingOptions[data.rating].description,
+            ratingid: props.ratingOptions[data.rating].id,
           },
         })}
     />
-    {rating}: {(ratingOptions[rating] &&
-                            ratingOptions[rating].description) || "ERROR"}
+    {props.rating}: {(props.ratingOptions[props.rating] &&
+                            props.ratingOptions[props.rating].description) || "ERROR"}
   </div>
 );
 

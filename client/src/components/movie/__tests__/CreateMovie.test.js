@@ -1,19 +1,19 @@
 import React from "react";
 import { mount } from "enzyme";
 
-import GridWindow from "../GridWindow";
-import client from "../../client";
+import CreateMovie from "../MovieEditor";
+import client from "../../../client";
 
 jest.mock("../../client");
 
-describe("GridWindow", () => {
+describe("CreateMovie", () => {
   let wrapper;
 
   beforeEach(() => {
     Object.keys(client).forEach((mock) => client[mock].mockClear());
     // wrapper = shallow( // Shallow will get angry when setState is used
     wrapper = mount(  // Mount shouldn't... but it still does. wtf?
-      <GridWindow />
+      <CreateMovie />
     );
   });
 
@@ -21,8 +21,8 @@ describe("GridWindow", () => {
     wrapper.unmount();
   });
 
-  it("should have the `GridWindow` element", () => {
-    expect(wrapper.find(GridWindow)).toBeTruthy();
+  it("should have the `CreateMovie` element", () => {
+    expect(wrapper.find(CreateMovie)).toBeTruthy();
   });
 
   describe("then calls the APIs", () => {
@@ -45,14 +45,6 @@ describe("GridWindow", () => {
         // client.getGenres.mockImplementation((cb) => {
         //   return cb({foo: "bar"});
         // });
-      });
-
-      it("should have genreOptions", () => {
-        expect(wrapper.state().genreOptions.length).toBe(9);
-      });
-
-      it("should have ratingOptions", () => {
-        expect(wrapper.state().ratingOptions.length).toBe(7);
       });
 
       it("should have tagOptions", () => {

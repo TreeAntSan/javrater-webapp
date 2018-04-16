@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import { withRouter } from "react-router";
 import { Grid } from "semantic-ui-react";
 import deline from 'deline';
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
+
+import utils from "../../utils";
 
 import Basics from "./Basics";
 import TagSection from "./TagSection";
 import Output from "./Output";
-import utils from "../utils";
 
-class GridWindow extends Component {
+class MovieEditor extends Component {
 
   // TODO Bonus: add a tooltip timing function
 
@@ -38,22 +38,45 @@ class GridWindow extends Component {
     },
     tagOptions: [],
     tallyTags: {
-      tags: [],
-      series: [],
+      tagsList: [],
+      catTags: "",
+      seriesList: [],
+      catSeries: "",
       tagIds: [],
     },
-    userid: 1,
     output: "",
+    loaded: false,
   };
+
+  editMoviePopulated = false;
 
   constructor(props) {
     super(props);
     this.state = this.initialState;
   }
 
-  componentWillUpdate() {
-    if (!this.props.allTags.loading && this.state.tagOptions.length === 0) {
+  /*
+    TODO Add transition blocking to prevent a user from accidentally navigating away
+    from the page when making changes. See
+    https://reacttraining.com/react-router/web/example/preventing-transitions
+  */
+
+  componentDidMount() {
+    if (this._checkIfReady()) {
+      this.setState({ loaded: true });
+    }
+
+    if (utils.queryOK(this.props.allTags, this.props.allTags.allTags) &&
+      this.state.tagOptions.length === 0) {
       this._handleTags();
+    }
+
+    if (!this.editMoviePopulated &&
+      utils.queryOK(this.props.editMovie, this.props.editMovie.data) &&
+      utils.queryOK(this.props.allRatings, this.props.allRatings.allRatings)
+    ) {
+      this.editMoviePopulated = true;
+      this._handleEditMovie();
     }
   }
 
@@ -67,13 +90,13 @@ class GridWindow extends Component {
     this.tagDict = tagDict;
 
     // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-    this.setState({ tagOptions, checkedTags: cloneDeep(this.initialState.checkedTags) });
+    this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) });
   };
 
   handleTagChange = (tag, tagState) => {
-    const checkedTags = {...this.state.checkedTags};
+    const checkedTags = cloneDeep(this.state.checkedTags);
     checkedTags[tag].checked = tagState;
-    this.setState({ checkedTags, tallyTags: this._tallyTags() }, this.renderOutput);
+    this.setState({ checkedTags, tallyTags: this._tallyTags(checkedTags) }, this.generateOutput);
   };
 
   handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
@@ -84,53 +107,58 @@ class GridWindow extends Component {
     if (genre !== undefined) basicValues.genre = genre;
     if (rating !== undefined) basicValues.rating = rating;
     if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
-    this.setState({ basicValues }, this.renderOutput);
+    this.setState({ basicValues }, this.generateOutput);
   };
 
   handleOutputChange = (event, data) => {
     this.setState({ output: data.value});
   };
 
-  _tallyTags = () => {
-    let tags = [];
-    let series = [];
+  _tallyTags = (checkedTags) => {
+    let tagsList = [];
+    let seriesList = [];
     let tagIds = [];
-    Object.keys(this.state.checkedTags).forEach(key => {
-      const tag = this.state.checkedTags[key];
+    Object.keys(checkedTags).forEach(key => {
+      const tag = checkedTags[key];
       if (tag.checked) {
         tagIds.push(tag.id);
         if (this.tagDict[key].category.toLowerCase() === "series" ||
           this.tagDict[key].category.toLowerCase() === "director") {
-          series.push(key);
+          seriesList.push(key);
         } else {
-          tags.push(key);
+          tagsList.push(key);
         }
       }
     });
-    return { tags, series, tagIds };
+
+    return {
+      tagsList,
+      seriesList,
+      tagIds,
+      catTags: tagsList.join(", "),
+      catSeries: seriesList.join(" "),
+    };
   };
 
-  renderOutput = () => {
-    const { tags, series } = this.state.tallyTags;
-
-    let tagList = tags.join(", ");
-    let seriesList = series.join(" ");
-    seriesList = seriesList.length ? " " + seriesList : seriesList;
+  generateOutput = () => {
+    const { catTags, catSeries } = this.state.tallyTags;
 
     let output = "";
     if (this.state.basicValues.tagsOnly) {
-      output = `(${tagList})`;
+      output = `(${catTags})`;
     } else {
-      output = deline`${this.state.basicValues.genre.genrecode}
-                      ${seriesList} ${this.state.basicValues.rating.ratingtext} -
-                      ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${tagList})`;
+      output = deline`
+        ${this.state.basicValues.genre.genrecode}
+        ${(catSeries && " ") + catSeries} ${this.state.basicValues.rating.ratingtext} -
+        ${this.state.basicValues.title} [${this.state.basicValues.prodcode}] (${catTags})
+      `;
     }
 
     this.setState({ output });
   };
 
   handleSaveClick = async () => {
-    const { tagIds } = this._tallyTags();
+    const { tagIds } = this.state.tallyTags;
     const result = await this.props.addMovie({
       variables: {
         title: this.state.basicValues.title,
@@ -138,11 +166,29 @@ class GridWindow extends Component {
         genre: this.state.basicValues.genre.genreid,
         rating: this.state.basicValues.rating.ratingid,
         tags: tagIds,
-      }
+      },
     });
 
     const { id } = result.data.addMovie;
-    this.setState({ output: `Success: ${id}` });
+    this.setState({ output: `Success: Added ${id}` });
+  };
+
+  handleUpdateClick = async () => {
+    const { tagIds } = this.state.tallyTags;
+    const result = await this.props.updateMovie({
+      variables: {
+        id: this.props.editMovie.data.movie.id,
+        title: this.state.basicValues.title,
+        prodCode: this.state.basicValues.prodcode,
+        genre: this.state.basicValues.genre.genreid,
+        rating: this.state.basicValues.rating.ratingid,
+        tags: tagIds,
+        replaceTags: true,
+      },
+    });
+
+    const { id } = result.data.updateMovie;
+    this.setState({ output: `Success: Updated ${id}` });
   };
 
   handleParseClick = () => {
@@ -166,7 +212,45 @@ class GridWindow extends Component {
   };
 
   handleResetClick = () => {
-    this.setState(this.initialState);
+    this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
+  };
+
+  _handleEditMovie = () => {
+    const movieData = this.props.editMovie.data.movie;
+    const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
+    const checkedTags = cloneDeep(this.state.checkedTags);
+    movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
+
+    this.setState({
+      basicValues: {
+        title: movieData.title,
+        prodcode: movieData.prodCode,
+        genre: {
+          genrecode: movieData.genre.code,
+          genreid: movieData.genre.id,
+        },
+        rating: {
+          ratingnum: ratingNum,
+          ratingtext: movieData.rating.rating,
+          ratingdescription: movieData.rating.description,
+          ratingid: movieData.rating.id,
+        }
+      },
+      checkedTags,
+    });
+  };
+
+  _checkIfReady = () => {
+    const props = this.props;
+    const editMovieReady = !isEmpty(props.editMovie) ?
+      utils.queryOK(props.editMovie, props.editMovie.data) :
+      true;
+
+    return (utils.queryOK(props.allRatings, props.allRatings.allRatings) &&
+      utils.queryOK(props.allGenres, props.allGenres.allGenres) &&
+      utils.queryOK(props.allTags, props.allTags.allTags) &&
+      editMovieReady
+    );
   };
 
   render () {
@@ -267,12 +351,11 @@ class GridWindow extends Component {
               onOutputChange={this.handleOutputChange}
               outputValue={this.state.output}
               onSaveClick={this.handleSaveClick}
+              onUpdateClick={this.handleUpdateClick}
               onParseClick={this.handleParseClick}
               onResetClick={this.handleResetClick}
-              ready={!this.props.allRatings.loading &&
-                !this.props.allGenres.loading &&
-                !this.props.allTags.loading
-              }
+              ready={this.state.loaded}
+              editMode={!isEmpty(this.props.editMovie)}
             />
           </Grid.Column>
         </Grid.Row>
@@ -281,55 +364,13 @@ class GridWindow extends Component {
   }
 }
 
-GridWindow.propType = {
+MovieEditor.propType = {
   allRatings: PropTypes.object.isRequired,
   allGenres: PropTypes.object.isRequired,
   allTags: PropTypes.object.isRequired,
+  addMovie: PropTypes.func.isRequired,
+  updateMovie: PropTypes.func.isRequired,
+  editMovie: PropTypes.object,
 };
 
-const ALL_GENRES_QUERY = gql`
-  query AllGenresQuery {
-    allGenres {
-      id
-      code
-      description
-    }
-  }
-`;
-
-const ALL_RATINGS_QUERY = gql`
-  query AllRatingsQuery {
-    allRatings {
-      id
-      rating
-      description
-    }
-  }
-`;
-
-const ALL_TAGS_QUERY = gql`
-  query AllTagsQuery {
-    allTags {
-      id
-      category
-      tag
-      name
-      description
-    }
-  }
-`;
-
-const ADD_MOVIE_MUTATION = gql`
-  mutation AddMovieMutation($title: String!, $prodCode: String!, $genre: String!, $rating: String!, $tags: [String]!) {
-    addMovie(title: $title, prodCode: $prodCode, genre: $genre, rating: $rating, tags: $tags) {
-      id
-    }
-  }
-`;
-
-export default compose(
-  graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
-  graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
-  graphql(ALL_TAGS_QUERY, { name: "allTags" }),
-  graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
-)(GridWindow);
+export default withRouter(MovieEditor);

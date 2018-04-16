@@ -101,6 +101,18 @@ const Query = {
   },
 
   /**
+   * Return user information on a User minus their password and email.
+   * @param parent
+   * @param id
+   * @param ctx
+   * @param info
+   * @returns {*}
+   */
+  user(parent, { id }, ctx, info) {
+    return ctx.db.query.user({ where: { id } }, info);
+  },
+
+  /**
    * Return information on the requesting User minus their password.
    * @param parent
    * @param args
@@ -111,6 +123,17 @@ const Query = {
   me(parent, args, ctx, info) {
     const id = getUserId(ctx);
     return ctx.db.query.user({ where: { id } }, info);
+  },
+
+  /**
+   * Very simple query returns the current user's ID (if any).
+   * @param parent
+   * @param args
+   * @param ctx
+   * @returns {*}
+   */
+  currentUser(parent, args, ctx) {
+    return getUserId(ctx);
   },
 };
 

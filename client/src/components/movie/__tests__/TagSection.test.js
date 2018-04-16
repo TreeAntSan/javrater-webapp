@@ -4,7 +4,7 @@ import { mount } from "enzyme";
 import { Segment, Dimmer, Form } from "semantic-ui-react";
 import TagSection from "../TagSection";
 
-import mockTags from "../../__mocks__/tag_all";
+import mockTags from "../../../__mocks__/tag_all";
 
 describe("TagSection", () => {
   const firstCategory = mockTags.response[0].category;
