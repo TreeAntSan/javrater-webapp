@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
+import { withApollo } from "react-apollo";
 
 import utils from "../utils";
 
@@ -8,6 +9,8 @@ class Logout extends PureComponent {
   constructor(props) {
     super(props);
 
+    // TODO Does this do anything?
+    props.client.resetStore();
     try {
       utils.removeToken();
     } catch (error) {
@@ -26,4 +29,4 @@ class Logout extends PureComponent {
   }
 }
 
-export default withRouter(Logout);
+export default withRouter(withApollo(Logout));

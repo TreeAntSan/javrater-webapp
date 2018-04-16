@@ -4,8 +4,6 @@ import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
 
-import utils from "../../utils";
-
 import LoadingError from "../LoadingError";
 import MovieEditor from "./MovieEditor";
 

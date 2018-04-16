@@ -1,73 +1,61 @@
-/* eslint-disable no-console */
-const getGenres = (cb) => {
-  return fetch("/api/v1/genre/all", {
-    method: "get",
-    accept: "application/json",
-  }).then(checkStatus)
-    .then(parseJSON)
-    .then(cb)
-    .catch(error => console.log(error.message));
-};
+import { AUTH_TOKEN, USER_NAME } from "./constants";
 
-const getRatings = (cb) => {
-  return fetch("/api/v1/rating/all", {
-    method: "get",
-    accept: "application/json",
-  }).then(checkStatus)
-    .then(parseJSON)
-    .then(cb)
-    .catch(error => console.log(error.message));
-};
+// TODO better token management
+// There are risks with using localStorage for API tokens in a production
+// application. You open yourself up to XSS attacks. If malicious
+// JavaScript makes it into your app, that JavaScript will have access
+// to localStorage and therefore any sensitive tokens.
 
-const getTags = (cb) => {
-  return fetch("/api/v1/tag/all", {
-    method: "get",
-    accept: "application/json",
-  }).then(checkStatus)
-    .then(parseJSON)
-    .then(cb)
-    .catch(error => console.log(error.message));
-};
+// For more info on token management, see this article:
+// https://auth0.com/blog/cookies-vs-tokens-definitive-guide/
+class Client {
+  constructor() {
+    this.useLocalStorage = (typeof localStorage !== "undefined");
+    this.subscribers = [];
 
-const getMovie = (cb) => {
-  return fetch("/api/v1/movie/all", {
-    method: "get",
-    accept: "application/json",
-  }).then(checkStatus)
-    .then(parseJSON)
-    .then(cb)
-    .catch(error => console.log(error.message));
-};
-
-const postMovie = (payload, cb) => {
-  return fetch("/api/v1/movie/add", {
-    headers: {
-      Accept: "application/json",
-      "Content-type": "application/json",
-    },
-    method: "post",
-    body: JSON.stringify(payload),
-  }).then(checkStatus)
-    .then(parseJSON)
-    .then(cb)
-    .catch(error => console.log(error.message));
-};
-
-const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  } else {
-    const error = new Error(`HTTP Error ${response.statusText}`);
-    error.status = response.statusText;
-    error.response = response;
-    console.log(error);
-    throw error;
+    if (this.useLocalStorage) {
+      this.token = localStorage.getItem(AUTH_TOKEN);
+      this.name = localStorage.getItem(USER_NAME);
+    } else {
+      throw new Error("localStorage not available on this browser!");
+    }
   }
-};
 
-const parseJSON = (response) => {
-  return response.json();
-};
+  isTokenSet() {
+    return !!this.token;
+  }
 
-const client = { getGenres, getRatings, getTags, getMovie, postMovie };
-export default client;
+  getName() {
+    return this.name;
+  }
+
+  subscribe(cb) {
+    this.subscribers.push(cb);
+  }
+
+  notifySubscribers() {
+    this.subscribers.forEach(cb => cb(this.isTokenSet()));
+  }
+
+  setToken(token, name) {
+    this.token = token;
+    this.name = name;
+
+    if (this.useLocalStorage) {
+      localStorage.setItem(AUTH_TOKEN, token);
+      localStorage.setItem(USER_NAME, name);
+    }
+  }
+
+  removeToken() {
+    this.token = null;
+    this.name = null;
+
+    if (this.useLocalStorage) {
+      localStorage.removeItem(AUTH_TOKEN);
+      localStorage.removeItem(USER_NAME);
+    }
+  }
+}
+
+export const client = new Client();

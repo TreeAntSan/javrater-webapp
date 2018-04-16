@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql, Query, compose, withApollo } from "react-apollo";
+import { Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
 import { Container } from "semantic-ui-react";
@@ -113,6 +113,4 @@ const DELETE_MOVIE_MUTATION = gql`
   }
 `;
 
-export default withRouter(compose(
-  withApollo,
-)(Movies));
+export default withRouter(withApollo(Movies));

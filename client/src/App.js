@@ -2,6 +2,7 @@ import React from "react";
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import UserWrapper from "./components/UserWrapper";
+import withUser from "./UserProtector";
 import HeaderMenu from "./components/HeaderMenu";
 import Welcome from "./components/Welcome";
 import Movie from "./components/movie/Movie";
@@ -15,57 +16,34 @@ import LoadingError from "./components/LoadingError";
 // TODO Use context to clean up the repeated use of UserWrapper. See https://stackoverflow.com/a/49726454/3120546
 const App = () => (
   <div>
-    <UserWrapper>
-      <HeaderMenu />
-    </UserWrapper>
+    <HeaderMenu />
     <br />
     <Switch>
       <Route exact path="/" render={() => <Redirect to="/welcome" />} />
-      <Route exact path="/welcome" render={() =>
-        <UserWrapper>
-          <Welcome />
-        </UserWrapper>}
+      <Route exact path="/welcome" component={withUser(Welcome)}/>
+      <Route exact path="/movie/create" component={withUser(Movie)}/>
+      <Route exact path="/movie/edit/:id" component={
+        withUser(Movie, {
+          private: true,
+          props: {
+            editMode: true,
+          },
+        })}
       />
-      <Route exact path="/movie/create" render={() =>
-        <UserWrapper>
-          <Movie />
-        </UserWrapper>}
-      />
-      <Route exact path="/movie/edit/:id" render={() =>
-        <UserWrapper>
-          <Movie editMode />
-        </UserWrapper>}
-      />
-      <Route exact path="/movies" render={() =>
-        <UserWrapper>
-          <Movies
-            showCreatedBy
-            showDelete
-            showEdit
-          />
-        </UserWrapper>}
+      <Route exact path="/movies" component={
+        withUser(Movies, {
+          props: {
+            showCreatedBy: true,
+            showDelete: true,
+            showEdit: true,
+          },
+        })}
       />
       {/* TODO The loginPath prop here is a little hacky, consider a better solution... */}
-      <Route exact path="/login" render={() =>
-        <UserWrapper>
-          <Login loginPath={"/login"} />
-        </UserWrapper>}
-      />
-      <Route exact path="/signup" render={() =>
-        <UserWrapper>
-          <Login loginPath={"/login"} />
-        </UserWrapper>}
-      />
-      <Route exact path="/logout" render={() =>
-        <UserWrapper>
-          <Logout />
-        </UserWrapper>}
-      />
-      <Route exact path="/user/:id" render={() =>
-        <UserWrapper private>
-          <User />
-        </UserWrapper>}
-      />
+      <Route exact path="/login" component={withUser(Login, { props: { loginPath: "/login" } })} />
+      <Route exact path="/signup" component={withUser(Login, { props: { loginPath: "/login" } })} />
+      <Route exact path="/logout" component={Logout} />
+      <Route exact path="/user/:id" component={withUser(User, { private: true })} />
       <Route path="*" render={() =>
         <LoadingError
           error={true}

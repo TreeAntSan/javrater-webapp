@@ -4,6 +4,7 @@ import { Menu, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 import utils from "../utils";
+import withUser from "../UserProtector";
 
 const HeaderMenu = props => (
   <Menu stackable>
@@ -50,4 +51,4 @@ HeaderMenu.propTypes = {
   currentUser: PropTypes.object,
 };
 
-export default HeaderMenu;
+export default withUser(HeaderMenu);

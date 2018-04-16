@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import { graphql, compose } from 'react-apollo';
+import { graphql, compose, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Link, Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
@@ -20,6 +20,9 @@ class Login extends Component {
   };
 
   _confirm = async () => {
+    // TODO Does this do anything?
+    this.props.client.resetStore();
+
     // Login
     if (this.props.location.pathname === this.props.loginPath) {
       this.setState({ submissionInProgress: true });
@@ -170,6 +173,7 @@ const LOGIN_MUTATION = gql`
 `;
 
 export default withRouter(compose(
+  withApollo,
   graphql(SIGNUP_MUTATION, { name: 'signupMutation' }),
   graphql(LOGIN_MUTATION, { name: 'loginMutation' }),
 )(Login));
