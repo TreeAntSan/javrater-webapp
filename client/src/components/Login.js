@@ -21,7 +21,7 @@ class Login extends Component {
 
   _confirm = async () => {
     // TODO Does this do anything?
-    this.props.client.resetStore();
+    // this.props.client.resetStore();
 
     // Login
     if (this.props.location.pathname === this.props.loginPath) {
