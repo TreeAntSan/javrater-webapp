@@ -23,11 +23,11 @@ class Movies extends Component {
         id: movieId,
       },
       update: this.props.updateFunction ||
-      ((proxy, {data: {deleteMovie}}) => {
-          const data = proxy.readQuery({query: ALL_MOVIES_QUERY});
+      ((proxy, { data: { deleteMovie } }) => {
+          const data = proxy.readQuery({ query: ALL_MOVIES_QUERY });
           // Remove the movie using the mutation return data.
           data.movies.splice(data.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
-          proxy.writeQuery({query: ALL_MOVIES_QUERY, data});
+          proxy.writeQuery({ query: ALL_MOVIES_QUERY, data });
         }
       ),
     });
