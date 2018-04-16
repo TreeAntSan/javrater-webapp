@@ -18,7 +18,7 @@ import LoadingError from "./LoadingError";
 class UserWrapper extends PureComponent {
   render() {
 
-    const { children, meQuery } = this.props;
+    const { children, meQuery, ...rest } = this.props;
 
     // This route is private and requires that you be a user
     if (this.props.private) {
@@ -30,8 +30,14 @@ class UserWrapper extends PureComponent {
               <div>
                 <p>{meQuery.error && meQuery.error.message}</p>
                 <p>
-                  Please <Link to="/login">Login</Link> {" "}
-                  or <Link to="/signup">Sign-up</Link>!
+                  Please <Link to={{
+                    pathname: "/login",
+                    state: { from: this.props.location },
+                  }}>Login</Link> {" "}
+                  or <Link to={{
+                    pathname: "/signup",
+                    state: { from: this.props.location },
+                  }}>Sign-up</Link>!
                 </p>
               </div>
             )}
@@ -42,7 +48,7 @@ class UserWrapper extends PureComponent {
     }
 
     const childrenWithProps = React.Children.map(children, child =>
-      React.cloneElement(child, { currentUser: meQuery }));
+      React.cloneElement(child, { currentUser: meQuery, ...rest }));
 
     return (
       <div>{childrenWithProps}</div>

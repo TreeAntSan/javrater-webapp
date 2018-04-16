@@ -19,7 +19,6 @@ class Login extends Component {
     shouldRedirect: false,
   };
 
-
   _confirm = async () => {
     // Login
     if (this.props.location.pathname === this.props.loginPath) {
@@ -68,7 +67,7 @@ class Login extends Component {
 
   render () {
     // TODO Bug UserWrapper doesn't get the name to the client immediately after being redirected
-    if (this.state.shouldRedirect) {
+    if (this.state.shouldRedirect || this.props.currentUser.me) {
       return (
         <Redirect to={this._redirectPath()} />
       )
