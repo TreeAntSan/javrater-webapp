@@ -48,8 +48,6 @@ class MovieEditor extends Component {
     loaded: false,
   };
 
-  editMoviePopulated = false;
-
   constructor(props) {
     super(props);
     this.state = this.initialState;
@@ -61,29 +59,22 @@ class MovieEditor extends Component {
     https://reacttraining.com/react-router/web/example/preventing-transitions
   */
 
-  componentDidMount() {
-    if (this._checkIfReady()) {
-      this.setState({ loaded: true });
-    }
-
+  componentWillMount() {
     if (utils.queryOK(this.props.allTags, this.props.allTags.allTags) &&
       this.state.tagOptions.length === 0) {
       this._processTags();
     }
 
-    if (!this.editMoviePopulated &&
-      utils.queryOK(this.props.editMovie, this.props.editMovie.data) &&
+    if (utils.queryOK(this.props.editMovie, this.props.editMovie.movie) &&
       utils.queryOK(this.props.allRatings, this.props.allRatings.allRatings)
     ) {
-      this.editMoviePopulated = true;
       this._processEditMovie();
     }
-  }
 
-  // componentWillUnmount() {
-  //   this.setState(this.initialState);
-  //   this.editMoviePopulated = false;
-  // }
+    if (this._checkIfReady(this.props)) {
+      this.setState({ loaded: true });
+    }
+  }
 
   _processTags = () => {
     const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
@@ -99,7 +90,8 @@ class MovieEditor extends Component {
   };
 
   _processEditMovie = () => {
-    const movieData = this.props.editMovie.data.movie;
+    console.log("_processEditMovie", this.props.editMovie);
+    const movieData = this.props.editMovie.movie;
     const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
     const checkedTags = cloneDeep(this.state.checkedTags);
     movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
@@ -207,7 +199,7 @@ class MovieEditor extends Component {
     const { tagIds } = this.state.tallyTags;
     const result = await this.props.updateMovie({
       variables: {
-        id: this.props.editMovie.data.movie.id,
+        id: this.props.editMovie.movie.id,
         title: this.state.basicValues.title,
         prodCode: this.state.basicValues.prodcode,
         genre: this.state.basicValues.genre.genreid,
@@ -245,8 +237,7 @@ class MovieEditor extends Component {
     this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
   };
 
-  _checkIfReady = () => {
-    const props = this.props;
+  _checkIfReady = (props) => {
     const editMovieReady = !isEmpty(props.editMovie) ?
       utils.queryOK(props.editMovie, props.editMovie.data) :
       true;

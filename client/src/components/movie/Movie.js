@@ -9,39 +9,14 @@ import MovieEditor from "./MovieEditor";
 
 // TODO Bug with glitchy loading, requiring a second click on a link to work
 class Movie extends Component {
-  state = {
-    editMovie: {},
-  };
-  queryAttempted = false;
-
-  componentWillMount() {
-    console.log("componentWillMount");
-    if (this.props.editMode && this.props.match.params.id) {
-      this._loadEditMovie();
-    }
-  }
-
-  _loadEditMovie = async () => {
-    const result = await this._queryMovie(this.props.match.params.id);
-    console.log("result", result);
-
-    // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
-    this.setState({ editMovie: result.data.movie });
-  };
-
-  _queryMovie = async id => {
-    // Using async and await means the result will never have status "loading" so it'll be ready
-    return await this.props.client.query({
-      query: MOVIE_QUERY,
-      variables: {
-        id,
-      },
-    });
-  };
-
   render() {
     const { allRatings, allTags, allGenres } = this.props;
-    const editMovie = this.state.editMovie;
+
+    const editMovie = this.props.editMovie || {};
+    // let { editMovie } = this.props;
+    // if (editMovie === undefined) {
+    //   editMovie = {};
+    // }
 
     if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
       allRatings.error || allGenres.error || allTags.error || editMovie.error) {
@@ -67,7 +42,7 @@ class Movie extends Component {
         allTags={allTags}
         addMovie={this.props.addMovie}
         updateMovie={this.props.updateMovie}
-        editMovie={this.state.editMovie}
+        editMovie={editMovie}
       />
     );
   }
@@ -79,6 +54,7 @@ Movie.propTypes = {
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
   updateMovie: PropTypes.func.isRequired,
+  editMovie: PropTypes.object,
   editMode: PropTypes.bool,
 };
 
@@ -183,11 +159,21 @@ const UPDATE_MOVIE_MUTATION = gql`
   }
 `;
 
-export default withRouter(compose(
+export default compose(
+  withRouter,
   withApollo,
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
   graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
   graphql(UPDATE_MOVIE_MUTATION, { name: "updateMovie" }),
-)(Movie));
+  graphql(MOVIE_QUERY, {
+    name: "editMovie",
+    skip: ownProps => !(ownProps.editMode && ownProps.match.params.id),
+    options: ownProps => ({
+      variables: {
+        id: ownProps.match.params.id,
+      },
+    }),
+  }),
+)(Movie);
