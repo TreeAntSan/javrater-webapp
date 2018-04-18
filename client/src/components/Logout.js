@@ -27,7 +27,6 @@ class Logout extends PureComponent {
   }
 }
 
-// export default withRouter(withApollo(Logout));
 export default compose(
   withRouter,
   withApollo,

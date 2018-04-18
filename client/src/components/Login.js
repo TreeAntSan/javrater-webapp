@@ -45,7 +45,6 @@ class Login extends Component {
         utils.setToken(token);
         this.setState({ shouldRedirect: true });
       } catch (error) {
-        console.log('error!');
         this.setState({ submissionInProgress: false, submissionFailure: error.message });
       }
 
