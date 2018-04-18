@@ -70,10 +70,6 @@ class MovieEditor extends Component {
     ) {
       this._processEditMovie();
     }
-
-    if (this._checkIfReady(this.props)) {
-      this.setState({ loaded: true });
-    }
   }
 
   _processTags = () => {
@@ -86,11 +82,10 @@ class MovieEditor extends Component {
     this.tagDict = tagDict;
 
     // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-    this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) });
+    this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) }, this._checkIfReady);
   };
 
   _processEditMovie = () => {
-    console.log("_processEditMovie", this.props.editMovie);
     const movieData = this.props.editMovie.movie;
     const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
     const checkedTags = cloneDeep(this.state.checkedTags);
@@ -112,28 +107,23 @@ class MovieEditor extends Component {
         }
       },
       checkedTags,
-    });
+    }, this._checkIfReady);
   };
 
-  handleTagChange = (tag, tagState) => {
-    const checkedTags = cloneDeep(this.state.checkedTags);
-    checkedTags[tag].checked = tagState;
-    this.setState({ checkedTags, tallyTags: this._tallyTags(checkedTags) }, this.generateOutput);
-  };
+  _checkIfReady = () => {
+    const props = this.props;
+    const editMovieReady = isEmpty(props.editMovie) ?
+      true :
+      utils.queryOK(props.editMovie, props.editMovie.movie);
 
-  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
-    // TODO There must be a more elegant way to accomplish this...
-    const basicValues = {...this.state.basicValues};
-    if (title !== undefined) basicValues.title = title;
-    if (prodcode !== undefined) basicValues.prodcode = prodcode;
-    if (genre !== undefined) basicValues.genre = genre;
-    if (rating !== undefined) basicValues.rating = rating;
-    if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
-    this.setState({ basicValues }, this.generateOutput);
-  };
+    const loaded = (
+      utils.queryOK(props.allRatings, props.allRatings.allRatings) &&
+      utils.queryOK(props.allGenres, props.allGenres.allGenres) &&
+      utils.queryOK(props.allTags, props.allTags.allTags) &&
+      editMovieReady
+    );
 
-  handleOutputChange = (event, data) => {
-    this.setState({ output: data.value});
+    this.setState({ loaded });
   };
 
   _tallyTags = (checkedTags) => {
@@ -160,6 +150,27 @@ class MovieEditor extends Component {
       catTags: tagsList.join(", "),
       catSeries: seriesList.join(" "),
     };
+  };
+
+  handleTagChange = (tag, tagState) => {
+    const checkedTags = cloneDeep(this.state.checkedTags);
+    checkedTags[tag].checked = tagState;
+    this.setState({ checkedTags, tallyTags: this._tallyTags(checkedTags) }, this.generateOutput);
+  };
+
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
+    // TODO There must be a more elegant way to accomplish this...
+    const basicValues = {...this.state.basicValues};
+    if (title !== undefined) basicValues.title = title;
+    if (prodcode !== undefined) basicValues.prodcode = prodcode;
+    if (genre !== undefined) basicValues.genre = genre;
+    if (rating !== undefined) basicValues.rating = rating;
+    if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
+    this.setState({ basicValues }, this.generateOutput);
+  };
+
+  handleOutputChange = (event, data) => {
+    this.setState({ output: data.value});
   };
 
   generateOutput = () => {
@@ -235,18 +246,6 @@ class MovieEditor extends Component {
 
   handleResetClick = () => {
     this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
-  };
-
-  _checkIfReady = (props) => {
-    const editMovieReady = !isEmpty(props.editMovie) ?
-      utils.queryOK(props.editMovie, props.editMovie.data) :
-      true;
-
-    return (utils.queryOK(props.allRatings, props.allRatings.allRatings) &&
-      utils.queryOK(props.allGenres, props.allGenres.allGenres) &&
-      utils.queryOK(props.allTags, props.allTags.allTags) &&
-      editMovieReady
-    );
   };
 
   render () {

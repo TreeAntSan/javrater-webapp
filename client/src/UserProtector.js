@@ -17,7 +17,7 @@ export default (IncomingRoute, options = {}) => {
       if (meData.loading || (options.private && (meData.error || meData.me === undefined))) {
         return (
           <LoadingError
-            error={meData.error || meData.me === undefined}
+            error={meData.error || (options.private && meData.me === undefined)}
             errorMessage={(
               <div>
                 <p>{(meData.error && meData.error.message) || "There was a problem..."}</p>

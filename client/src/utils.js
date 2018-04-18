@@ -90,7 +90,7 @@ const loggedIn = meQuery => (
  * @returns boolean
  */
 const queryOK = (query, data) => (
-  query && data && !query.loading && !query.error
+  !!query && !!data && !query.loading && !query.error
 );
 
 const utils = {
