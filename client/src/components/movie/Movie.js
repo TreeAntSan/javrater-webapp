@@ -7,16 +7,19 @@ import { withRouter } from "react-router";
 import LoadingError from "../LoadingError";
 import MovieEditor from "./MovieEditor";
 
-// TODO Bug with glitchy loading, requiring a second click on a link to work
 class Movie extends Component {
   render() {
     const { allRatings, allTags, allGenres } = this.props;
 
+    // Since this is an optional prop set it to an empty object to keep error checks compatible.
+    // This prop is populated depending on this.props.match.params.id's existence
     const editMovie = this.props.editMovie || {};
-    // let { editMovie } = this.props;
-    // if (editMovie === undefined) {
-    //   editMovie = {};
-    // }
+
+    // If there was no movie found it is null. If no movie was attempted it would be undefined.
+    if (editMovie.movie === null) {
+      editMovie.error = {};
+      editMovie.error.message = "Could not find";
+    }
 
     if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
       allRatings.error || allGenres.error || allTags.error || editMovie.error) {
@@ -55,7 +58,6 @@ Movie.propTypes = {
   addMovie: PropTypes.func.isRequired,
   updateMovie: PropTypes.func.isRequired,
   editMovie: PropTypes.object,
-  editMode: PropTypes.bool,
 };
 
 const ALL_GENRES_QUERY = gql`
@@ -169,7 +171,7 @@ export default compose(
   graphql(UPDATE_MOVIE_MUTATION, { name: "updateMovie" }),
   graphql(MOVIE_QUERY, {
     name: "editMovie",
-    skip: ownProps => !(ownProps.editMode && ownProps.match.params.id),
+    skip: ownProps => !ownProps.match.params.id,
     options: ownProps => ({
       variables: {
         id: ownProps.match.params.id,

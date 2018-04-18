@@ -20,14 +20,7 @@ const App = () => (
       <Route exact path="/" render={() => <Redirect to="/welcome" />} />
       <Route exact path="/welcome" component={withUser(Welcome)}/>
       <Route exact path="/movie/create" component={withUser(Movie)}/>
-      <Route exact path="/movie/edit/:id" component={
-        withUser(Movie, {
-          private: true,
-          props: {
-            editMode: true,
-          },
-        })}
-      />
+      <Route exact path="/movie/edit/:id" component={withUser(Movie, { private: true })} />
       <Route exact path="/movies" component={
         withUser(Movies, {
           props: {
