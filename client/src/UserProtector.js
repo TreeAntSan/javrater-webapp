@@ -13,24 +13,26 @@ export default (IncomingRoute, options = {}) => {
     render() {
       const { meData } = this.props;
 
-      // Only show the error (usually the uses is not logged in) if the route is private.
+      // Only show the error (usually the user is not logged in) if the route is private.
       if (meData.loading || (options.private && (meData.error || meData.me === undefined))) {
         return (
           <LoadingError
             error={meData.error || meData.me === undefined}
             errorMessage={(
               <div>
-                <p>{(meData.error && meData.error.message) || "You're not logged in!"}</p>
-                <p>
-                  Please <Link to={{
-                    pathname: "/login",
-                    state: { from: this.props.location },
-                  }}>Login</Link> {" "}
-                  or <Link to={{
-                    pathname: "/signup",
-                    state: { from: this.props.location },
-                  }}>Sign-up</Link>!
-                </p>
+                <p>{(meData.error && meData.error.message) || "There was a problem..."}</p>
+                {meData.error && meData.error.message === "GraphQL error: Not authorized" &&
+                  <p>
+                    Please <Link to={{
+                      pathname: "/login",
+                      state: { from: this.props.location },
+                    }}>Login</Link> {" "}
+                    or <Link to={{
+                      pathname: "/signup",
+                      state: { from: this.props.location },
+                    }}>Sign-up</Link>!
+                  </p>
+                }
               </div>
             )}
             loadingMessage={options.private ? "Checking if you're logged in..." : "Loading..."}

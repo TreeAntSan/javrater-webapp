@@ -14,26 +14,34 @@ class Movie extends Component {
   };
   queryAttempted = false;
 
+  componentWillMount() {
+    console.log("componentWillMount");
+    if (this.props.editMode && this.props.match.params.id) {
+      this._loadEditMovie();
+    }
+  }
+
+  _loadEditMovie = async () => {
+    const result = await this._queryMovie(this.props.match.params.id);
+    console.log("result", result);
+
+    // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
+    this.setState({ editMovie: result.data.movie });
+  };
+
   _queryMovie = async id => {
-    const result = await this.props.client.query({
+    // Using async and await means the result will never have status "loading" so it'll be ready
+    return await this.props.client.query({
       query: MOVIE_QUERY,
       variables: {
         id,
       },
     });
-
-    // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
-    this.setState({ editMovie: result });
   };
 
   render() {
     const { allRatings, allTags, allGenres } = this.props;
     const editMovie = this.state.editMovie;
-
-    if (this.props.editMode && this.props.match && !this.queryAttempted) {
-      this.queryAttempted = true; // Just one attempt...
-      this._queryMovie(this.props.match.params.id);
-    }
 
     if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
       allRatings.error || allGenres.error || allTags.error || editMovie.error) {

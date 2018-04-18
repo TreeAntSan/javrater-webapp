@@ -68,7 +68,7 @@ class MovieEditor extends Component {
 
     if (utils.queryOK(this.props.allTags, this.props.allTags.allTags) &&
       this.state.tagOptions.length === 0) {
-      this._handleTags();
+      this._processTags();
     }
 
     if (!this.editMoviePopulated &&
@@ -76,11 +76,16 @@ class MovieEditor extends Component {
       utils.queryOK(this.props.allRatings, this.props.allRatings.allRatings)
     ) {
       this.editMoviePopulated = true;
-      this._handleEditMovie();
+      this._processEditMovie();
     }
   }
 
-  _handleTags = () => {
+  // componentWillUnmount() {
+  //   this.setState(this.initialState);
+  //   this.editMoviePopulated = false;
+  // }
+
+  _processTags = () => {
     const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
 
     // Need to update initial state so it's reset to these values each time.
@@ -91,6 +96,31 @@ class MovieEditor extends Component {
 
     // Need to deep copy or the component state will update initialState, breaking the reset functionality.
     this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) });
+  };
+
+  _processEditMovie = () => {
+    const movieData = this.props.editMovie.data.movie;
+    const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
+    const checkedTags = cloneDeep(this.state.checkedTags);
+    movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
+
+    this.setState({
+      basicValues: {
+        title: movieData.title,
+        prodcode: movieData.prodCode,
+        genre: {
+          genrecode: movieData.genre.code,
+          genreid: movieData.genre.id,
+        },
+        rating: {
+          ratingnum: ratingNum,
+          ratingtext: movieData.rating.rating,
+          ratingdescription: movieData.rating.description,
+          ratingid: movieData.rating.id,
+        }
+      },
+      checkedTags,
+    });
   };
 
   handleTagChange = (tag, tagState) => {
@@ -213,31 +243,6 @@ class MovieEditor extends Component {
 
   handleResetClick = () => {
     this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
-  };
-
-  _handleEditMovie = () => {
-    const movieData = this.props.editMovie.data.movie;
-    const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
-    const checkedTags = cloneDeep(this.state.checkedTags);
-    movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
-
-    this.setState({
-      basicValues: {
-        title: movieData.title,
-        prodcode: movieData.prodCode,
-        genre: {
-          genrecode: movieData.genre.code,
-          genreid: movieData.genre.id,
-        },
-        rating: {
-          ratingnum: ratingNum,
-          ratingtext: movieData.rating.rating,
-          ratingdescription: movieData.rating.description,
-          ratingid: movieData.rating.id,
-        }
-      },
-      checkedTags,
-    });
   };
 
   _checkIfReady = () => {
