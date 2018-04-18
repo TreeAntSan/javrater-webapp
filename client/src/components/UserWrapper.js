@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
@@ -18,17 +18,17 @@ import LoadingError from "./LoadingError";
 class UserWrapper extends PureComponent {
   render() {
 
-    const { children, meQuery, ...rest } = this.props;
+    const { children, meData, ...rest } = this.props;
 
     // This route is private and requires that you be a user
     if (this.props.private) {
-      if (meQuery.loading || meQuery.error) {
+      if (meData.loading || meData.error) {
         return (
           <LoadingError
-            error={meQuery.error}
+            error={meData.error}
             errorMessage={(
               <div>
-                <p>{meQuery.error && meQuery.error.message}</p>
+                <p>{meData.error && meData.error.message}</p>
                 <p>
                   Please <Link to={{
                     pathname: "/login",
@@ -48,7 +48,7 @@ class UserWrapper extends PureComponent {
     }
 
     const childrenWithProps = React.Children.map(children, child =>
-      React.cloneElement(child, { currentUser: meQuery, ...rest }));
+      React.cloneElement(child, { ...rest }));
 
     return (
       <div>{childrenWithProps}</div>
@@ -58,7 +58,7 @@ class UserWrapper extends PureComponent {
 
 UserWrapper.propTypes = {
   children: PropTypes.node.isRequired,
-  meQuery: PropTypes.object.isRequired,
+  meData: PropTypes.object.isRequired,
   private: PropTypes.bool,
 };
 
@@ -74,4 +74,7 @@ const ME_QUERY = gql`
 
 // A note to myself: withRouter passes Route props (history, location, match) to this component.
 // All my components that are children of this component should also have this withRouter call.
-export default withRouter(graphql(ME_QUERY, { name: "meQuery" })(UserWrapper));
+export default compose(
+  withRouter,
+  graphql(ME_QUERY, { name: "meData" }),
+)(UserWrapper);

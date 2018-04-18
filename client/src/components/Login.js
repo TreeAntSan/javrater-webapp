@@ -19,10 +19,17 @@ class Login extends Component {
     shouldRedirect: false,
   };
 
-  _confirm = async () => {
-    // TODO Does this do anything?
-    // this.props.client.resetStore();
+  handleChange = (data) => {
+    this.setState(data);
+  };
 
+  _meQueryUpdate = (proxy, { data: { login: { user } } }) => {
+    if (user) {
+      proxy.writeQuery({ query: this.props.meQuery, data: { me: user } });
+    }
+  };
+
+  _confirm = async () => {
     // Login
     if (this.props.location.pathname === this.props.loginPath) {
       this.setState({ submissionInProgress: true });
@@ -32,11 +39,13 @@ class Login extends Component {
             email: this.state.email,
             password: this.state.password,
           },
+          update: this._meQueryUpdate,
         });
         const { token } = result.data.login;
         utils.setToken(token);
         this.setState({ shouldRedirect: true });
       } catch (error) {
+        console.log('error!');
         this.setState({ submissionInProgress: false, submissionFailure: error.message });
       }
 
@@ -50,6 +59,7 @@ class Login extends Component {
             email: this.state.email,
             password: this.state.password,
           },
+          update: this._meQueryUpdate,
         });
         const { token } = result.data.signup;
         utils.setToken(token);
@@ -70,7 +80,7 @@ class Login extends Component {
 
   render () {
     // TODO Bug UserWrapper doesn't get the name to the client immediately after being redirected
-    if (this.state.shouldRedirect || this.props.currentUser.me) {
+    if (this.state.shouldRedirect || this.props.meData.me) {
       return (
         <Redirect to={this._redirectPath()} />
       )
@@ -97,7 +107,7 @@ class Login extends Component {
               <Form.Input
                 required={!loginPage}
                 value={this.state.name}
-                onChange={e => this.setState({ name: e.target.value })}
+                onChange={e => this.handleChange({ name: e.target.value })}
                 label="Name"
                 autoComplete="username"
                 placeholder="A username"
@@ -106,7 +116,7 @@ class Login extends Component {
             <Form.Input
               required={!loginPage}
               value={this.state.email}
-              onChange={e => this.setState({ email: e.target.value })}
+              onChange={e => this.handleChange({ email: e.target.value })}
               label="Email"
               autoComplete="email"
               placeholder="Your email"
@@ -114,7 +124,7 @@ class Login extends Component {
             <Form.Input
               required={!loginPage}
               value={this.state.password}
-              onChange={e => this.setState({ password: e.target.value })}
+              onChange={e => this.handleChange({ password: e.target.value })}
               label="Password"
               autoComplete={loginPage ? "current-password" : "new-password"}
               placeholder={loginPage ? "Enter your password" : "Choose a safe password"}
@@ -160,6 +170,11 @@ const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {
     signup(email: $email, password: $password, name: $name) {
       token
+      user { 
+        id
+        name
+        email
+      }
     }
   }
 `;
@@ -168,12 +183,18 @@ const LOGIN_MUTATION = gql`
   mutation LoginMutation($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
+      user {
+        id
+        name
+        email
+      }
     }
   }
 `;
 
-export default withRouter(compose(
+export default compose(
+  withRouter,
   withApollo,
   graphql(SIGNUP_MUTATION, { name: 'signupMutation' }),
   graphql(LOGIN_MUTATION, { name: 'loginMutation' }),
-)(Login));
+)(Login);

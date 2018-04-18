@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
@@ -11,16 +11,16 @@ import LoadingError from "./components/LoadingError";
 export default (IncomingRoute, options = {}) => {
   class AuthHOC extends Component {
     render() {
-      const { meQuery } = this.props;
+      const { meData } = this.props;
 
       // Only show the error (usually the uses is not logged in) if the route is private.
-      if (meQuery.loading || (options.private && meQuery.error)) {
+      if (meData.loading || (options.private && (meData.error || meData.me === undefined))) {
         return (
           <LoadingError
-            error={meQuery.error}
+            error={meData.error || meData.me === undefined}
             errorMessage={(
               <div>
-                <p>{meQuery.error && meQuery.error.message}</p>
+                <p>{(meData.error && meData.error.message) || "You're not logged in!"}</p>
                 <p>
                   Please <Link to={{
                     pathname: "/login",
@@ -43,7 +43,7 @@ export default (IncomingRoute, options = {}) => {
         <IncomingRoute
           {...this.props}
           {...options.props}
-          currentUser={meQuery}
+          meQuery={ME_QUERY}
         />
       );
     }
@@ -63,8 +63,12 @@ export default (IncomingRoute, options = {}) => {
     router: PropTypes.object.isRequired,
   };
 
-  return graphql(ME_QUERY, {
-    name: "meQuery",
-    options: { fetchPolicy: "network-only" },
-  })(withRouter(AuthHOC));
+  return compose(
+    withRouter,
+    withApollo,
+    graphql(ME_QUERY, {
+      name: "meData",
+      options: { fetchPolicy: "cache-first" },
+    }),
+  )(AuthHOC);
 };

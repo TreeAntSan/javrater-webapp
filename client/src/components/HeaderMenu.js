@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withApollo } from "react-apollo";
+import { withApollo, compose } from "react-apollo";
 import { Menu, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 import utils from "../utils";
 import withUser from "../UserProtector";
-
 
 class HeaderMenu extends Component {
   constructor(props) {
@@ -20,7 +19,17 @@ class HeaderMenu extends Component {
   }
 
   componentWillMount() {
+    console.log("componentWillMount");
     this._reload();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log("nextProps", nextProps);
+    if (nextProps.meData.me) {
+      this.setState({ loggedIn: true, nameString: nextProps.meData.me.name});
+    } else {
+      this.setState({ loggedIn: false, nameString: "" });
+    }
   }
 
   componentWillUnmount() {
@@ -30,8 +39,9 @@ class HeaderMenu extends Component {
 
   _reload = () => {
     console.log("RELOAD");
-    const loggedIn = utils.loggedIn(this.props.currentUser);
-    const nameString = utils.grabName(this.props.currentUser);
+    console.log(this.props.client.cache);
+    const loggedIn = utils.loggedIn(this.props.meData);
+    const nameString = utils.grabName(this.props.meData);
     this.setState({ loggedIn, nameString });
   };
 
@@ -77,10 +87,13 @@ class HeaderMenu extends Component {
       </Menu>
     );
   }
-};
+}
 
 HeaderMenu.propTypes = {
   currentUser: PropTypes.object,
 };
 
-export default withUser(withApollo(HeaderMenu));
+export default compose(
+  withUser,
+  withApollo,
+)(HeaderMenu);

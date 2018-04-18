@@ -12,7 +12,6 @@ import User from "./components/user/User";
 import Footer from "./components/Footer";
 import LoadingError from "./components/LoadingError";
 
-// TODO Use context to clean up the repeated use of UserWrapper. See https://stackoverflow.com/a/49726454/3120546
 const App = () => (
   <div>
     <HeaderMenu />

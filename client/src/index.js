@@ -1,8 +1,8 @@
 import { ApolloProvider } from "react-apollo";
 import { ApolloClient } from "apollo-client";
-import { HttpLink } from "apollo-link-http";
+import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloLink, split } from "apollo-client-preset";
+import { split } from "apollo-client-preset";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 
@@ -13,34 +13,62 @@ import "semantic-ui-css/semantic.min.css";
 
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import util from "./utils";
+import utils from "./utils";
 
-const httpLink = new HttpLink({ uri: "http://localhost:4000" });
+const grabToken = () => {
+  try {
+    token = utils.getToken();
+    return token;
+  } catch (error) {
+    console.log(error.message);
+  }
+  return null;
+};
 
-let token = null;
-try {
-  token = util.getToken();
-} catch (error) {
-  console.log(error.message);
-}
+let token = grabToken();
 
-// ApolloLink for authentication
-// "This middleware will be invoked every time ApolloClient sends a request to the server. You can
-// imagine the process of sending a request as a chain of functions that are called. Each function
-// gets passed the GraphQL operation and another function called forward. forward needs to be called
-// at the end of the middleware function to pass the operation to the next middleware function in
-// the chain."
-const middlewareAuthLink = new ApolloLink((operation, forward) => {
-  const authorizationHeader = token ? `Bearer ${token}` : null;
-  operation.setContext({
-    headers: {
-      authorization: authorizationHeader,
-    },
+// Idea taken from:
+// https://blog.beeaweso.me/refreshing-token-based-authentication-with-apollo-client-2-0-7d45c20dc703
+// https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http#custom-fetching
+const customFetch = (uri, options) => {
+  const initialRequest = fetch(uri, options);
+
+  return initialRequest.then(response => (
+    response.text()
+  )).then((text) => {
+    const jsonified = JSON.parse(text);
+    // If there was an error we need to attempt to handle it...
+    if (jsonified.errors && jsonified.errors.findIndex(error =>
+      error.message === "Not authorized") !== -1  // Same error string as found in server-prisma/src/utils.js
+    ) {
+      // Attempt to re-grab the token from local storage
+      this.token = grabToken();
+
+      if (this.token) {
+        // Load it into the authorization header
+        options.headers.authorization = `Bearer ${this.token}`;
+
+        // Fire off the fetch a second time and hope it works.
+        return fetch(uri, options);
+      }
+    }
+
+    const result = {};
+    result.ok = true; // TODO Should this be false in the case of a failure to regrab a token???
+    result.text = () => new Promise((resolve, reject) => {
+      resolve(text);
+    });
+    return result;
   });
-  return forward(operation);
-});
+};
 
-const httpLinkWithAuthToken = middlewareAuthLink.concat(httpLink);
+const httpLinkWithAuthToken = createHttpLink({
+  uri: "http://localhost:4000",
+  fetch: customFetch,
+  headers: {
+    authorization: token ? `Bearer ${token}` : null,
+  },
+});
 
 // You’re instantiating a WebSocketLink that knows the subscriptions endpoint. The subscriptions
 // endpoint in this case is similar to the HTTP endpoint, except that it uses the ws instead of
@@ -75,6 +103,8 @@ const link = split(
 
 // Instantiate ApolloClient by passing in the httpLink and a new instance of an InMemoryCache.
 const client = new ApolloClient({
+  // https://github.com/apollographql/react-docs/blob/master/source/cache-updates.md
+  dataIdFromObject: o => o.id,
   link,
   cache: new InMemoryCache(),
 });
