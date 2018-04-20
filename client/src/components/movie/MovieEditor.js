@@ -192,36 +192,42 @@ class MovieEditor extends Component {
 
   handleSaveClick = async () => {
     const { tagIds } = this.state.tallyTags;
-    const result = await this.props.addMovie({
-      variables: {
-        title: this.state.basicValues.title,
-        prodCode: this.state.basicValues.prodcode,
-        genre: this.state.basicValues.genre.genreid,
-        rating: this.state.basicValues.rating.ratingid,
-        tags: tagIds,
-      },
-    });
+    try {
+      const result = await this.props.addMovie({
+        variables: {
+          title: this.state.basicValues.title || null,
+          prodCode: this.state.basicValues.prodcode || null,
+          genre: this.state.basicValues.genre.genreid || null,
+          rating: this.state.basicValues.rating.ratingid || null,
+          tags: tagIds,
+        },
+      });
 
-    const { id } = result.data.addMovie;
-    this.setState({ output: `Success: Added ${id}` });
+      this.setState({ output: `Success: Added ${result.data.addMovie.id}` });
+    } catch (error) {
+      this.setState({ output: `Failed! ${error.message}`});
+    }
   };
 
   handleUpdateClick = async () => {
     const { tagIds } = this.state.tallyTags;
-    const result = await this.props.updateMovie({
-      variables: {
-        id: this.props.editMovie.movie.id,
-        title: this.state.basicValues.title,
-        prodCode: this.state.basicValues.prodcode,
-        genre: this.state.basicValues.genre.genreid,
-        rating: this.state.basicValues.rating.ratingid,
-        tags: tagIds,
-        replaceTags: true,
-      },
-    });
+    try {
+      const result = await this.props.updateMovie({
+        variables: {
+          id: this.props.editMovie.movie.id,
+          title: this.state.basicValues.title,
+          prodCode: this.state.basicValues.prodcode,
+          genre: this.state.basicValues.genre.genreid,
+          rating: this.state.basicValues.rating.ratingid,
+          tags: tagIds,
+          replaceTags: true,
+        },
+      });
 
-    const { id } = result.data.updateMovie;
-    this.setState({ output: `Success: Updated ${id}` });
+      this.setState({ output: `Success: Updated ${result.data.addMovie.id}` });
+    } catch (error) {
+      this.setState({ output: `Failed! ${error.message}`});
+    }
   };
 
   handleParseClick = () => {

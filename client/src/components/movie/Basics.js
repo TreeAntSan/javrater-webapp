@@ -72,7 +72,7 @@ const Basics = props => (
                     ({ id, value: rating, description }))
               }
               onRate={props.onChange}
-              rating={props.values.rating.ratingnum}
+              ratingnum={props.values.rating.ratingnum}
             />
           </Form.Field>
         </List.Item>
