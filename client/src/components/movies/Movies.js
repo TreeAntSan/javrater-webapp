@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Query, withApollo } from "react-apollo";
-import gql from "graphql-tag";
+import { Query, withApollo, compose } from "react-apollo";
 import { withRouter } from "react-router";
 import { Container } from "semantic-ui-react";
 
@@ -9,6 +8,10 @@ import utils from "../../utils";
 
 import MovieTable from "./MovieTable";
 import LoadingError from "../LoadingError";
+
+import { ALL_MOVIES_QUERY } from "../../graphql/Queries";
+
+import { DELETE_MOVIE_MUTATION } from "../../graphql/Mutations";
 
 // TODO Bug: page doesn't refresh when navigated to it when there is a new movie saved
 class Movies extends Component {
@@ -22,9 +25,10 @@ class Movies extends Component {
       variables: {
         id: movieId,
       },
-      update: this.props.updateFunction ||
+      update: this.props.deleteMovieUpdate ||
       ((proxy, { data: { deleteMovie } }) => {
           const data = proxy.readQuery({ query: ALL_MOVIES_QUERY });
+
           // Remove the movie using the mutation return data.
           data.movies.splice(data.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
           proxy.writeQuery({ query: ALL_MOVIES_QUERY, data });
@@ -71,46 +75,10 @@ Movies.propTypes = {
   showDelete: PropTypes.bool,
   showEdit: PropTypes.bool,
   movies: PropTypes.array,
-  updateFunction: PropTypes.func,
+  deleteMovieUpdate: PropTypes.func,
 };
 
-const ALL_MOVIES_QUERY = gql`
-  query AllMoviesQuery {
-    movies {
-      id
-      title
-      prodCode
-      genre {
-        id
-        code
-        description
-      }
-      rating {
-        id
-        rating
-        description
-      }
-      tags {
-        id
-        tag
-        name
-        category
-        description
-      }
-      createdBy {
-        id
-        name
-      }
-    }
-  }
-`;
-
-const DELETE_MOVIE_MUTATION = gql`
-  mutation DeleteMovieMutation($id: ID!) {
-    deleteMovie(id: $id) {
-      id
-    }
-  }
-`;
-
-export default withRouter(withApollo(Movies));
+export default compose(
+  withRouter,
+  withApollo,
+)(Movies);

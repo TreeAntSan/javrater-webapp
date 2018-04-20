@@ -1,13 +1,32 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { graphql, compose, withApollo } from "react-apollo";
-import gql from "graphql-tag";
 import { withRouter } from "react-router";
 
 import LoadingError from "../LoadingError";
 import MovieEditor from "./MovieEditor";
 
+import {
+  ALL_GENRES_QUERY,
+  ALL_RATINGS_QUERY,
+  ALL_TAGS_QUERY,
+  MOVIE_QUERY_SIMPLE,
+} from "../../graphql/Queries";
+
+import {
+  ADD_MOVIE_MUTATION_SIMPLE,
+  UPDATE_MOVIE_MUTATION_SIMPLE,
+} from "../../graphql/Mutations";
+
 class Movie extends Component {
+  // _editMovieUpdate = (proxy, { data: { updateMovie } }) => {
+  //
+  // };
+  //
+  // _addMovieUpdate = (proxy, { data: { addMovie } }) => {
+  //   const data = proxy.readQuery({ query:  })
+  // };
+
   render() {
     const { allRatings, allTags, allGenres } = this.props;
 
@@ -60,116 +79,15 @@ Movie.propTypes = {
   editMovie: PropTypes.object,
 };
 
-const ALL_GENRES_QUERY = gql`
-  query AllGenresQuery {
-    allGenres {
-      id
-      code
-      description
-    }
-  }
-`;
-
-const ALL_RATINGS_QUERY = gql`
-  query AllRatingsQuery {
-    allRatings {
-      id
-      rating
-      description
-    }
-  }
-`;
-
-const ALL_TAGS_QUERY = gql`
-  query AllTagsQuery {
-    allTags {
-      id
-      category
-      tag
-      name
-      description
-    }
-  }
-`;
-
-const MOVIE_QUERY = gql`
-  query MovieQuery($id: ID!) {
-    movie(id: $id) {
-      id
-      title
-      prodCode
-      genre {
-        id
-        code
-      }
-      rating {
-        id
-        rating
-        description
-      }
-      tags {
-        id
-        tag
-      }
-    }
-  }
-`;
-
-const ADD_MOVIE_MUTATION = gql`
-  mutation AddMovieMutation(
-    $title: String!,
-    $prodCode: String!,
-    $genre: String!,
-    $rating: String!,
-    $tags: [String]!
-  ) {
-    addMovie(
-      title: $title,
-      prodCode: $prodCode,
-      genre: $genre,
-      rating: $rating,
-      tags: $tags
-    ) {
-      id
-    }
-  }
-`;
-
-const UPDATE_MOVIE_MUTATION = gql`
-  mutation UpdateMovieMutation(
-    $id: ID!, 
-    $title: String, 
-    $prodCode: String, 
-    $rating: String, 
-    $genre: String, 
-    $tags: [String!], 
-    $replaceTags: Boolean, 
-    $createdBy: String
-  ) {
-    updateMovie(
-      id: $id,
-      title: $title,
-      prodCode: $prodCode,
-      rating: $rating,
-      genre: $genre,
-      tags: $tags,
-      replaceTags: $replaceTags,
-      createdBy: $createdBy
-    ) {
-      id
-    }
-  }
-`;
-
 export default compose(
   withRouter,
   withApollo,
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
-  graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
-  graphql(UPDATE_MOVIE_MUTATION, { name: "updateMovie" }),
-  graphql(MOVIE_QUERY, {
+  graphql(ADD_MOVIE_MUTATION_SIMPLE, { name: "addMovie" }),
+  graphql(UPDATE_MOVIE_MUTATION_SIMPLE, { name: "updateMovie" }),
+  graphql(MOVIE_QUERY_SIMPLE, {
     name: "editMovie",
     skip: ownProps => !ownProps.match.params.id,
     options: ownProps => ({

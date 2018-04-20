@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { graphql, compose, withApollo } from "react-apollo";
-import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 
 import LoadingError from "./components/LoadingError";
+
+import { ME_QUERY_SIMPLE } from "./graphql/Queries";
 
 // Inspired from https://www.graph.cool/forum/t/react-hoc-to-check-for-authorized-user-protected-routes/478/2
 export default (IncomingRoute, options = {}) => {
@@ -45,21 +46,11 @@ export default (IncomingRoute, options = {}) => {
         <IncomingRoute
           {...this.props}
           {...options.props}
-          meQuery={ME_QUERY}
+          meQuery={ME_QUERY_SIMPLE}
         />
       );
     }
   }
-
-  const ME_QUERY = gql`
-    query MeQuery {
-      me {
-        id
-        name
-        email
-      }
-    }
-  `;
 
   AuthHOC.contextTypes = {
     router: PropTypes.object.isRequired,
@@ -68,7 +59,7 @@ export default (IncomingRoute, options = {}) => {
   return compose(
     withRouter,
     withApollo,
-    graphql(ME_QUERY, {
+    graphql(ME_QUERY_SIMPLE, {
       name: "meData",
       options: { fetchPolicy: "cache-first" },
     }),

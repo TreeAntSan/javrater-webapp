@@ -1,24 +1,27 @@
 import React from "react";
 import { Query } from "react-apollo";
-import gql from "graphql-tag";
 import { withRouter } from "react-router";
 import { Grid } from "semantic-ui-react";
-
 import UserDetail from "./UserDetail";
 
+import { ME_QUERY, USER_QUERY } from "../../graphql/Queries";
+
 const User = (props) => {
-  const QUERY = props.match.params.id === "me" ? ME_QUERY : USER_QUERY;
-
   // This is the Apollo Cache update function for the Movies component
-  const updateFunction = (proxy, { data: { deleteMovie } }) => {
-    const data = proxy.readQuery({ query: QUERY });
+  const _deleteMovieUpdate = (proxy, { data: { deleteMovie } }) => {
+    if (props.match.params.id === "me") {
+      const data = proxy.readQuery({ query: ME_QUERY });
 
-    // Depending on whether this is a me or user query the data will be located in different objects
-    const dataNamed = data.me || data.user;
+      // Remove the movie using the mutation return data.
+      data.me.movies.splice(data.me.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
+      proxy.writeQuery({ query: ME_QUERY, data });
+    } else {
+      const data = proxy.readQuery({ query: USER_QUERY, variables: { id: props.match.params.id } });
 
-    // Remove the movie using the mutation return data.
-    dataNamed.movies.splice(dataNamed.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
-    proxy.writeQuery({ query: QUERY, data });
+      // Remove the movie using the mutation return data.
+      data.user.movies.splice(data.user.movies.findIndex(movie => movie.id === deleteMovie.id), 1);
+      proxy.writeQuery({ query: USER_QUERY, data });
+    }
   };
 
   let userDetail = null;
@@ -30,7 +33,7 @@ const User = (props) => {
         {queryProps => (
           <UserDetail
             query={queryProps}
-            updateFunction={updateFunction}
+            deleteMovieUpdate={_deleteMovieUpdate}
           />
         )}
       </Query>
@@ -41,7 +44,7 @@ const User = (props) => {
         {queryProps => (
           <UserDetail
             query={queryProps}
-            updateFunction={updateFunction}
+            deleteMovieUpdate={_deleteMovieUpdate}
           />
         )}
       </Query>
@@ -58,66 +61,5 @@ const User = (props) => {
     </Grid>
   );
 };
-
-const USER_QUERY = gql`
-  query UserQuery($id: ID!) {
-    user(id: $id) {
-      id
-      name
-      movies {
-        id
-        title
-        prodCode
-        genre {
-          id
-          code
-          description
-        }
-        rating {
-          id
-          rating
-        }
-        tags {
-          id
-          tag
-          name
-          category
-          description
-        }
-      }
-    }
-  }
-`;
-
-const ME_QUERY = gql`
-  query MeQuery {
-    me {
-      id
-      name
-      email
-      movies {
-        id
-        title
-        prodCode
-        genre {
-          id
-          code
-          description
-        }
-        rating {
-          id
-          rating
-        }
-        tags {
-          id
-          tag
-          name
-          category
-          description
-        }
-      }
-    }
-  }
-`;
 
 export default withRouter(User);

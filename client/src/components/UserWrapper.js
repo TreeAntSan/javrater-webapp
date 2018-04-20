@@ -1,11 +1,12 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { graphql, compose } from "react-apollo";
-import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 
 import LoadingError from "./LoadingError";
+
+import { ME_QUERY_SIMPLE } from "../graphql/Queries";
 
 // TODO there is a significant problem with this style that will require research:
 // Every page load it hits the server with a me() query when you're logged out.
@@ -62,19 +63,9 @@ UserWrapper.propTypes = {
   private: PropTypes.bool,
 };
 
-const ME_QUERY = gql`
-  query MeQuery {
-    me {
-      id
-      name
-      email
-    }
-  }
-`;
-
 // A note to myself: withRouter passes Route props (history, location, match) to this component.
 // All my components that are children of this component should also have this withRouter call.
 export default compose(
   withRouter,
-  graphql(ME_QUERY, { name: "meData" }),
+  graphql(ME_QUERY_SIMPLE, { name: "meData" }),
 )(UserWrapper);

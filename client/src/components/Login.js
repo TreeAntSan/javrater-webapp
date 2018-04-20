@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { graphql, compose, withApollo } from 'react-apollo';
-import gql from 'graphql-tag';
 import { Link, Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
 import { Header, Segment, Form, Button, Container, Dimmer, Loader, Message } from "semantic-ui-react";
 
 import FloatingCenterGrid from "./FloatingCenterGrid";
 import utils from "../utils";
+
+import {
+  SIGNUP_MUTATION,
+  LOGIN_MUTATION,
+} from "../graphql/Mutations";
 
 class Login extends Component {
   state = {
@@ -78,7 +82,6 @@ class Login extends Component {
   };
 
   render () {
-    // TODO Bug UserWrapper doesn't get the name to the client immediately after being redirected
     if (this.state.shouldRedirect || this.props.meData.me) {
       return (
         <Redirect to={this._redirectPath()} />
@@ -164,32 +167,6 @@ Login.propType = {
   loginMutation: PropTypes.func.isRequired,
   loginPath: PropTypes.string.isRequired,
 };
-
-const SIGNUP_MUTATION = gql`
-  mutation SignupMutation($email: String!, $password: String!, $name: String!) {
-    signup(email: $email, password: $password, name: $name) {
-      token
-      user { 
-        id
-        name
-        email
-      }
-    }
-  }
-`;
-
-const LOGIN_MUTATION = gql`
-  mutation LoginMutation($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      token
-      user {
-        id
-        name
-        email
-      }
-    }
-  }
-`;
 
 export default compose(
   withRouter,

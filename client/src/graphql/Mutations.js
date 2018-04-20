@@ -99,3 +99,37 @@ export const UPDATE_MOVIE_MUTATION_SIMPLE = gql`
     }
   }
 `;
+
+export const DELETE_MOVIE_MUTATION = gql`
+  mutation DeleteMovieMutation($id: ID!) {
+    deleteMovie(id: $id) {
+      id
+    }
+  }
+`;
+
+export const SIGNUP_MUTATION = gql`
+  mutation SignupMutation($email: String!, $password: String!, $name: String!) {
+    signup(email: $email, password: $password, name: $name) {
+      token
+      user {
+        id
+        name
+        email
+      }
+    }
+  }
+`;
+
+export const LOGIN_MUTATION = gql`
+  mutation LoginMutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      token
+      user {
+        id
+        name
+        email
+      }
+    }
+  }
+`;
