@@ -4,12 +4,19 @@ import {
   GenreDetails,
   RatingDetails,
   TagDetails,
+  UserDetails,
+  // PrivateUserDetails,
 } from "./SimpleFragments";
 
 import {
   MovieFragment,
   MovieFragmentSimple,
 } from "./MovieFragments";
+
+import {
+  UserFragment,
+  // PrivateUserFragment, // TODO why is this broken?
+} from "./UserFragments";
 
 export const ALL_MOVIES_QUERY = gql`
   query AllMoviesQuery {
@@ -63,4 +70,46 @@ export const MOVIE_QUERY_SIMPLE = gql`
     }
   }
   ${MovieFragmentSimple}
+`;
+
+export const USER_QUERY = gql`
+  query UserQuery($id: ID!) {
+    user(id: $id) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+export const USER_QUERY_SIMPLE = gql`
+  query UserQuery($id: ID!) {
+    user(id: $id) {
+      ...UserDetails
+    }
+  }
+  ${UserDetails}
+`;
+
+export const ME_QUERY = gql`
+  query MeQuery {
+    me {
+      id
+      name
+      email
+      movies {
+        ...MovieFragment
+      }
+    }
+  }
+  ${MovieFragment}
+`;
+
+export const ME_QUERY_SIMPLE = gql`
+  query MeQuery {
+    me {
+      id
+      name
+      email
+    }
+  }
 `;

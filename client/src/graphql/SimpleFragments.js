@@ -1,7 +1,8 @@
 import gql from "graphql-tag";
 
 // These fragments are limited to a single-layer. Higher-order fragments (such as a fragment
-// responsible for grabbing a Movie's many details) should be in a separate Fragments file.
+// responsible for grabbing a Movie's many details or a user's movies in addition to their name)
+// should be in separate and intelligently labeled Fragments file.
 export const MovieDetails = gql`
   fragment MovieDetails on Movie {
     id
@@ -40,5 +41,13 @@ export const UserDetails = gql`
   fragment UserDetails on User {
     id
     name
+  }
+`;
+
+export const PrivateUserDetails = gql`
+  fragment PrivateUserDetails on PrivateUser {
+    id
+    name
+    email
   }
 `;
