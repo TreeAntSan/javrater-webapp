@@ -5,7 +5,7 @@ services:
     container_name: javrater-client
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
     volumes:
       - ".:/app"
       - "/app/node_modules"

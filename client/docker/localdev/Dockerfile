@@ -11,6 +11,7 @@ WORKDIR /app
 # install modules
 COPY ./package.json ./package.json
 RUN npm install
+RUN npm install -g serve
 
 # copy files to work directory
 COPY . .
