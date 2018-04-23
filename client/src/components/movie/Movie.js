@@ -1,38 +1,39 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { graphql, compose, withApollo } from "react-apollo";
-import gql from "graphql-tag";
 import { withRouter } from "react-router";
 
 import LoadingError from "../LoadingError";
 import MovieEditor from "./MovieEditor";
 
-// TODO Bug with glitchy loading, requiring a second click on a link to work
+import {
+  ALL_GENRES_QUERY,
+  ALL_RATINGS_QUERY,
+  ALL_TAGS_QUERY,
+  MOVIE_QUERY_SIMPLE,
+  ME_QUERY,
+  ALL_MOVIES_QUERY,
+} from "../../graphql/Queries";
+
+import {
+  ADD_MOVIE_MUTATION,
+  UPDATE_MOVIE_MUTATION,
+} from "../../graphql/Mutations";
+
+import { MovieFragment } from "../../graphql/MovieFragments";
+
 class Movie extends Component {
-  state = {
-    editMovie: {},
-  };
-  queryAttempted = false;
-
-  _queryMovie = async id => {
-    const result = await this.props.client.query({
-      query: MOVIE_QUERY,
-      variables: {
-        id,
-      },
-    });
-
-    // TODO is there an alternative to using state? Such as using the Apollo cache? Can the cache be accessed and passed via prop?
-    this.setState({ editMovie: result });
-  };
-
   render() {
     const { allRatings, allTags, allGenres } = this.props;
-    const editMovie = this.state.editMovie;
 
-    if (this.props.editMode && this.props.match && !this.queryAttempted) {
-      this.queryAttempted = true; // Just one attempt...
-      this._queryMovie(this.props.match.params.id);
+    // Since this is an optional prop set it to an empty object to keep error checks compatible.
+    // This prop is populated depending on this.props.match.params.id's existence
+    const editMovie = this.props.editMovie || {};
+
+    // If there was no movie found it is null. If no movie was attempted it would be undefined.
+    if (editMovie.movie === null) {
+      editMovie.error = {};
+      editMovie.error.message = "Could not find";
     }
 
     if (allRatings.loading || allGenres.loading || allTags.loading || editMovie.loading ||
@@ -59,7 +60,7 @@ class Movie extends Component {
         allTags={allTags}
         addMovie={this.props.addMovie}
         updateMovie={this.props.updateMovie}
-        editMovie={this.state.editMovie}
+        editMovie={editMovie}
       />
     );
   }
@@ -71,115 +72,58 @@ Movie.propTypes = {
   allTags: PropTypes.object.isRequired,
   addMovie: PropTypes.func.isRequired,
   updateMovie: PropTypes.func.isRequired,
-  editMode: PropTypes.bool,
+  editMovie: PropTypes.object,
 };
 
-const ALL_GENRES_QUERY = gql`
-  query AllGenresQuery {
-    allGenres {
-      id
-      code
-      description
-    }
-  }
-`;
-
-const ALL_RATINGS_QUERY = gql`
-  query AllRatingsQuery {
-    allRatings {
-      id
-      rating
-      description
-    }
-  }
-`;
-
-const ALL_TAGS_QUERY = gql`
-  query AllTagsQuery {
-    allTags {
-      id
-      category
-      tag
-      name
-      description
-    }
-  }
-`;
-
-const MOVIE_QUERY = gql`
-  query MovieQuery($id: ID!) {
-    movie(id: $id) {
-      id
-      title
-      prodCode
-      genre {
-        id
-        code
-      }
-      rating {
-        id
-        rating
-        description
-      }
-      tags {
-        id
-        tag
-      }
-    }
-  }
-`;
-
-const ADD_MOVIE_MUTATION = gql`
-  mutation AddMovieMutation(
-    $title: String!,
-    $prodCode: String!,
-    $genre: String!,
-    $rating: String!,
-    $tags: [String]!
-  ) {
-    addMovie(
-      title: $title,
-      prodCode: $prodCode,
-      genre: $genre,
-      rating: $rating,
-      tags: $tags
-    ) {
-      id
-    }
-  }
-`;
-
-const UPDATE_MOVIE_MUTATION = gql`
-  mutation UpdateMovieMutation(
-    $id: ID!, 
-    $title: String, 
-    $prodCode: String, 
-    $rating: String, 
-    $genre: String, 
-    $tags: [String!], 
-    $replaceTags: Boolean, 
-    $createdBy: String
-  ) {
-    updateMovie(
-      id: $id,
-      title: $title,
-      prodCode: $prodCode,
-      rating: $rating,
-      genre: $genre,
-      tags: $tags,
-      replaceTags: $replaceTags,
-      createdBy: $createdBy
-    ) {
-      id
-    }
-  }
-`;
-
-export default withRouter(compose(
+export default compose(
+  withRouter,
   withApollo,
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
-  graphql(ADD_MOVIE_MUTATION, { name: "addMovie" }),
-  graphql(UPDATE_MOVIE_MUTATION, { name: "updateMovie" }),
-)(Movie));
+  graphql(ADD_MOVIE_MUTATION, {
+    name: "addMovie",
+    options: {
+      update: (proxy, { data: { addMovie } }) => {
+        try {
+          const meData = proxy.readQuery({ query: ME_QUERY });
+          meData.me.movies.push(addMovie);
+          proxy.writeQuery({ query: ME_QUERY, data: meData });
+        } catch (error) {
+          // Do nothing, the cache wasn't filled yet, so fail quietly
+        }
+
+        try {
+          const moviesData = proxy.readQuery({ query: ALL_MOVIES_QUERY });
+          moviesData.movies.push(addMovie);
+          proxy.writeQuery({ query: ALL_MOVIES_QUERY, data: moviesData });
+        } catch (error) {
+          // Do nothing, the cache wasn't filled yet, so fail quietly
+        }
+      },
+    },
+  }),
+  graphql(UPDATE_MOVIE_MUTATION, {
+    name: "updateMovie",
+    options: {
+      update: (proxy, { data: { updateMovie } }) => {
+        // Excellent example of using writeFragment - finds the movie and edits it everywhere!
+        proxy.writeFragment({
+          id: updateMovie.id,
+          fragment: MovieFragment,
+          fragmentName: "MovieFragment",  // Required because this fragment has fragments itself
+          data: updateMovie,
+        });
+      },
+    },
+  }),
+  graphql(MOVIE_QUERY_SIMPLE, {
+    name: "editMovie",
+    skip: ownProps => !ownProps.match.params.id,
+    options: ownProps => ({
+      variables: {
+        id: ownProps.match.params.id,
+      },
+    }),
+  }),
+)(Movie);

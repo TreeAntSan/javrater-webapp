@@ -6,7 +6,7 @@ const RatingElement = props => (
   <div>
     <Rating
       clearable
-      rating={props.rating}
+      rating={props.ratingnum}
       maxRating={props.maxRating}
       onRate={(event, data) =>
         props.onRate({
@@ -18,8 +18,8 @@ const RatingElement = props => (
           },
         })}
     />
-    {props.rating}: {(props.ratingOptions[props.rating] &&
-                            props.ratingOptions[props.rating].description) || "ERROR"}
+    {props.ratingnum}: {(props.ratingOptions[props.ratingnum] &&
+                            props.ratingOptions[props.ratingnum].description) || "ERROR"}
   </div>
 );
 
@@ -27,7 +27,7 @@ RatingElement.propTypes = {
   maxRating: PropTypes.number.isRequired,
   ratingOptions: PropTypes.array.isRequired,
   onRate: PropTypes.func.isRequired,
-  rating: PropTypes.number.isRequired,
+  ratingnum: PropTypes.number.isRequired,
 };
 
 export default RatingElement;

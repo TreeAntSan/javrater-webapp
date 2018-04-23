@@ -48,8 +48,6 @@ class MovieEditor extends Component {
     loaded: false,
   };
 
-  editMoviePopulated = false;
-
   constructor(props) {
     super(props);
     this.state = this.initialState;
@@ -61,26 +59,20 @@ class MovieEditor extends Component {
     https://reacttraining.com/react-router/web/example/preventing-transitions
   */
 
-  componentDidMount() {
-    if (this._checkIfReady()) {
-      this.setState({ loaded: true });
-    }
-
+  componentWillMount() {
     if (utils.queryOK(this.props.allTags, this.props.allTags.allTags) &&
       this.state.tagOptions.length === 0) {
-      this._handleTags();
+      this._processTags();
     }
 
-    if (!this.editMoviePopulated &&
-      utils.queryOK(this.props.editMovie, this.props.editMovie.data) &&
+    if (utils.queryOK(this.props.editMovie, this.props.editMovie.movie) &&
       utils.queryOK(this.props.allRatings, this.props.allRatings.allRatings)
     ) {
-      this.editMoviePopulated = true;
-      this._handleEditMovie();
+      this._processEditMovie();
     }
   }
 
-  _handleTags = () => {
+  _processTags = () => {
     const tagOptions = utils.tagOptionFormatter(this.props.allTags.allTags);
 
     // Need to update initial state so it's reset to these values each time.
@@ -90,28 +82,48 @@ class MovieEditor extends Component {
     this.tagDict = tagDict;
 
     // Need to deep copy or the component state will update initialState, breaking the reset functionality.
-    this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) });
+    this.setState({ tagOptions, checkedTags: cloneDeep(tagSeed) }, this._checkIfReady);
   };
 
-  handleTagChange = (tag, tagState) => {
+  _processEditMovie = () => {
+    const movieData = this.props.editMovie.movie;
+    const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
     const checkedTags = cloneDeep(this.state.checkedTags);
-    checkedTags[tag].checked = tagState;
-    this.setState({ checkedTags, tallyTags: this._tallyTags(checkedTags) }, this.generateOutput);
+    movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
+
+    this.setState({
+      basicValues: {
+        title: movieData.title,
+        prodcode: movieData.prodCode,
+        genre: {
+          genrecode: movieData.genre.code,
+          genreid: movieData.genre.id,
+        },
+        rating: {
+          ratingnum: ratingNum,
+          ratingtext: movieData.rating.rating,
+          ratingdescription: movieData.rating.description,
+          ratingid: movieData.rating.id,
+        }
+      },
+      checkedTags,
+    }, this._checkIfReady);
   };
 
-  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
-    // TODO There must be a more elegant way to accomplish this...
-    const basicValues = {...this.state.basicValues};
-    if (title !== undefined) basicValues.title = title;
-    if (prodcode !== undefined) basicValues.prodcode = prodcode;
-    if (genre !== undefined) basicValues.genre = genre;
-    if (rating !== undefined) basicValues.rating = rating;
-    if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
-    this.setState({ basicValues }, this.generateOutput);
-  };
+  _checkIfReady = () => {
+    const props = this.props;
+    const editMovieReady = isEmpty(props.editMovie) ?
+      true :
+      utils.queryOK(props.editMovie, props.editMovie.movie);
 
-  handleOutputChange = (event, data) => {
-    this.setState({ output: data.value});
+    const loaded = (
+      utils.queryOK(props.allRatings, props.allRatings.allRatings) &&
+      utils.queryOK(props.allGenres, props.allGenres.allGenres) &&
+      utils.queryOK(props.allTags, props.allTags.allTags) &&
+      editMovieReady
+    );
+
+    this.setState({ loaded });
   };
 
   _tallyTags = (checkedTags) => {
@@ -140,6 +152,27 @@ class MovieEditor extends Component {
     };
   };
 
+  handleTagChange = (tag, tagState) => {
+    const checkedTags = cloneDeep(this.state.checkedTags);
+    checkedTags[tag].checked = tagState;
+    this.setState({ checkedTags, tallyTags: this._tallyTags(checkedTags) }, this.generateOutput);
+  };
+
+  handleBasicsChange = ({ title, prodcode, genre, rating, tagsOnly }) => {
+    // TODO There must be a more elegant way to accomplish this...
+    const basicValues = {...this.state.basicValues};
+    if (title !== undefined) basicValues.title = title;
+    if (prodcode !== undefined) basicValues.prodcode = prodcode;
+    if (genre !== undefined) basicValues.genre = genre;
+    if (rating !== undefined) basicValues.rating = rating;
+    if (tagsOnly !== undefined) basicValues.tagsOnly = tagsOnly;
+    this.setState({ basicValues }, this.generateOutput);
+  };
+
+  handleOutputChange = (event, data) => {
+    this.setState({ output: data.value});
+  };
+
   generateOutput = () => {
     const { catTags, catSeries } = this.state.tallyTags;
 
@@ -159,36 +192,42 @@ class MovieEditor extends Component {
 
   handleSaveClick = async () => {
     const { tagIds } = this.state.tallyTags;
-    const result = await this.props.addMovie({
-      variables: {
-        title: this.state.basicValues.title,
-        prodCode: this.state.basicValues.prodcode,
-        genre: this.state.basicValues.genre.genreid,
-        rating: this.state.basicValues.rating.ratingid,
-        tags: tagIds,
-      },
-    });
+    try {
+      const result = await this.props.addMovie({
+        variables: {
+          title: this.state.basicValues.title || null,
+          prodCode: this.state.basicValues.prodcode || null,
+          genre: this.state.basicValues.genre.genreid || null,
+          rating: this.state.basicValues.rating.ratingid || null,
+          tags: tagIds,
+        },
+      });
 
-    const { id } = result.data.addMovie;
-    this.setState({ output: `Success: Added ${id}` });
+      this.setState({ output: `Success: Added ${result.data.addMovie.id}` });
+    } catch (error) {
+      this.setState({ output: `Failed! ${error.message}`});
+    }
   };
 
   handleUpdateClick = async () => {
     const { tagIds } = this.state.tallyTags;
-    const result = await this.props.updateMovie({
-      variables: {
-        id: this.props.editMovie.data.movie.id,
-        title: this.state.basicValues.title,
-        prodCode: this.state.basicValues.prodcode,
-        genre: this.state.basicValues.genre.genreid,
-        rating: this.state.basicValues.rating.ratingid,
-        tags: tagIds,
-        replaceTags: true,
-      },
-    });
+    try {
+      const result = await this.props.updateMovie({
+        variables: {
+          id: this.props.editMovie.movie.id,
+          title: this.state.basicValues.title,
+          prodCode: this.state.basicValues.prodcode,
+          genre: this.state.basicValues.genre.genreid,
+          rating: this.state.basicValues.rating.ratingid,
+          tags: tagIds,
+          replaceTags: true,
+        },
+      });
 
-    const { id } = result.data.updateMovie;
-    this.setState({ output: `Success: Updated ${id}` });
+      this.setState({ output: `Success: Updated ${result.data.updateMovie.id}` });
+    } catch (error) {
+      this.setState({ output: `Failed! ${error.message}`});
+    }
   };
 
   handleParseClick = () => {
@@ -213,44 +252,6 @@ class MovieEditor extends Component {
 
   handleResetClick = () => {
     this.setState({ ...this.initialState, checkedTags: cloneDeep(this.initialState.checkedTags) });
-  };
-
-  _handleEditMovie = () => {
-    const movieData = this.props.editMovie.data.movie;
-    const ratingNum = this.props.allRatings.allRatings.findIndex(rating => rating.id === movieData.rating.id);
-    const checkedTags = cloneDeep(this.state.checkedTags);
-    movieData.tags.forEach(tag => checkedTags[tag.tag].checked = true);
-
-    this.setState({
-      basicValues: {
-        title: movieData.title,
-        prodcode: movieData.prodCode,
-        genre: {
-          genrecode: movieData.genre.code,
-          genreid: movieData.genre.id,
-        },
-        rating: {
-          ratingnum: ratingNum,
-          ratingtext: movieData.rating.rating,
-          ratingdescription: movieData.rating.description,
-          ratingid: movieData.rating.id,
-        }
-      },
-      checkedTags,
-    });
-  };
-
-  _checkIfReady = () => {
-    const props = this.props;
-    const editMovieReady = !isEmpty(props.editMovie) ?
-      utils.queryOK(props.editMovie, props.editMovie.data) :
-      true;
-
-    return (utils.queryOK(props.allRatings, props.allRatings.allRatings) &&
-      utils.queryOK(props.allGenres, props.allGenres.allGenres) &&
-      utils.queryOK(props.allTags, props.allTags.allTags) &&
-      editMovieReady
-    );
   };
 
   render () {

@@ -1,17 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withApollo } from "react-apollo";
+import { withApollo, compose } from "react-apollo";
 import { Menu, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
-import utils from "../utils";
 import withUser from "../UserProtector";
-
 
 class HeaderMenu extends Component {
   constructor(props) {
     super(props);
-    console.log("subscribed");
     this.unsubscribe = this.props.client.onResetStore(this._reload);
     this.state = {
       loggedIn: false,
@@ -23,16 +20,26 @@ class HeaderMenu extends Component {
     this._reload();
   }
 
+  componentWillReceiveProps() {
+    this._reload()
+  }
+
   componentWillUnmount() {
-    console.log("unsubscribed");
     this.unsubscribe();
   }
 
+  // Force getting meData from the cache by using the client's readQuery
   _reload = () => {
-    console.log("RELOAD");
-    const loggedIn = utils.loggedIn(this.props.currentUser);
-    const nameString = utils.grabName(this.props.currentUser);
-    this.setState({ loggedIn, nameString });
+    try {
+      const { me } = this.props.client.readQuery({
+        query: this.props.meQuery,
+      });
+      if (me) {
+        this.setState({ loggedIn: true, nameString: me.name});
+      }
+    } catch (error) {
+      this.setState({ loggedIn: false, nameString: "" });
+    }
   };
 
   render() {
@@ -77,10 +84,13 @@ class HeaderMenu extends Component {
       </Menu>
     );
   }
-};
+}
 
 HeaderMenu.propTypes = {
   currentUser: PropTypes.object,
 };
 
-export default withUser(withApollo(HeaderMenu));
+export default compose(
+  withUser,   // TODO not really needed, just using it for meQuery prop
+  withApollo, // Needed to access client
+)(HeaderMenu);

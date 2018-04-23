@@ -1,12 +1,17 @@
 const jwt = require("jsonwebtoken");
 
 function getUserId(ctx) {
+  const authLoad = getAuthToken(ctx);
+  return authLoad.result.userId;
+}
+
+function getAuthToken(ctx) {
   const Authorization = ctx.request.get("Authorization");
   if (Authorization) {
     const token = Authorization.replace("Bearer ", "");
     try {
-      const { userId } = jwt.verify(token, process.env.APP_SECRET);
-      return userId;
+      const result = jwt.verify(token, process.env.APP_SECRET);
+      return { result, token };
     } catch (error) {
       if (error.name === "JsonWebTokenError") {
         throw new AuthError();
@@ -62,12 +67,14 @@ async function getTagList(ctx, tags) {
 
 class AuthError extends Error {
   constructor() {
+    // If error is changed you must also change the same string in client/src/index.js
     super("Not authorized");
   }
 }
 
 module.exports = {
   getUserId,
+  getAuthToken,
   getRatingId,
   getTagList,
   AuthError,

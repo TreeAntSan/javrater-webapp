@@ -5,12 +5,11 @@ type Query {
   genre(id: ID!): Genre
   rating(id: ID!): Rating
   tag(id: ID!): Tag
-  allGenres: [SimpleGenre]!
-  allRatings: [SimpleRating]!
-  allTags: [SimpleTag]!
+  allGenres: [Genre]!
+  allRatings: [Rating]!
+  allTags: [Tag]!
   user(id: ID!): User
   me: PrivateUser
-  currentUser: ID
 }
 
 type Mutation {
@@ -27,7 +26,7 @@ type Subscription {
 
 type AuthPayload {
   token: String!
-  user: User!
+  user: PrivateUser!
 }
 
 # For public use. It does not expose password or email.
@@ -43,27 +42,4 @@ type PrivateUser {
   email: String!
   name: String!
   movies: [Movie!]!
-}
-
-# Does not include Movies link
-type SimpleGenre {
-  id: ID!
-  code: String!
-  description: String!
-}
-
-# Does not include Movies link
-type SimpleRating {
-  id: ID!
-  rating: String!
-  description: String!
-}
-
-# Does not include Movies link
-type SimpleTag {
-  id: ID!
-  category: String!
-  tag: String!
-  name: String!
-  description: String!
 }

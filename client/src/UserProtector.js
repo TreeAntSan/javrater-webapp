@@ -1,36 +1,39 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { graphql } from "react-apollo";
-import gql from "graphql-tag";
+import { graphql, compose, withApollo } from "react-apollo";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 
 import LoadingError from "./components/LoadingError";
 
+import { ME_QUERY_SIMPLE } from "./graphql/Queries";
+
 // Inspired from https://www.graph.cool/forum/t/react-hoc-to-check-for-authorized-user-protected-routes/478/2
 export default (IncomingRoute, options = {}) => {
   class AuthHOC extends Component {
     render() {
-      const { meQuery } = this.props;
+      const { meData } = this.props;
 
-      // Only show the error (usually the uses is not logged in) if the route is private.
-      if (meQuery.loading || (options.private && meQuery.error)) {
+      // Only show the error (usually the user is not logged in) if the route is private.
+      if (meData.loading || (options.private && (meData.error || meData.me === undefined))) {
         return (
           <LoadingError
-            error={meQuery.error}
+            error={meData.error || (options.private && meData.me === undefined)}
             errorMessage={(
               <div>
-                <p>{meQuery.error && meQuery.error.message}</p>
-                <p>
-                  Please <Link to={{
-                    pathname: "/login",
-                    state: { from: this.props.location },
-                  }}>Login</Link> {" "}
-                  or <Link to={{
-                    pathname: "/signup",
-                    state: { from: this.props.location },
-                  }}>Sign-up</Link>!
-                </p>
+                <p>{(meData.error && meData.error.message) || "There was a problem..."}</p>
+                {meData.error && meData.error.message === "GraphQL error: Not authorized" &&
+                  <p>
+                    Please <Link to={{
+                      pathname: "/login",
+                      state: { from: this.props.location },
+                    }}>Login</Link> {" "}
+                    or <Link to={{
+                      pathname: "/signup",
+                      state: { from: this.props.location },
+                    }}>Sign-up</Link>!
+                  </p>
+                }
               </div>
             )}
             loadingMessage={options.private ? "Checking if you're logged in..." : "Loading..."}
@@ -43,28 +46,22 @@ export default (IncomingRoute, options = {}) => {
         <IncomingRoute
           {...this.props}
           {...options.props}
-          currentUser={meQuery}
+          meQuery={ME_QUERY_SIMPLE}
         />
       );
     }
   }
 
-  const ME_QUERY = gql`
-    query MeQuery {
-      me {
-        id
-        name
-        email
-      }
-    }
-  `;
-
   AuthHOC.contextTypes = {
     router: PropTypes.object.isRequired,
   };
 
-  return graphql(ME_QUERY, {
-    name: "meQuery",
-    options: { fetchPolicy: "network-only" },
-  })(withRouter(AuthHOC));
+  return compose(
+    withRouter,
+    withApollo,
+    graphql(ME_QUERY_SIMPLE, {
+      name: "meData",
+      options: { fetchPolicy: "cache-first" },
+    }),
+  )(AuthHOC);
 };

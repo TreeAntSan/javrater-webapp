@@ -11,7 +11,7 @@ const auth = {
     return {
       token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
       user,
-    }
+    };
   },
 
   async login(parent, { email, password }, ctx, info) {
@@ -28,7 +28,7 @@ const auth = {
     return {
       token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
       user,
-    }
+    };
   },
 };
 

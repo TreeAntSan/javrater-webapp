@@ -12,7 +12,6 @@ import User from "./components/user/User";
 import Footer from "./components/Footer";
 import LoadingError from "./components/LoadingError";
 
-// TODO Use context to clean up the repeated use of UserWrapper. See https://stackoverflow.com/a/49726454/3120546
 const App = () => (
   <div>
     <HeaderMenu />
@@ -21,14 +20,7 @@ const App = () => (
       <Route exact path="/" render={() => <Redirect to="/welcome" />} />
       <Route exact path="/welcome" component={withUser(Welcome)}/>
       <Route exact path="/movie/create" component={withUser(Movie)}/>
-      <Route exact path="/movie/edit/:id" component={
-        withUser(Movie, {
-          private: true,
-          props: {
-            editMode: true,
-          },
-        })}
-      />
+      <Route exact path="/movie/edit/:id" component={withUser(Movie, { private: true })} />
       <Route exact path="/movies" component={
         withUser(Movies, {
           props: {

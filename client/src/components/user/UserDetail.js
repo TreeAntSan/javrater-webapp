@@ -52,7 +52,7 @@ const UserDetail = (props) => {
               showDelete={self}
               showEdit={self}
               movies={userData.movies}
-              updateFunction={props.updateFunction}
+              deleteMovieUpdate={props.deleteMovieUpdate}
             />
           </div>
           :
@@ -71,7 +71,7 @@ const UserDetail = (props) => {
 
 UserDetail.propTypes = {
   query: PropTypes.object.isRequired,
-  updateFunction: PropTypes.func,
+  deleteMovieUpdate: PropTypes.func,
 };
 
 export default withRouter(UserDetail);
