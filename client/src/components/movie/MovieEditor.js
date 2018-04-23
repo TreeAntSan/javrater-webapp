@@ -224,7 +224,7 @@ class MovieEditor extends Component {
         },
       });
 
-      this.setState({ output: `Success: Updated ${result.data.addMovie.id}` });
+      this.setState({ output: `Success: Updated ${result.data.updateMovie.id}` });
     } catch (error) {
       this.setState({ output: `Failed! ${error.message}`});
     }

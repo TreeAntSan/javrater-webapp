@@ -11,22 +11,18 @@ import {
   ALL_RATINGS_QUERY,
   ALL_TAGS_QUERY,
   MOVIE_QUERY_SIMPLE,
+  ME_QUERY,
+  ALL_MOVIES_QUERY,
 } from "../../graphql/Queries";
 
 import {
-  ADD_MOVIE_MUTATION_SIMPLE,
-  UPDATE_MOVIE_MUTATION_SIMPLE,
+  ADD_MOVIE_MUTATION,
+  UPDATE_MOVIE_MUTATION,
 } from "../../graphql/Mutations";
 
-class Movie extends Component {
-  // _editMovieUpdate = (proxy, { data: { updateMovie } }) => {
-  //
-  // };
-  //
-  // _addMovieUpdate = (proxy, { data: { addMovie } }) => {
-  //   const data = proxy.readQuery({ query:  })
-  // };
+import { MovieFragment } from "../../graphql/MovieFragments";
 
+class Movie extends Component {
   render() {
     const { allRatings, allTags, allGenres } = this.props;
 
@@ -85,8 +81,42 @@ export default compose(
   graphql(ALL_GENRES_QUERY, { name: "allGenres" }),
   graphql(ALL_RATINGS_QUERY, { name: "allRatings" }),
   graphql(ALL_TAGS_QUERY, { name: "allTags" }),
-  graphql(ADD_MOVIE_MUTATION_SIMPLE, { name: "addMovie" }),
-  graphql(UPDATE_MOVIE_MUTATION_SIMPLE, { name: "updateMovie" }),
+  graphql(ADD_MOVIE_MUTATION, {
+    name: "addMovie",
+    options: {
+      update: (proxy, { data: { addMovie } }) => {
+        try {
+          const meData = proxy.readQuery({ query: ME_QUERY });
+          meData.me.movies.push(addMovie);
+          proxy.writeQuery({ query: ME_QUERY, data: meData });
+        } catch (error) {
+          // Do nothing, the cache wasn't filled yet, so fail quietly
+        }
+
+        try {
+          const moviesData = proxy.readQuery({ query: ALL_MOVIES_QUERY });
+          moviesData.movies.push(addMovie);
+          proxy.writeQuery({ query: ALL_MOVIES_QUERY, data: moviesData });
+        } catch (error) {
+          // Do nothing, the cache wasn't filled yet, so fail quietly
+        }
+      },
+    },
+  }),
+  graphql(UPDATE_MOVIE_MUTATION, {
+    name: "updateMovie",
+    options: {
+      update: (proxy, { data: { updateMovie } }) => {
+        // Excellent example of using writeFragment - finds the movie and edits it everywhere!
+        proxy.writeFragment({
+          id: updateMovie.id,
+          fragment: MovieFragment,
+          fragmentName: "MovieFragment",  // Required because this fragment has fragments itself
+          data: updateMovie,
+        });
+      },
+    },
+  }),
   graphql(MOVIE_QUERY_SIMPLE, {
     name: "editMovie",
     skip: ownProps => !ownProps.match.params.id,
