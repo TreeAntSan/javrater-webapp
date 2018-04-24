@@ -16,3 +16,7 @@ seed:
   import: movieseed.graphql
 
 cluster: ${env:PRISMA_CLUSTER}
+
+endpoint: ${env:PRISMA_ENDPOINT}
+
+#endpoint: http://localhost:4466
