@@ -1,0 +1,14 @@
+version: "3.6"
+
+services:
+  javrater-server-prisma:
+    container_name: javrater-server-prisma
+    build:
+      context: .
+      dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - ".:/app"
+      - "/app/node_modules"
+    ports:
+      - "3010:3000"
+      - "4000:4000"
