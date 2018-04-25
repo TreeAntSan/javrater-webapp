@@ -25,4 +25,4 @@ COPY . .
 # Leave as this until I fix prisma server contact
 CMD [ "node", "-r", "dotenv/config", "src/index.js" ]
 
-EXPOSE 3000 4000
+EXPOSE 4000

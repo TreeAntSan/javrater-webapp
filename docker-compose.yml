@@ -23,7 +23,12 @@ services:
         aliases:
           - prisma
     environment:
+      # env var PRISMA_MANAGEMENT_API_SECRET must be set before running
+      # docker-compose supports .env files (https://docs.docker.com/compose/environment-variables/#the-env-file)
+      # just define a .env file WHERE docker-compose is run (not where docker-compose.yml exists).
+      # In addition you must add that same secret to the clusterSecret in ~/.prisma/config.yml.
       PRISMA_CONFIG: |
+        managementApiSecret: ${PRISMA_MANAGEMENT_API_SECRET}
         port: 4466
         databases:
           default:
@@ -69,7 +74,6 @@ services:
       - "./server-prisma:/app"
       - "/app/node_modules"
     ports:
-      - "3010:3000"
       - "4000:4000"
     extra_hosts: # https://stackoverflow.com/a/43579846/3120546
       # I set static IPs for the prisma server in database/docker-compose.yml.
