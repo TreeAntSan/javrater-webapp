@@ -71,7 +71,7 @@ services:
     ports:
       - "3010:3000"
       - "4000:4000"
-    extra_hosts:
+    extra_hosts: # https://stackoverflow.com/a/43579846/3120546
       # I set static IPs for the prisma server in database/docker-compose.yml.
       # I set in my MacOS's /etc/hosts file to have `127.0.0.1 self` so I can run the same .env in either
       # localdev or in a container.

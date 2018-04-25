@@ -18,9 +18,17 @@ After launching prisma server:
 To kill and remove the docker processes (this WILL delete the database)
   `docker kill $(docker ps -aq)`
   `docker rm $(docker ps -aq)`
+  `docker network prune` (optional but may-as-well if nuking everything)
+
+You may also want to delete images to clear hard drive space:
+  `docker images` (look for images with empty REPOSITORY entries, they're redundant)
+  `docker rmi <container1> <container2> ... -f`
 
 Optionally of course you can kill/rm just specific docker containers.
 If you want to nuke prisma and the db just kill/rm those two.
+
+If you ever get complaints about networks or bridges existing already, run:
+  `docker network prune`
 
 Currently playground does not work and will need to be run manually.
   `cd server-prisma; graphql playground;`

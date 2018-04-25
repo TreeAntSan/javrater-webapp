@@ -34,7 +34,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: prisma
 
-# https://stackoverflow.com/a/39498534/3120546 ()
+# https://stackoverflow.com/a/39498534/3120546
 networks:
   prisma:
     driver: bridge
