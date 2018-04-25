@@ -1,0 +1,101 @@
+version: "3.6"
+
+networks:
+  javrater-webapp:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+        # No gateway, no longer supported/needed
+
+services:
+  # The contents below are recycled from server-prisma/database/docker-compose.yml
+  # WITH ONE OR MORE IMPORTANT DIFFERENCES
+  # 1) Change from networks.prisma to networks.javrater-webapp. This network itself is defined at the top.
+  prisma:
+    image: prismagraphql/prisma:1.7
+    restart: always
+    ports:
+    - "4466:4466"
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.20
+        aliases:
+          - prisma
+    environment:
+      PRISMA_CONFIG: |
+        port: 4466
+        databases:
+          default:
+            connector: mysql
+            active: true
+            host: db
+            port: 3306
+            user: root
+            password: prisma
+
+  db:
+    image: mysql:5.7
+    restart: always
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.30
+        aliases:
+          - db
+    environment:
+      MYSQL_ROOT_PASSWORD: prisma
+
+  # The contents below are recycled from client/docker-compose.yml and server-prisma/docker-compose.yml
+  # WITH ONE OR MORE IMPORTANT DIFFERENCES
+  # 1) Change from (external) networks.prisma to networks.javrater-webapp. This network itself is defined at the top.
+  # 2) build.context has been changed from . to ./server-prisma and ./client in order to make the Dockerfiles be in
+  #    the correct location.
+  # 3) Each service has been given a static IP address and an alias. These are not necessary for browsing as these
+  #    aliases only apply to the inter-container network bridge. A browser will still access the client at port 3005,
+  #    server-prisma at port 4000 and playground at port 3010. These static IPs and aliases might be useful for testing,
+  #    though.
+  javrater-server-prisma:
+    container_name: javrater-server-prisma
+    restart: always
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.40
+        aliases:
+          - server-prisma
+    build:
+      context: "./server-prisma"
+      dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - ".:/app"
+      - "/app/node_modules"
+    ports:
+      - "3010:3000"
+      - "4000:4000"
+    extra_hosts:
+      # I set static IPs for the prisma server in database/docker-compose.yml.
+      # I set in my MacOS's /etc/hosts file to have `127.0.0.1 self` so I can run the same .env in either
+      # localdev or in a container.
+      # In localdev, this server will be run locally in node, and will hit 'self', which will be an alias to
+      # 127.0.0.1 (localhost).
+      # In a container this file is run and the server will hit 'self', which will be an alias to 172.18.0.20
+      # The endpoint is configured in the .env as PRISMA_ENDPOINT.
+      # "http://self:4466/server-prisma/dev" will work for both localdev and container.
+      # "http://prisma:4466/server-prisma/dev" will work for just container (an alias set in database/docker-compose.yml)
+      - "self:172.18.0.20"
+
+  javrater-client:
+    container_name: javrater-client
+    restart: always
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.50
+        aliases:
+          - client
+    build:
+      context: "./client"
+      dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - ".:/app"
+      - "/app/node_modules"
+    ports:
+      - "3005:3000"

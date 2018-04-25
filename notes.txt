@@ -1,0 +1,29 @@
+Docker Notes
+To launch everything at once go to the root of this git repo and run
+  `docker-compose -f docker-compose.yml up -d`
+
+To launch just the client:
+  `docker-compose -f client/docker-compose.yml up -d`
+
+To launch just server-prisma:
+  `docker-compose -f server-prisma/docker-compose.yml up -d`
+
+To launch just the prisma server and DB:
+  `docker-compose -f server-prisma/database/docker-compose.yml up -d`
+
+After launching prisma server:
+  `cd server-prisma; prisma deploy;`
+  (you need prisma install globally, do so with `npm i -g prisma`)
+
+To kill and remove the docker processes (this WILL delete the database)
+  `docker kill $(docker ps -aq)`
+  `docker rm $(docker ps -aq)`
+
+Optionally of course you can kill/rm just specific docker containers.
+If you want to nuke prisma and the db just kill/rm those two.
+
+Currently playground does not work and will need to be run manually.
+  `cd server-prisma; graphql playground;`
+  (you need graphql install globally, do so with `npm i -g graphql`)
+
+There is a problem with playground at the moment - you'll have to edit server-prisma/database/prisma.yml and delete / comment-out the setting "endpoint" to make it work. Pretty dumb.

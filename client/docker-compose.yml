@@ -3,6 +3,7 @@ version: "3.6"
 services:
   javrater-client:
     container_name: javrater-client
+    restart: always
     build:
       context: .
       dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile

@@ -3,6 +3,7 @@ version: "3.6"
 services:
   javrater-server-prisma:
     container_name: javrater-server-prisma
+    restart: always
     build:
       context: .
       dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
@@ -12,3 +13,20 @@ services:
     ports:
       - "3010:3000"
       - "4000:4000"
+    extra_hosts:
+      # I set static IPs for the prisma server in database/docker-compose.yml.
+      # I set in my MacOS's /etc/hosts file to have `127.0.0.1 self` so I can run the same .env in either
+      # localdev or in a container.
+      # In localdev, this server will be run locally in node, and will hit 'self', which will be an alias to
+      # 127.0.0.1 (localhost).
+      # In a container this file is run and the server will hit 'self', which will be an alias to 172.18.0.20
+      # The endpoint is configured in the .env as PRISMA_ENDPOINT.
+      # "http://self:4466/server-prisma/dev" will work for both localdev and container.
+      # "http://prisma:4466/server-prisma/dev" will work for just container (an alias set in database/docker-compose.yml)
+      - "self:172.18.0.20"
+
+# Connect to Prisma bridge (created at the up of ./database/docker-compose.yml)
+networks:
+  default:
+    external:
+      name: database_prisma

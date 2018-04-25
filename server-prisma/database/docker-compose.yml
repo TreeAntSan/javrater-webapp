@@ -1,10 +1,16 @@
-version: '3'
+version: "3"
+
 services:
   prisma:
     image: prismagraphql/prisma:1.7
     restart: always
     ports:
     - "4466:4466"
+    networks:
+      prisma:
+        ipv4_address: 172.18.0.20
+        aliases:
+          - prisma
     environment:
       PRISMA_CONFIG: |
         port: 4466
@@ -16,9 +22,23 @@ services:
             port: 3306
             user: root
             password: prisma
+
   db:
     image: mysql:5.7
     restart: always
+    networks:
+      prisma:
+        ipv4_address: 172.18.0.30
+        aliases:
+          - db
     environment:
       MYSQL_ROOT_PASSWORD: prisma
 
+# https://stackoverflow.com/a/39498534/3120546 ()
+networks:
+  prisma:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+        # No gateway, no longer supported/needed
