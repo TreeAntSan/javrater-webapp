@@ -14,6 +14,7 @@ To launch just the prisma server and DB:
 After launching prisma server:
   `cd server-prisma; prisma deploy;`
   (you need prisma install globally, do so with `npm i -g prisma`)
+  (once I had a failure complaining about a socket hangup - start a new terminal and try again)
 
 To kill and remove the docker processes (this WILL delete the database)
   `docker kill $(docker ps -aq)`

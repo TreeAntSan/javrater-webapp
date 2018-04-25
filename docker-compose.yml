@@ -66,7 +66,7 @@ services:
       context: "./server-prisma"
       dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
     volumes:
-      - ".:/app"
+      - "./server-prisma:/app"
       - "/app/node_modules"
     ports:
       - "3010:3000"
@@ -95,7 +95,7 @@ services:
       context: "./client"
       dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
     volumes:
-      - ".:/app"
+      - "./client:/app"
       - "/app/node_modules"
     ports:
       - "3005:3000"
