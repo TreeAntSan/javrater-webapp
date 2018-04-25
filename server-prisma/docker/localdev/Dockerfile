@@ -13,7 +13,7 @@ COPY ./package.json ./package.json
 RUN yarn install
 
 # install graphql to allow playground
-RUN yarn global add graphql
+#RUN yarn global add graphql
 
 # copy files to work directory
 COPY . .
