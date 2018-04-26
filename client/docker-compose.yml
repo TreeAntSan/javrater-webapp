@@ -8,7 +8,11 @@ services:
       context: .
       dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
     volumes:
-      - ".:/app"
+      - ".:/app" # Code refresh works, but does not work for remote docker-machines (named volume required)
+#      - "javrater-client:/app" # Code refresh doesn't, not viable for development
       - "/app/node_modules"
     ports:
       - "3005:3000"
+
+#volumes:
+#  javrater-client:

@@ -7,7 +7,9 @@ WORKDIR /app
 
 # install modules
 COPY ./package.json ./package.json
-RUN yarn install
+#RUN yarn install
+
+COPY . .
 
 # do something
 CMD [ "sleep", "99999999" ]

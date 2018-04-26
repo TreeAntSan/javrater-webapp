@@ -1,17 +1,9 @@
 version: "3.6"
 
-networks:
-  javrater-webapp:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16
-        # No gateway, no longer supported/needed
-
 services:
   # The contents below are recycled from server-prisma/database/docker-compose.yml
   # WITH ONE OR MORE IMPORTANT DIFFERENCES
-  # 1) Change from networks.prisma to networks.javrater-webapp. This network itself is defined at the top.
+  # 1) Change from networks.prisma to networks.javrater-webapp. This network itself is defined at the bottom.
   prisma:
     image: prismagraphql/prisma:1.7
     restart: always
@@ -52,7 +44,7 @@ services:
 
   # The contents below are recycled from client/docker-compose.yml and server-prisma/docker-compose.yml
   # WITH ONE OR MORE IMPORTANT DIFFERENCES
-  # 1) Change from (external) networks.prisma to networks.javrater-webapp. This network itself is defined at the top.
+  # 1) Change from (external) networks.prisma to networks.javrater-webapp. This network itself is defined at the bottom.
   # 2) build.context has been changed from . to ./server-prisma and ./client in order to make the Dockerfiles be in
   #    the correct location.
   # 3) Each service has been given a static IP address and an alias. These are not necessary for browsing as these
@@ -71,7 +63,7 @@ services:
       context: "./server-prisma"
       dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
     volumes:
-      - "./server-prisma:/app"
+      - "javrater-server/server-prisma:/app"
       - "/app/node_modules"
     ports:
       - "4000:4000"
@@ -99,7 +91,30 @@ services:
       context: "./client"
       dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
     volumes:
-      - "./client:/app"
+      - "javrater-client:/app"
       - "/app/node_modules"
     ports:
       - "3005:3000"
+
+networks:
+  javrater-webapp:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+        # No gateway, no longer supported/needed
+
+volumes:
+  # https://stackoverflow.com/a/49920624/3120546 and https://stackoverflow.com/a/48688324/3120546
+  javrater-server:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/server-prisma
+  javrater-client:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/client
