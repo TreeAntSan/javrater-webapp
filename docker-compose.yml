@@ -94,7 +94,8 @@ services:
       - "javrater-client:/app"
       - "/app/node_modules"
     ports:
-      - "3005:3000"
+      - "3005:3000" # Localdev I prefer 3005
+      - "80:80"     # For production build just go to 80
 
 networks:
   javrater-webapp:
@@ -106,6 +107,8 @@ networks:
 
 volumes:
   # https://stackoverflow.com/a/49920624/3120546 and https://stackoverflow.com/a/48688324/3120546
+  # Bind does not appear to allow for live code updates so this compose file is not a valid option
+  # for development and is really limited only to building in production modes.
   javrater-server:
     driver: local
     driver_opts:

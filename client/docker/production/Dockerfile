@@ -18,6 +18,6 @@ RUN yarn build
 #RUN rm -rf ./src
 
 # start the client
-CMD [ "serve", "-s", "build", "-p", "3000" ]
+CMD [ "serve", "-s", "build", "-p", "80" ]
 
-EXPOSE 3000
+EXPOSE 80
