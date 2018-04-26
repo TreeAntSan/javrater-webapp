@@ -1,3 +1,6 @@
+# I have not tested but I believe that this compose file MUST be run in it's own directory due to the use
+# of ${PWD} in the volume definitions at the bottom of this file.
+
 version: "3.6"
 
 services:
@@ -63,7 +66,7 @@ services:
       context: "./server-prisma"
       dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
     volumes:
-      - "javrater-server/server-prisma:/app"
+      - "javrater-server-prisma:/app"
       - "/app/node_modules"
     ports:
       - "4000:4000"
@@ -109,7 +112,7 @@ volumes:
   # https://stackoverflow.com/a/49920624/3120546 and https://stackoverflow.com/a/48688324/3120546
   # Bind does not appear to allow for live code updates so this compose file is not a valid option
   # for development and is really limited only to building in production modes.
-  javrater-server:
+  javrater-server-prisma:
     driver: local
     driver_opts:
       type: none
