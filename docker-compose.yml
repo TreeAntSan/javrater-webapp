@@ -1,0 +1,126 @@
+# I have not tested but I believe that this compose file MUST be run in it's own directory due to the use
+# of ${PWD} in the volume definitions at the bottom of this file.
+
+version: "3.6"
+
+services:
+  # The contents below are recycled from server-prisma/database/docker-compose.yml
+  # WITH ONE OR MORE IMPORTANT DIFFERENCES
+  # 1) Change from networks.prisma to networks.javrater-webapp. This network itself is defined at the bottom.
+  prisma:
+    image: prismagraphql/prisma:1.7
+    restart: always
+    ports:
+    - "4466:4466"
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.20
+        aliases:
+          - prisma
+    environment:
+      # env var PRISMA_MANAGEMENT_API_SECRET must be set before running
+      # docker-compose supports .env files (https://docs.docker.com/compose/environment-variables/#the-env-file)
+      # just define a .env file WHERE docker-compose is run (not where docker-compose.yml exists).
+      # In addition you must add that same secret to the clusterSecret in ~/.prisma/config.yml.
+      PRISMA_CONFIG: |
+        managementApiSecret: ${PRISMA_MANAGEMENT_API_SECRET}
+        port: 4466
+        databases:
+          default:
+            connector: mysql
+            active: true
+            host: db
+            port: 3306
+            user: root
+            password: prisma
+
+  db:
+    image: mysql:5.7
+    restart: always
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.30
+        aliases:
+          - db
+    environment:
+      MYSQL_ROOT_PASSWORD: prisma
+
+  # The contents below are recycled from client/docker-compose.yml and server-prisma/docker-compose.yml
+  # WITH ONE OR MORE IMPORTANT DIFFERENCES
+  # 1) Change from (external) networks.prisma to networks.javrater-webapp. This network itself is defined at the bottom.
+  # 2) build.context has been changed from . to ./server-prisma and ./client in order to make the Dockerfiles be in
+  #    the correct location.
+  # 3) Each service has been given a static IP address and an alias. These are not necessary for browsing as these
+  #    aliases only apply to the inter-container network bridge. A browser will still access the client at port 3005,
+  #    server-prisma at port 4000 and playground at port 3010. These static IPs and aliases might be useful for testing,
+  #    though.
+  javrater-server-prisma:
+    container_name: javrater-server-prisma
+    restart: always
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.40
+        aliases:
+          - server-prisma
+    build:
+      context: "./server-prisma"
+      dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - "javrater-server-prisma:/app"
+      - "/app/node_modules"
+    ports:
+      - "4000:4000"
+    extra_hosts: # https://stackoverflow.com/a/43579846/3120546
+      # I set static IPs for the prisma server in database/docker-compose.yml.
+      # I set in my MacOS's /etc/hosts file to have `127.0.0.1 self` so I can run the same .env in either
+      # localdev or in a container.
+      # In localdev, this server will be run locally in node, and will hit 'self', which will be an alias to
+      # 127.0.0.1 (localhost).
+      # In a container this file is run and the server will hit 'self', which will be an alias to 172.18.0.20
+      # The endpoint is configured in the .env as PRISMA_ENDPOINT.
+      # "http://self:4466/server-prisma/dev" will work for both localdev and container.
+      # "http://prisma:4466/server-prisma/dev" will work for just container (an alias set in database/docker-compose.yml)
+      - "self:172.18.0.20"
+
+  javrater-client:
+    container_name: javrater-client
+    restart: always
+    networks:
+      javrater-webapp:
+        ipv4_address: 172.18.0.50
+        aliases:
+          - client
+    build:
+      context: "./client"
+      dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - "javrater-client:/app"
+      - "/app/node_modules"
+    ports:
+      - "3005:3000" # Localdev I prefer 3005
+      - "80:80"     # For production build just go to 80
+
+networks:
+  javrater-webapp:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+        # No gateway, no longer supported/needed
+
+volumes:
+  # https://stackoverflow.com/a/49920624/3120546 and https://stackoverflow.com/a/48688324/3120546
+  # Bind does not appear to allow for live code updates so this compose file is not a valid option
+  # for development and is really limited only to building in production modes.
+  javrater-server-prisma:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/server-prisma
+  javrater-client:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/client

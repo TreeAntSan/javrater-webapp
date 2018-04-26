@@ -16,3 +16,6 @@ seed:
   import: movieseed.graphql
 
 cluster: ${env:PRISMA_CLUSTER}
+
+# Comment this out to let graphql playground launch
+endpoint: ${env:PRISMA_ENDPOINT}

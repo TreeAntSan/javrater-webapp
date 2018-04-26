@@ -1,0 +1,48 @@
+Docker Notes
+
+Launch all together!
+To launch everything at once go to the root of this git repo and run
+  `docker-compose -f docker-compose.yml up -d`
+
+Or... launch all piecemeal...
+To launch just the client:
+  `docker-compose -f client/docker-compose.yml up -d`
+
+To launch just server-prisma:
+  `docker-compose -f server-prisma/docker-compose.yml up -d`
+
+To launch just the prisma server and DB:
+  `docker-compose -f server-prisma/database/docker-compose.yml up -d`
+
+Seeding the database
+After launching prisma server:
+  `cd server-prisma; prisma deploy;`
+  (you need prisma install globally, do so with `npm i -g prisma`)
+  (once I had a failure complaining about a socket hangup - start a new terminal and try again)
+
+To kill and remove the docker processes (this WILL delete the database)
+  `docker kill $(docker ps -aq)`
+  `docker rm $(docker ps -aq)`
+  `docker network prune` (optional but may-as-well if nuking everything)
+
+You may also want to delete images to clear hard drive space:
+  `docker images` (look for images with empty REPOSITORY entries, they're redundant)
+  `docker rmi <container1> <container2> ... -f`
+
+Optionally of course you can kill/rm just specific docker containers.
+If you want to nuke prisma and the db just kill/rm those two.
+
+If you ever get complaints about networks or bridges existing already, run:
+  `docker network prune`
+
+Currently playground does not work and will need to be run manually.
+  `cd server-prisma; graphql playground;`
+  (you need graphql install globally, do so with `npm i -g graphql`)
+
+There is a problem with playground at the moment - you'll have to edit server-prisma/database/prisma.yml and delete / comment-out the setting "endpoint" to make it work. Pretty dumb.
+
+To switch between localdev and production you need to docker kill/rm the client container and delete the image. From there then run the docker-compose up command again:
+  `JAVRATER_CLIENT_BUILD_MODE=production docker-compose up -d`
+  (it should rebuild the missing client container)
+
+  You can tell if it's in prod mode by seeing if the create movie page is laggy or not, and, obviously, looking for the serve command in the docker build logs.
