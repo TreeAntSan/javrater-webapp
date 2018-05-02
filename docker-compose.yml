@@ -1,3 +1,13 @@
+# This file has been abandoned but will remain here. I couldn't get the volumes to work the way I expect
+# them to so my recommendation is to instead docker-compose each file individually:
+# client/docker-compose.yml, server-prisma/docker-compose.yml, and
+# server-prisma/database/docker-compose.yml
+# When going to AWS (basically prod), to speed things up make sure your packages are installed locally
+# and you build the client. Use the compose files client/docker-compose-aws.yml and
+# server-prisma/docker-compose-aws.yml instead. And finally set
+# $JAVRATER_CLIENT_BUILD_MODE=prebuilt and $JAVRATER_SERVER_BUILD_MODE=prebuilt
+# to make sure that the steps of installing and building are skipped completely. Those remote
+# EC2 instances that are free are also suuuuper slow.
 # I have not tested but I believe that this compose file MUST be run in it's own directory due to the use
 # of ${PWD} in the volume definitions at the bottom of this file.
 

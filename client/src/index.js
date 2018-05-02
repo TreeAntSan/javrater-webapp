@@ -14,6 +14,7 @@ import "semantic-ui-css/semantic.min.css";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import utils from "./utils";
+import { API_ROOT } from "./api-config";
 
 const grabToken = () => {
   try {
@@ -63,7 +64,7 @@ const customFetch = (uri, options) => {
 };
 
 const httpLinkWithAuthToken = createHttpLink({
-  uri: "http://localhost:4000",
+  uri: `http://${API_ROOT}`,
   fetch: customFetch,
   headers: {
     authorization: token ? `Bearer ${token}` : null,
@@ -75,7 +76,7 @@ const httpLinkWithAuthToken = createHttpLink({
 // http protocol. Notice that you’re also authenticating the websocket connection with the user’s
 // token that you retrieve from localStorage.
 const wsLink = new WebSocketLink({
-  uri: "ws://localhost:4000",
+  uri: `ws://${API_ROOT}`,
   options: {
     reconnect: true,
     connectionParams: {
