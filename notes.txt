@@ -1,24 +1,52 @@
-Docker Notes
+Notes
 
-Launch all together!
-To launch everything at once go to the root of this git repo and run
+Also see large comment at top of ./docker-compose.yml describing steps to launching this whole thing for AWS.
+
+Docker Launches!
+To launch the client:
+  `cd client`
   `docker-compose -f docker-compose.yml up -d`
 
-Or... launch all piecemeal...
-To launch just the client:
-  `docker-compose -f client/docker-compose.yml up -d`
+To launch server-prisma:
+  `cd server-prisma`
+  `docker-compose -f docker-compose.yml up -d`
 
-To launch just server-prisma:
-  `docker-compose -f server-prisma/docker-compose.yml up -d`
-
-To launch just the prisma server and DB:
-  `docker-compose -f server-prisma/database/docker-compose.yml up -d`
+To launch the prisma server and DB:
+  `cd server-prisma`
+  `docker-compose -f database/docker-compose.yml up -d`
 
 Seeding the database
 After launching prisma server:
-  `cd server-prisma; prisma deploy;`
+  `cd server-prisma; prisma deploy -e ./.env.special;`
   (you need prisma install globally, do so with `npm i -g prisma`)
   (once I had a failure complaining about a socket hangup - start a new terminal and try again)
+  (you will need a .env file. For example...)
+  for local dev:
+    PRISMA_STAGE="dev"
+    PRISMA_ENDPOINT="http://self:4466/server-prisma/dev"
+    PRISMA_CLUSTER="local"
+    PRISMA_SECRET="SOME_PRISMA_SECRET"
+    APP_SECRET="SOME_APP_SECRET"
+    PRISMA_MANAGEMENT_API_SECRET="SOME_PRISMA_MANAGEMENT_API_SECRET"
+
+  for aws deployment:
+    PRISMA_STAGE="dev"
+    PRISMA_ENDPOINT="http://ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com:4466/server-prisma/dev"
+    PRISMA_CLUSTER="aws01"
+    PRISMA_SECRET="SOME_PRISMA_SECRET"
+    APP_SECRET="SOME_APP_SECRET"
+    PRISMA_MANAGEMENT_API_SECRET="SOME_PRISMA_MANAGEMENT_API_SECRET"
+
+  In ~/.prisma/config.yml you'll need a new entry for that new PRISMA_CLUSTER ("aws01" in this example)
+  My config looked like this:
+    clusters:
+      local:
+        host: 'http://localhost:4466'
+        clusterSecret: "SOME_PRISMA_MANAGEMENT_API_SECRET"
+      aws01:
+        host: 'http://ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com:4466'
+        clusterSecret: "SOME_PRISMA_MANAGEMENT_API_SECRET"
+  (notice the repeat of "SOME_PRISMA_MANAGEMENT_API_SECRET", it's the same secret string as in the .env's)
 
 To kill and remove the docker processes (this WILL delete the database)
   `docker kill $(docker ps -aq)`
@@ -46,3 +74,44 @@ To switch between localdev and production you need to docker kill/rm the client 
   (it should rebuild the missing client container)
 
   You can tell if it's in prod mode by seeing if the create movie page is laggy or not, and, obviously, looking for the serve command in the docker build logs.
+
+
+###########
+Instructions for local development (you run the code on your local machine)
+1) Install node (at least 9.0, that's what I was using at the time)
+2) Install Docker
+3) Install yarn because it's better
+4) Navigate to client and server-prisma and run `yarn install`
+5) Write ./server-prisma/.env but pick your own secrets:
+    PRISMA_STAGE="dev"
+    PRISMA_ENDPOINT="http://self:4466/server-prisma/dev"
+    PRISMA_CLUSTER="local"
+    PRISMA_SECRET="SOME_PRISMA_SECRET"
+    APP_SECRET="SOME_APP_SECRET"
+    PRISMA_MANAGEMENT_API_SECRET="SOME_PRISMA_MANAGEMENT_API_SECRET"
+6) `yarn start` in both directories should work
+7) Install Prisma tool with `npm i -g prisma`
+7) Go to ./server-prisma and run `docker-compose -f database/docker-compose up -d` to launch the docker
+   containers for the Prisma server software.
+8) Make sure that the "clusterSecret" for local in ~/.prisma/config.yml is the same as your
+   PRISMA_MANAGEMENT_API_SECRET secret you have defined in the ./server-prisma/.env file.
+9) Run `prisma deploy` - if it works then dang you're doing well!
+
+Go to localhost:3005 and see it work!
+
+###########
+Instructions for docker
+1) Update your /etc/hosts and add the line "127.0.0.1	self" (put a tab between them)
+2) Go to ./client and run `docker-compose -f docker-compose.yml up -d`
+   Go to localhost:3005 and see it load! Things won't really work but you can still go.
+3) Go to ./server-prisma and run `docker-compose -f docker-compose.yml up -d` and
+   `docker-compose -f database/docker-compose up -d`
+4) Make sure shit is up with `docker ps` - if things are restarting then that's bad... you'll have to use
+   docker run commands such as `docker run -it -p 80:80 -p 3005:3000 --entrypoint="/bin/bash" client_javrater-client`
+   for client and for server `docker run -it -p 4000:4000 --add-host="self:172.18.0.20" --network="database_prisma" --entrypoint="/bin/bash" server-prisma_javrater-server-prisma`
+   (after killing and rm'ing the restarting container and getting the name right)
+
+
+Instructions for AWS
+I'm too lazy to copy and proof-read things, look at ./docker-compose.yml's big comment at the top. That file
+was originally intended for AWS use but I ended up giving up on it because volumes were too buggy.

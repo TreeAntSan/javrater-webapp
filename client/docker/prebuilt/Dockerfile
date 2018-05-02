@@ -5,17 +5,11 @@ FROM node:9.11.1
 RUN mkdir -p /app
 WORKDIR /app
 
-# install modules
-COPY ./package.json ./package.json
-RUN yarn install
+# install serve tool
 RUN yarn global add serve
 
 # copy files to work directory
-COPY . .
-
-# build the client
-RUN yarn build
-#RUN rm -rf ./src
+COPY ./build ./build
 
 # start the client
 CMD [ "serve", "--single", "--port=80", "./build" ]

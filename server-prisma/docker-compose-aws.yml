@@ -1,0 +1,25 @@
+version: "3.6"
+
+services:
+  javrater-server-prisma:
+    container_name: javrater-server-prisma
+    restart: always
+    build:
+      context: .
+      dockerfile: docker/${JAVRATER_SERVER_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - "javrater-server-prisma:/app" # Code refresh doesn't, not viable for development
+      - "/app/node_modules"
+    ports:
+      - "4000:4000"
+    extra_hosts:
+      - "self:172.18.0.20"
+
+# Connect to Prisma bridge (created at the up of ./database/docker-compose.yml)
+networks:
+  default:
+    external:
+      name: database_prisma
+
+volumes:
+  javrater-server-prisma:

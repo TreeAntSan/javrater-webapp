@@ -1,0 +1,18 @@
+version: "3.6"
+
+services:
+  javrater-client:
+    container_name: javrater-client
+    restart: always
+    build:
+      context: .
+      dockerfile: docker/${JAVRATER_CLIENT_BUILD_MODE:-localdev}/Dockerfile
+    volumes:
+      - "javrater-client:/app" # Code refresh doesn't, not viable for development
+      - "/app/node_modules"
+    ports:
+      - "3005:3000" # Localdev I prefer 3005
+      - "80:80"     # For production build just go to 80
+
+volumes:
+  javrater-client:
